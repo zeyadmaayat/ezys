@@ -14,16 +14,199 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      abbreviations: {
+        Row: {
+          abbreviation: string
+          category_id: string | null
+          created_at: string
+          definition_ar: string | null
+          definition_en: string | null
+          full_form_ar: string
+          full_form_en: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          abbreviation: string
+          category_id?: string | null
+          created_at?: string
+          definition_ar?: string | null
+          definition_en?: string | null
+          full_form_ar: string
+          full_form_en: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          abbreviation?: string
+          category_id?: string | null
+          created_at?: string
+          definition_ar?: string | null
+          definition_en?: string | null
+          full_form_ar?: string
+          full_form_en?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abbreviations_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          icon: string | null
+          id: string
+          name_ar: string
+          name_en: string
+          slug: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          id?: string
+          name_ar: string
+          name_en: string
+          slug: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          id?: string
+          name_ar?: string
+          name_en?: string
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      topics: {
+        Row: {
+          category_id: string
+          content_ar: string | null
+          content_en: string | null
+          created_at: string
+          id: string
+          slug: string
+          sort_order: number | null
+          summary_ar: string | null
+          summary_en: string | null
+          title_ar: string
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          content_ar?: string | null
+          content_en?: string | null
+          created_at?: string
+          id?: string
+          slug: string
+          sort_order?: number | null
+          summary_ar?: string | null
+          summary_en?: string | null
+          title_ar: string
+          title_en: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          content_ar?: string | null
+          content_en?: string | null
+          created_at?: string
+          id?: string
+          slug?: string
+          sort_order?: number | null
+          summary_ar?: string | null
+          summary_en?: string | null
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topics_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +333,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
