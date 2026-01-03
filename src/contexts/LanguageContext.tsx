@@ -88,6 +88,8 @@ const translations: Translations = {
   searchPlaceholder: { en: 'Search topics and abbreviations...', ar: 'البحث في المواضيع والاختصارات...' },
   searchResults: { en: 'Search Results', ar: 'نتائج البحث' },
   noResults: { en: 'No results found', ar: 'لم يتم العثور على نتائج' },
+  noContent: { en: 'No content available yet', ar: 'لا يوجد محتوى متاح حتى الآن' },
+  noCategories: { en: 'No categories available yet', ar: 'لا توجد فئات متاحة حتى الآن' },
 
   // Admin
   adminPanel: { en: 'Admin Panel', ar: 'لوحة الإدارة' },
