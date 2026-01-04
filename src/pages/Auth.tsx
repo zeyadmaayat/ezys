@@ -97,23 +97,46 @@ const Auth = () => {
         </div>
 
         <Card className="border-border shadow-lg">
+          {/* Auth Mode Tabs */}
+          <div className="flex border-b border-border">
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(true);
+                setErrors({});
+                setGeneralError(null);
+              }}
+              className={`flex-1 py-3 text-center font-medium transition-colors ${
+                isLogin 
+                  ? 'text-accent border-b-2 border-accent bg-accent/5' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t('login')}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(false);
+                setErrors({});
+                setGeneralError(null);
+              }}
+              className={`flex-1 py-3 text-center font-medium transition-colors ${
+                !isLogin 
+                  ? 'text-accent border-b-2 border-accent bg-accent/5' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t('signUp')}
+            </button>
+          </div>
+          
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">
               {isLogin ? t('welcomeBack') : t('createAccount')}
             </CardTitle>
             <CardDescription>
-              {isLogin ? t('dontHaveAccount') : t('alreadyHaveAccount')}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setErrors({});
-                  setGeneralError(null);
-                }}
-                className={`text-accent hover:underline font-medium ${isRTL ? 'mr-1' : 'ml-1'}`}
-              >
-                {isLogin ? t('signUp') : t('login')}
-              </button>
+              {isLogin ? t('enterCredentials') : t('fillDetails')}
             </CardDescription>
           </CardHeader>
           

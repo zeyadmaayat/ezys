@@ -36,6 +36,8 @@ const translations: Translations = {
   passwordMismatch: { en: 'Passwords do not match', ar: 'كلمات المرور غير متطابقة' },
   passwordTooShort: { en: 'Password must be at least 6 characters', ar: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' },
   invalidEmail: { en: 'Please enter a valid email', ar: 'الرجاء إدخال بريد إلكتروني صحيح' },
+  enterCredentials: { en: 'Enter your credentials to continue', ar: 'أدخل بيانات الاعتماد الخاصة بك للمتابعة' },
+  fillDetails: { en: 'Fill in your details to get started', ar: 'أدخل بياناتك للبدء' },
 
   // Home
   heroTitle: { en: 'Your Professional Logistics Hub', ar: 'مركزك المهني للخدمات اللوجستية' },
