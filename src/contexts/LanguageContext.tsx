@@ -85,6 +85,9 @@ const translations: Translations = {
   edit: { en: 'Edit', ar: 'تعديل' },
   add: { en: 'Add', ar: 'إضافة' },
   actions: { en: 'Actions', ar: 'الإجراءات' },
+  back: { en: 'Back', ar: 'رجوع' },
+  comingSoon: { en: 'Coming soon', ar: 'قريباً' },
+  allCategories: { en: 'All Categories', ar: 'جميع الفئات' },
 
   // Search
   searchPlaceholder: { en: 'Search topics and abbreviations...', ar: 'البحث في المواضيع والاختصارات...' },
@@ -128,6 +131,49 @@ const translations: Translations = {
   confirmDelete: { en: 'Are you sure you want to delete this?', ar: 'هل أنت متأكد من حذف هذا؟' },
   accessDenied: { en: 'Access Denied', ar: 'الوصول مرفوض' },
   adminOnly: { en: 'This area is for administrators only', ar: 'هذه المنطقة للمسؤولين فقط' },
+
+  // Topic Editor
+  basicInfo: { en: 'Basic Information', ar: 'المعلومات الأساسية' },
+  structuredContent: { en: 'Structured Content', ar: 'المحتوى المنظم' },
+  useTemplate: { en: 'Use Standard Template', ar: 'استخدام القالب القياسي' },
+  noSections: { en: 'No sections added yet. Add sections or use the standard template.', ar: 'لم تتم إضافة أقسام بعد. أضف أقسامًا أو استخدم القالب القياسي.' },
+  addSection: { en: 'Add Section', ar: 'إضافة قسم' },
+  fillRequired: { en: 'Please fill all required fields', ar: 'يرجى ملء جميع الحقول المطلوبة' },
+  deleteTopicWarning: { en: 'This action cannot be undone. The topic and all its content will be permanently deleted.', ar: 'لا يمكن التراجع عن هذا الإجراء. سيتم حذف الموضوع وجميع محتوياته بشكل دائم.' },
+
+  // Section Types
+  sectionDefinition: { en: 'Definition', ar: 'التعريف' },
+  sectionKeyConcepts: { en: 'Key Concepts', ar: 'المفاهيم الأساسية' },
+  sectionComparison: { en: 'Comparison', ar: 'المقارنة' },
+  sectionAdvantages: { en: 'Advantages', ar: 'المميزات' },
+  sectionRisks: { en: 'Risks & Challenges', ar: 'المخاطر والتحديات' },
+  sectionBestPractices: { en: 'Best Practices', ar: 'أفضل الممارسات' },
+  sectionExample: { en: 'Practical Example', ar: 'مثال عملي' },
+  sectionRelatedKPIs: { en: 'Related KPIs', ar: 'مؤشرات الأداء' },
+  sectionCustom: { en: 'Custom', ar: 'مخصص' },
+  
+  // These are for the add section buttons with camelCase keys
+  sectionDefinition2: { en: 'Definition', ar: 'التعريف' },
+  sectionKeyConcepts2: { en: 'Key Concepts', ar: 'المفاهيم الأساسية' },
+  sectionComparison2: { en: 'Comparison', ar: 'المقارنة' },
+  sectionAdvantages2: { en: 'Advantages', ar: 'المميزات' },
+  sectionRisks2: { en: 'Risks', ar: 'المخاطر' },
+  sectionBestPractices2: { en: 'Best Practices', ar: 'أفضل الممارسات' },
+  sectionExample2: { en: 'Example', ar: 'مثال' },
+  sectionRelatedKpis2: { en: 'Related KPIs', ar: 'مؤشرات الأداء' },
+  sectionCustom2: { en: 'Custom', ar: 'مخصص' },
+
+  // Content Types
+  contentTypeText: { en: 'Text', ar: 'نص' },
+  contentTypeBullets: { en: 'Bullet List', ar: 'قائمة نقطية' },
+  contentTypeComparison: { en: 'Comparison Table', ar: 'جدول مقارنة' },
+  contentTypeCallout: { en: 'Callout', ar: 'تنبيه' },
+
+  // Editor Actions
+  addBullet: { en: 'Add Bullet', ar: 'إضافة نقطة' },
+  addRow: { en: 'Add Row', ar: 'إضافة صف' },
+  leftColumn: { en: 'Left Column', ar: 'العمود الأيسر' },
+  rightColumn: { en: 'Right Column', ar: 'العمود الأيمن' },
 
   // Footer
   allRightsReserved: { en: 'All rights reserved', ar: 'جميع الحقوق محفوظة' },

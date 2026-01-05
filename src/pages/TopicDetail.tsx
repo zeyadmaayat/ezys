@@ -5,6 +5,7 @@ import MainLayout from '@/components/MainLayout';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import StructuredTopicRenderer from '@/components/topic/StructuredTopicRenderer';
 
 interface Topic {
   id: string;
@@ -72,9 +73,15 @@ const TopicDetail = () => {
     return language === 'ar' ? topic.title_ar : topic.title_en;
   };
 
-  const getTopicContent = () => {
+  const getTopicSummary = () => {
     if (!topic) return '';
-    return language === 'ar' ? topic.content_ar : topic.content_en;
+    return language === 'ar' ? topic.summary_ar : topic.summary_en;
+  };
+
+  const getTopicContent = () => {
+    if (!topic) return null;
+    // Content is now stored as JSON, same in both fields
+    return topic.content_en;
   };
 
   const getCategoryName = () => {
@@ -104,24 +111,15 @@ const TopicDetail = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 {getTopicTitle()}
               </h1>
-              {(language === 'ar' ? topic.summary_ar : topic.summary_en) && (
-                <p className="text-lg text-muted-foreground">
-                  {language === 'ar' ? topic.summary_ar : topic.summary_en}
+              {getTopicSummary() && (
+                <p className="text-lg text-muted-foreground border-l-4 border-accent pl-4">
+                  {getTopicSummary()}
                 </p>
               )}
             </header>
 
-            {/* Topic Content */}
-            <div className="prose prose-lg max-w-none dark:prose-invert">
-              {getTopicContent() ? (
-                <div 
-                  className="whitespace-pre-wrap text-foreground leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: getTopicContent()?.replace(/\n/g, '<br />') || '' }}
-                />
-              ) : (
-                <p className="text-muted-foreground italic">{t('noTopics')}</p>
-              )}
-            </div>
+            {/* Topic Content - Structured Renderer */}
+            <StructuredTopicRenderer content={getTopicContent()} />
           </article>
         ) : (
           <div className="text-center py-20">
