@@ -4,6 +4,7 @@ import {
   StructuredContent, 
   TopicSection, 
   ComparisonItem,
+  ProductDescriptionContent,
   parseStructuredContent 
 } from '@/types/structured-content';
 import { 
@@ -30,6 +31,7 @@ const SECTION_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   'best-practices': CheckCircle,
   'example': FileText,
   'related-kpis': BarChart3,
+  'product-description': FileText,
   'custom': BookOpen
 };
 
@@ -42,6 +44,7 @@ const SECTION_COLORS: Record<string, string> = {
   'best-practices': 'border-l-teal-500 bg-teal-500/5',
   'example': 'border-l-indigo-500 bg-indigo-500/5',
   'related-kpis': 'border-l-orange-500 bg-orange-500/5',
+  'product-description': 'border-l-cyan-500 bg-cyan-500/5',
   'custom': 'border-l-gray-500 bg-gray-500/5'
 };
 
@@ -54,6 +57,7 @@ const ICON_COLORS: Record<string, string> = {
   'best-practices': 'text-teal-500',
   'example': 'text-indigo-500',
   'related-kpis': 'text-orange-500',
+  'product-description': 'text-cyan-500',
   'custom': 'text-gray-500'
 };
 
