@@ -151,6 +151,7 @@ const translations: Translations = {
   sectionExample: { en: 'Practical Example', ar: 'مثال عملي' },
   sectionRelatedKPIs: { en: 'Related KPIs', ar: 'مؤشرات الأداء' },
   sectionCustom: { en: 'Custom', ar: 'مخصص' },
+  sectionProductDescription: { en: 'Product Description', ar: 'وصف المنتج' },
   
   // These are for the add section buttons with camelCase keys
   sectionDefinition2: { en: 'Definition', ar: 'التعريف' },
@@ -168,6 +169,7 @@ const translations: Translations = {
   contentTypeBullets: { en: 'Bullet List', ar: 'قائمة نقطية' },
   contentTypeComparison: { en: 'Comparison Table', ar: 'جدول مقارنة' },
   contentTypeCallout: { en: 'Callout', ar: 'تنبيه' },
+  contentTypeProductCard: { en: 'Product Card', ar: 'بطاقة المنتج' },
 
   // Editor Actions
   addBullet: { en: 'Add Bullet', ar: 'إضافة نقطة' },

@@ -11,6 +11,7 @@ import {
   ContentType, 
   SectionType,
   ComparisonItem,
+  ProductDescriptionContent,
   SECTION_DEFAULTS 
 } from '@/types/structured-content';
 import { 
@@ -46,27 +47,45 @@ const SectionEditor = ({
 
   const handleTypeChange = (type: SectionType) => {
     const defaults = SECTION_DEFAULTS[type];
+    const getDefaultContent = (contentType: ContentType) => {
+      switch (contentType) {
+        case 'bullets':
+        case 'comparison-table':
+          return [];
+        case 'product-card':
+          return { title_en: '', title_ar: '', bullets_en: [], bullets_ar: [], tone: 'professional' as const };
+        default:
+          return '';
+      }
+    };
     onUpdate({
       ...section,
       type,
       title_en: defaults.title_en,
       title_ar: defaults.title_ar,
       contentType: defaults.contentType,
-      content_en: defaults.contentType === 'bullets' ? [] : 
-                  defaults.contentType === 'comparison-table' ? [] : '',
-      content_ar: defaults.contentType === 'bullets' ? [] : 
-                  defaults.contentType === 'comparison-table' ? [] : ''
+      content_en: getDefaultContent(defaults.contentType),
+      content_ar: getDefaultContent(defaults.contentType)
     });
   };
 
   const handleContentTypeChange = (contentType: ContentType) => {
+    const getDefaultContent = (ct: ContentType) => {
+      switch (ct) {
+        case 'bullets':
+        case 'comparison-table':
+          return [];
+        case 'product-card':
+          return { title_en: '', title_ar: '', bullets_en: [], bullets_ar: [], tone: 'professional' as const };
+        default:
+          return '';
+      }
+    };
     onUpdate({
       ...section,
       contentType,
-      content_en: contentType === 'bullets' ? [] : 
-                  contentType === 'comparison-table' ? [] : '',
-      content_ar: contentType === 'bullets' ? [] : 
-                  contentType === 'comparison-table' ? [] : ''
+      content_en: getDefaultContent(contentType),
+      content_ar: getDefaultContent(contentType)
     });
   };
 
@@ -133,6 +152,53 @@ const SectionEditor = ({
     });
   };
 
+  // Product card handlers
+  const updateProductField = (field: keyof ProductDescriptionContent, value: unknown) => {
+    const content = section.content_en as ProductDescriptionContent;
+    const updated = { ...content, [field]: value };
+    onUpdate({
+      ...section,
+      content_en: updated,
+      content_ar: updated
+    });
+  };
+
+  const addProductBullet = (lang: 'en' | 'ar') => {
+    const content = section.content_en as ProductDescriptionContent;
+    const key = `bullets_${lang}` as 'bullets_en' | 'bullets_ar';
+    const updated = { ...content, [key]: [...content[key], ''] };
+    onUpdate({
+      ...section,
+      content_en: updated,
+      content_ar: updated
+    });
+  };
+
+  const updateProductBullet = (lang: 'en' | 'ar', index: number, value: string) => {
+    const content = section.content_en as ProductDescriptionContent;
+    const key = `bullets_${lang}` as 'bullets_en' | 'bullets_ar';
+    const bullets = [...content[key]];
+    bullets[index] = value;
+    const updated = { ...content, [key]: bullets };
+    onUpdate({
+      ...section,
+      content_en: updated,
+      content_ar: updated
+    });
+  };
+
+  const removeProductBullet = (lang: 'en' | 'ar', index: number) => {
+    const content = section.content_en as ProductDescriptionContent;
+    const key = `bullets_${lang}` as 'bullets_en' | 'bullets_ar';
+    const bullets = content[key].filter((_, i) => i !== index);
+    const updated = { ...content, [key]: bullets };
+    onUpdate({
+      ...section,
+      content_en: updated,
+      content_ar: updated
+    });
+  };
+
   return (
     <Card className="border-border">
       <CardHeader className="py-3 px-4">
@@ -153,6 +219,7 @@ const SectionEditor = ({
                 <SelectItem value="best-practices">{t('sectionBestPractices')}</SelectItem>
                 <SelectItem value="example">{t('sectionExample')}</SelectItem>
                 <SelectItem value="related-kpis">{t('sectionRelatedKPIs')}</SelectItem>
+                <SelectItem value="product-description">{t('sectionProductDescription')}</SelectItem>
                 <SelectItem value="custom">{t('sectionCustom')}</SelectItem>
               </SelectContent>
             </Select>
@@ -166,6 +233,7 @@ const SectionEditor = ({
                 <SelectItem value="bullets">{t('contentTypeBullets')}</SelectItem>
                 <SelectItem value="comparison-table">{t('contentTypeComparison')}</SelectItem>
                 <SelectItem value="callout">{t('contentTypeCallout')}</SelectItem>
+                <SelectItem value="product-card">{t('contentTypeProductCard')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

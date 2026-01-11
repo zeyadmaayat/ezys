@@ -10,9 +10,10 @@ export type SectionType =
   | 'best-practices'
   | 'example'
   | 'related-kpis'
+  | 'product-description'
   | 'custom';
 
-export type ContentType = 'text' | 'bullets' | 'comparison-table' | 'callout';
+export type ContentType = 'text' | 'bullets' | 'comparison-table' | 'callout' | 'product-card';
 
 export interface ComparisonItem {
   left_en: string;
@@ -21,15 +22,25 @@ export interface ComparisonItem {
   right_ar: string;
 }
 
+export interface ProductDescriptionContent {
+  title_en: string;
+  title_ar: string;
+  bullets_en: string[];
+  bullets_ar: string[];
+  tone: 'professional' | 'marketing' | 'technical';
+  useCase_en?: string;
+  useCase_ar?: string;
+}
+
 export interface TopicSection {
   id: string;
   type: SectionType;
   title_en: string;
   title_ar: string;
   contentType: ContentType;
-  // Content can be: string (text/callout), string[] (bullets), or ComparisonItem[] (comparison-table)
-  content_en: string | string[] | ComparisonItem[];
-  content_ar: string | string[] | ComparisonItem[];
+  // Content can be: string (text/callout), string[] (bullets), ComparisonItem[] (comparison-table), or ProductDescriptionContent (product-card)
+  content_en: string | string[] | ComparisonItem[] | ProductDescriptionContent;
+  content_ar: string | string[] | ComparisonItem[] | ProductDescriptionContent;
   order: number;
 }
 
@@ -80,6 +91,11 @@ export const SECTION_DEFAULTS: Record<SectionType, { title_en: string; title_ar:
     title_ar: 'مؤشرات الأداء والمصطلحات ذات الصلة',
     contentType: 'bullets'
   },
+  'product-description': {
+    title_en: 'Product Description',
+    title_ar: 'وصف المنتج',
+    contentType: 'product-card'
+  },
   'custom': {
     title_en: 'Custom Section',
     title_ar: 'قسم مخصص',
@@ -95,16 +111,33 @@ export const generateSectionId = (): string => {
 // Helper to create a new section with defaults
 export const createSection = (type: SectionType, order: number): TopicSection => {
   const defaults = SECTION_DEFAULTS[type];
+  const getDefaultContent = (contentType: ContentType): string | string[] | ComparisonItem[] | ProductDescriptionContent => {
+    switch (contentType) {
+      case 'bullets':
+        return [];
+      case 'comparison-table':
+        return [];
+      case 'product-card':
+        return {
+          title_en: '',
+          title_ar: '',
+          bullets_en: [],
+          bullets_ar: [],
+          tone: 'professional'
+        } as ProductDescriptionContent;
+      default:
+        return '';
+    }
+  };
+  
   return {
     id: generateSectionId(),
     type,
     title_en: defaults.title_en,
     title_ar: defaults.title_ar,
     contentType: defaults.contentType,
-    content_en: defaults.contentType === 'bullets' ? [] : 
-                defaults.contentType === 'comparison-table' ? [] : '',
-    content_ar: defaults.contentType === 'bullets' ? [] : 
-                defaults.contentType === 'comparison-table' ? [] : '',
+    content_en: getDefaultContent(defaults.contentType),
+    content_ar: getDefaultContent(defaults.contentType),
     order
   };
 };
