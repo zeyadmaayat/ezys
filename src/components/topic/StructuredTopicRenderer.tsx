@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   StructuredContent, 
@@ -169,11 +170,18 @@ const StructuredTopicRenderer = ({ content }: StructuredTopicRendererProps) => {
   if (!structured || structured.sections.length === 0) {
     // Fallback: render as plain text if not structured JSON
     if (content && !content.startsWith('{')) {
+      const sanitizedContent = DOMPurify.sanitize(
+        content.replace(/\n/g, '<br />'),
+        {
+          ALLOWED_TAGS: ['br', 'p', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'span'],
+          ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+        }
+      );
       return (
         <div className="prose prose-lg max-w-none dark:prose-invert">
           <div 
             className="whitespace-pre-wrap text-foreground leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br />') }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />
         </div>
       );
