@@ -15,6 +15,7 @@ const translations: Translations = {
   categories: { en: 'Categories', ar: 'الفئات' },
   search: { en: 'Search', ar: 'بحث' },
   admin: { en: 'Admin', ar: 'لوحة الإدارة' },
+  tools: { en: 'Tools', ar: 'الأدوات' },
   login: { en: 'Login', ar: 'تسجيل الدخول' },
   logout: { en: 'Logout', ar: 'تسجيل الخروج' },
   signUp: { en: 'Sign Up', ar: 'إنشاء حساب' },
