@@ -23,14 +23,68 @@ import {
   Truck,
   Package,
   Mail,
-  ClipboardCheck
+  ClipboardCheck,
+  RotateCcw
 } from 'lucide-react';
 
 interface ActionPlanProcessorProps {
-  plan: ActionPlan;
-  onActionUpdate: (actionId: string, status: ActionStep['status'], notes?: string) => void;
-  onComplete: () => void;
+  plan?: ActionPlan;
+  onActionUpdate?: (actionId: string, status: ActionStep['status'], notes?: string) => void;
+  onComplete?: () => void;
 }
+
+// Sample demo plan for standalone usage
+const SAMPLE_PLAN: ActionPlan = {
+  id: 'demo-plan-1',
+  title_en: 'Process Incoming Shipment',
+  title_ar: 'معالجة الشحنة الواردة',
+  description_en: 'A step-by-step training scenario for processing a new shipment arrival at the warehouse.',
+  description_ar: 'سيناريو تدريبي خطوة بخطوة لمعالجة وصول شحنة جديدة إلى المستودع.',
+  category: 'warehouse',
+  difficulty: 'beginner',
+  estimatedTime_en: '15-20 minutes',
+  estimatedTime_ar: '15-20 دقيقة',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  actions: [
+    {
+      id: 'step-1',
+      tool: 'create_ticket',
+      description_en: 'Create a receiving ticket for the incoming shipment',
+      description_ar: 'إنشاء تذكرة استلام للشحنة الواردة',
+      args: { title: 'Shipment #SH-2024-001', priority: 'normal' },
+      order: 1,
+      status: 'pending'
+    },
+    {
+      id: 'step-2',
+      tool: 'log_inspection',
+      description_en: 'Inspect the shipment and log any damages or discrepancies',
+      description_ar: 'فحص الشحنة وتسجيل أي أضرار أو تناقضات',
+      args: { inspection_type: 'receiving', checklist: ['quantity', 'condition', 'labels'] },
+      order: 2,
+      status: 'pending'
+    },
+    {
+      id: 'step-3',
+      tool: 'update_inventory',
+      description_en: 'Update inventory records with received items',
+      description_ar: 'تحديث سجلات المخزون بالعناصر المستلمة',
+      args: { action: 'add', location: 'Warehouse A', items: 50 },
+      order: 3,
+      status: 'pending'
+    },
+    {
+      id: 'step-4',
+      tool: 'notify_stakeholder',
+      description_en: 'Notify the procurement team about successful receipt',
+      description_ar: 'إخطار فريق المشتريات بنجاح الاستلام',
+      args: { team: 'procurement', message: 'Shipment received and processed' },
+      order: 4,
+      status: 'pending'
+    }
+  ]
+};
 
 const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   'create_ticket': FileText,
@@ -171,9 +225,13 @@ const ActionStepCard = ({
   );
 };
 
-const ActionPlanProcessor = ({ plan, onActionUpdate, onComplete }: ActionPlanProcessorProps) => {
+const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnActionUpdate, onComplete: externalOnComplete }: ActionPlanProcessorProps) => {
   const { language } = useLanguage();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_PLAN);
+  
+  // Use external plan if provided, otherwise use internal demo plan
+  const plan = externalPlan || internalPlan;
   
   const title = language === 'ar' ? plan.title_ar : plan.title_en;
   const description = language === 'ar' ? plan.description_ar : plan.description_en;
@@ -184,9 +242,33 @@ const ActionPlanProcessor = ({ plan, onActionUpdate, onComplete }: ActionPlanPro
   const progress = (completedCount / sortedActions.length) * 100;
 
   const handleActionUpdate = (actionId: string, status: ActionStep['status'], notes?: string) => {
-    onActionUpdate(actionId, status, notes);
+    if (externalOnActionUpdate) {
+      externalOnActionUpdate(actionId, status, notes);
+    } else {
+      // Internal state management for demo mode
+      setInternalPlan(prev => ({
+        ...prev,
+        actions: prev.actions.map(action => 
+          action.id === actionId ? { ...action, status, notes } : action
+        )
+      }));
+    }
     if (currentStepIndex < sortedActions.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
+    }
+  };
+
+  const handleReset = () => {
+    setInternalPlan({
+      ...SAMPLE_PLAN,
+      actions: SAMPLE_PLAN.actions.map(a => ({ ...a, status: 'pending', notes: undefined }))
+    });
+    setCurrentStepIndex(0);
+  };
+
+  const handleComplete = () => {
+    if (externalOnComplete) {
+      externalOnComplete();
     }
   };
 
@@ -241,18 +323,26 @@ const ActionPlanProcessor = ({ plan, onActionUpdate, onComplete }: ActionPlanPro
             onApprove={() => handleActionUpdate(step.id, 'approved', step.notes)}
             onReject={() => handleActionUpdate(step.id, 'rejected', step.notes)}
             onSkip={() => handleActionUpdate(step.id, 'skipped', step.notes)}
-            onNotesChange={(notes) => onActionUpdate(step.id, step.status, notes)}
+            onNotesChange={(notes) => handleActionUpdate(step.id, step.status, notes)}
           />
         ))}
       </div>
 
-      {/* Complete Button */}
-      {allCompleted && (
-        <Button onClick={onComplete} className="w-full" size="lg">
-          <CheckCircle className="w-5 h-5 mr-2" />
-          {language === 'ar' ? 'إكمال خطة العمل' : 'Complete Action Plan'}
-        </Button>
-      )}
+      {/* Complete / Reset Buttons */}
+      <div className="flex gap-4">
+        {!externalPlan && (
+          <Button onClick={handleReset} variant="outline" className="flex-1">
+            <RotateCcw className="w-4 h-4 mr-2" />
+            {language === 'ar' ? 'إعادة التعيين' : 'Reset Demo'}
+          </Button>
+        )}
+        {allCompleted && (
+          <Button onClick={handleComplete} className="flex-1" size="lg">
+            <CheckCircle className="w-5 h-5 mr-2" />
+            {language === 'ar' ? 'إكمال خطة العمل' : 'Complete Action Plan'}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

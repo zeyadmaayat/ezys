@@ -13,6 +13,7 @@ import Categories from "./pages/Categories";
 import CategoryDetail from "./pages/CategoryDetail";
 import TopicDetail from "./pages/TopicDetail";
 import Search from "./pages/Search";
+import Tools from "./pages/Tools";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/category/:slug" element={<ProtectedRoute><CategoryDetail /></ProtectedRoute>} />
               <Route path="/category/:categorySlug/topic/:topicSlug" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
               <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
+              <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

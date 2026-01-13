@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Package, Search, Globe, Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench } from 'lucide-react';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -58,6 +58,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               </Link>
               <Link to="/categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 {t('categories')}
+              </Link>
+              <Link to="/tools" className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                <Wrench className="w-4 h-4" />
+                {t('tools')}
               </Link>
               {isAdmin && (
                 <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
@@ -169,6 +173,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {t('categories')}
+                </Link>
+                <Link
+                  to="/tools"
+                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Wrench className="w-4 h-4" />
+                  {t('tools')}
                 </Link>
                 {isAdmin && (
                   <Link
