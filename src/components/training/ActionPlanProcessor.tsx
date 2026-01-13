@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ActionPlan, 
   ActionStep, 
   LOGISTICS_TOOLS, 
   LogisticsTool 
 } from '@/types/action-plan';
+import { SAMPLE_ACTION_PLANS } from '@/data/sample-action-plans';
 import {
   CheckCircle,
   XCircle,
@@ -32,59 +34,6 @@ interface ActionPlanProcessorProps {
   onActionUpdate?: (actionId: string, status: ActionStep['status'], notes?: string) => void;
   onComplete?: () => void;
 }
-
-// Sample demo plan for standalone usage
-const SAMPLE_PLAN: ActionPlan = {
-  id: 'demo-plan-1',
-  title_en: 'Process Incoming Shipment',
-  title_ar: 'معالجة الشحنة الواردة',
-  description_en: 'A step-by-step training scenario for processing a new shipment arrival at the warehouse.',
-  description_ar: 'سيناريو تدريبي خطوة بخطوة لمعالجة وصول شحنة جديدة إلى المستودع.',
-  category: 'warehouse',
-  difficulty: 'beginner',
-  estimatedTime_en: '15-20 minutes',
-  estimatedTime_ar: '15-20 دقيقة',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  actions: [
-    {
-      id: 'step-1',
-      tool: 'create_ticket',
-      description_en: 'Create a receiving ticket for the incoming shipment',
-      description_ar: 'إنشاء تذكرة استلام للشحنة الواردة',
-      args: { title: 'Shipment #SH-2024-001', priority: 'normal' },
-      order: 1,
-      status: 'pending'
-    },
-    {
-      id: 'step-2',
-      tool: 'log_inspection',
-      description_en: 'Inspect the shipment and log any damages or discrepancies',
-      description_ar: 'فحص الشحنة وتسجيل أي أضرار أو تناقضات',
-      args: { inspection_type: 'receiving', checklist: ['quantity', 'condition', 'labels'] },
-      order: 2,
-      status: 'pending'
-    },
-    {
-      id: 'step-3',
-      tool: 'update_inventory',
-      description_en: 'Update inventory records with received items',
-      description_ar: 'تحديث سجلات المخزون بالعناصر المستلمة',
-      args: { action: 'add', location: 'Warehouse A', items: 50 },
-      order: 3,
-      status: 'pending'
-    },
-    {
-      id: 'step-4',
-      tool: 'notify_stakeholder',
-      description_en: 'Notify the procurement team about successful receipt',
-      description_ar: 'إخطار فريق المشتريات بنجاح الاستلام',
-      args: { team: 'procurement', message: 'Shipment received and processed' },
-      order: 4,
-      status: 'pending'
-    }
-  ]
-};
 
 const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   'create_ticket': FileText,
