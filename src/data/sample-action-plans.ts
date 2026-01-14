@@ -759,6 +759,1107 @@ export const SAMPLE_ACTION_PLANS: ActionPlan[] = [
     ],
     createdAt: '2024-01-23T07:00:00Z',
     updatedAt: '2024-01-23T07:00:00Z'
+  },
+  // INBOUND LOGISTICS SCENARIOS
+  {
+    id: 'plan_inbound_001',
+    title_en: 'Receiving & Put-Away Process',
+    title_ar: 'عملية الاستلام والتخزين',
+    description_en: 'Complete inbound workflow from truck arrival to inventory placement in warehouse.',
+    description_ar: 'سير العمل الوارد الكامل من وصول الشاحنة إلى وضع المخزون في المستودع.',
+    category: 'inbound',
+    difficulty: 'beginner',
+    estimatedTime_en: '25 minutes',
+    estimatedTime_ar: '25 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'create_ticket',
+        description_en: 'Log inbound shipment arrival at dock door',
+        description_ar: 'تسجيل وصول الشحنة الواردة إلى باب الرصيف',
+        args: {
+          title: 'Inbound Arrival - PO-2024-0890',
+          priority: 'medium',
+          description: 'Truck arrived at Dock 5, 15 pallets expected',
+          category: 'inbound'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'log_inspection',
+        description_en: 'Perform receiving inspection and count verification',
+        description_ar: 'إجراء فحص الاستلام والتحقق من العدد',
+        args: {
+          itemId: 'PO-2024-0890',
+          result: 'Pass',
+          notes: '15 pallets received, no damage, count matches PO',
+          inspector: 'Receiving Clerk'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'update_inventory',
+        description_en: 'Update inventory with received quantities',
+        description_ar: 'تحديث المخزون بالكميات المستلمة',
+        args: {
+          sku: 'PROD-A-001',
+          quantity: '500',
+          location: 'Receiving Zone',
+          reason: 'Inbound receipt PO-2024-0890'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'create_ticket',
+        description_en: 'Generate put-away task for warehouse team',
+        description_ar: 'إنشاء مهمة التخزين لفريق المستودع',
+        args: {
+          title: 'Put-Away Task - PO-2024-0890',
+          priority: 'medium',
+          description: 'Move 15 pallets from Receiving to Bin A-12-3',
+          category: 'warehouse'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-24T08:00:00Z',
+    updatedAt: '2024-01-24T08:00:00Z'
+  },
+  {
+    id: 'plan_inbound_002',
+    title_en: 'Supplier ASN Processing',
+    title_ar: 'معالجة إشعار الشحن المسبق',
+    description_en: 'Process Advanced Shipping Notice and prepare for inbound receipt.',
+    description_ar: 'معالجة إشعار الشحن المسبق والتحضير للاستلام الوارد.',
+    category: 'inbound',
+    difficulty: 'intermediate',
+    estimatedTime_en: '20 minutes',
+    estimatedTime_ar: '20 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'approve_document',
+        description_en: 'Validate ASN details against purchase order',
+        description_ar: 'التحقق من تفاصيل إشعار الشحن مقابل أمر الشراء',
+        args: {
+          documentId: 'ASN-2024-SUP-456',
+          approverName: 'Inbound Coordinator',
+          comments: 'ASN matches PO-2024-0891, quantities and SKUs verified'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'schedule_shipment',
+        description_en: 'Confirm dock door appointment',
+        description_ar: 'تأكيد موعد باب الرصيف',
+        args: {
+          origin: 'Supplier Warehouse',
+          destination: 'Dock 3 - Main Warehouse',
+          date: '2024-02-12 10:00 AM',
+          carrier: 'Supplier Dedicated Fleet',
+          items: '20 pallets, mixed SKUs'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'send_email',
+        description_en: 'Confirm appointment with supplier',
+        description_ar: 'تأكيد الموعد مع المورد',
+        args: {
+          to: 'logistics@supplier.com',
+          subject: 'Dock Appointment Confirmed - Feb 12, 10:00 AM',
+          body: 'Your shipment ASN-2024-SUP-456 is scheduled for Dock 3. Please arrive 15 min early.',
+          cc: 'inbound@company.com'
+        },
+        status: 'pending',
+        order: 3
+      }
+    ],
+    createdAt: '2024-01-24T09:00:00Z',
+    updatedAt: '2024-01-24T09:00:00Z'
+  },
+
+  // OUTBOUND LOGISTICS SCENARIOS
+  {
+    id: 'plan_outbound_001',
+    title_en: 'Order Picking & Packing',
+    title_ar: 'التقاط وتغليف الطلب',
+    description_en: 'Complete outbound workflow from order release to shipment dispatch.',
+    description_ar: 'سير العمل الصادر الكامل من إصدار الطلب إلى إرسال الشحنة.',
+    category: 'outbound',
+    difficulty: 'beginner',
+    estimatedTime_en: '25 minutes',
+    estimatedTime_ar: '25 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'create_ticket',
+        description_en: 'Release customer order for picking',
+        description_ar: 'إصدار طلب العميل للالتقاط',
+        args: {
+          title: 'Pick Order - SO-2024-1234',
+          priority: 'high',
+          description: 'Customer: ABC Corp, 5 line items, Ship by: Today 4PM',
+          category: 'outbound'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'log_inspection',
+        description_en: 'Verify pick accuracy and quality',
+        description_ar: 'التحقق من دقة الالتقاط والجودة',
+        args: {
+          itemId: 'SO-2024-1234',
+          result: 'Pass',
+          notes: 'All items picked correctly, no damage, labels applied',
+          inspector: 'Pick Team Lead'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'update_inventory',
+        description_en: 'Deduct picked quantities from inventory',
+        description_ar: 'خصم الكميات الملتقطة من المخزون',
+        args: {
+          sku: 'Multiple SKUs',
+          quantity: '-50',
+          location: 'Staging Area',
+          reason: 'Outbound order SO-2024-1234'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'schedule_shipment',
+        description_en: 'Schedule carrier pickup',
+        description_ar: 'جدولة استلام الناقل',
+        args: {
+          origin: 'Shipping Dock 2',
+          destination: 'ABC Corp, Dubai',
+          date: '2024-02-10 16:00',
+          carrier: 'Express Courier',
+          items: '5 cartons, 45 kg total'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-24T10:00:00Z',
+    updatedAt: '2024-01-24T10:00:00Z'
+  },
+  {
+    id: 'plan_outbound_002',
+    title_en: 'Cross-Dock Operation',
+    title_ar: 'عملية التحميل العابر',
+    description_en: 'Handle cross-dock shipment with minimal storage time.',
+    description_ar: 'التعامل مع شحنة التحميل العابر بأقل وقت تخزين.',
+    category: 'outbound',
+    difficulty: 'advanced',
+    estimatedTime_en: '30 minutes',
+    estimatedTime_ar: '30 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'schedule_shipment',
+        description_en: 'Synchronize inbound and outbound dock times',
+        description_ar: 'مزامنة أوقات الرصيف الوارد والصادر',
+        args: {
+          origin: 'Supplier Truck - Dock 1',
+          destination: 'Customer Truck - Dock 8',
+          date: '2024-02-11 09:00-11:00',
+          carrier: 'Cross-dock operation',
+          items: '40 pallets - direct transfer'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'notify_stakeholder',
+        description_en: 'Alert cross-dock team of incoming flow',
+        description_ar: 'تنبيه فريق التحميل العابر بالتدفق القادم',
+        args: {
+          stakeholders: 'Cross-dock Supervisor, Dock Handlers',
+          message: 'Cross-dock operation scheduled 09:00. 40 pallets, 2-hour window.',
+          urgency: 'high'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'log_inspection',
+        description_en: 'Quick quality check during transfer',
+        description_ar: 'فحص جودة سريع أثناء النقل',
+        args: {
+          itemId: 'XDOCK-2024-0078',
+          result: 'Pass',
+          notes: 'Spot check 5 pallets - all OK, labels match, no damage',
+          inspector: 'Cross-dock Lead'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'send_email',
+        description_en: 'Confirm dispatch to customer',
+        description_ar: 'تأكيد الإرسال للعميل',
+        args: {
+          to: 'receiving@customer.com',
+          subject: 'Shipment Dispatched - ETA Today 14:00',
+          body: 'Your 40 pallet shipment has departed. Tracking: TRK-2024-XD-078',
+          cc: 'logistics@company.com'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-24T11:00:00Z',
+    updatedAt: '2024-01-24T11:00:00Z'
+  },
+
+  // DISTRIBUTION & FULFILLMENT SCENARIOS
+  {
+    id: 'plan_distribution_001',
+    title_en: 'Multi-Stop Route Planning',
+    title_ar: 'تخطيط مسار متعدد المحطات',
+    description_en: 'Plan and execute a multi-stop delivery route for regional distribution.',
+    description_ar: 'تخطيط وتنفيذ مسار توصيل متعدد المحطات للتوزيع الإقليمي.',
+    category: 'distribution',
+    difficulty: 'intermediate',
+    estimatedTime_en: '30 minutes',
+    estimatedTime_ar: '30 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'create_ticket',
+        description_en: 'Create route manifest with stop sequence',
+        description_ar: 'إنشاء بيان المسار مع تسلسل المحطات',
+        args: {
+          title: 'Route Planning - RT-2024-0156',
+          priority: 'high',
+          description: '8 stops, Riyadh region, total 120 cartons, 800 kg',
+          category: 'distribution'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'schedule_shipment',
+        description_en: 'Optimize delivery sequence',
+        description_ar: 'تحسين تسلسل التوصيل',
+        args: {
+          origin: 'Distribution Center',
+          destination: 'Multiple (8 stops)',
+          date: '2024-02-13 06:00 Start',
+          carrier: 'Internal Fleet - Truck 007',
+          items: 'Mixed orders, time windows applied'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'send_email',
+        description_en: 'Send delivery notifications to all customers',
+        description_ar: 'إرسال إشعارات التوصيل لجميع العملاء',
+        args: {
+          to: 'customer-list@route-RT-2024-0156',
+          subject: 'Delivery Scheduled - Feb 13',
+          body: 'Your order is scheduled for delivery. Estimated window will be sent morning of delivery.',
+          cc: 'dispatch@company.com'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'generate_report',
+        description_en: 'Generate driver manifest and loading sequence',
+        description_ar: 'إنشاء بيان السائق وتسلسل التحميل',
+        args: {
+          reportType: 'Driver Manifest',
+          dateRange: 'Route RT-2024-0156',
+          format: 'PDF'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-25T07:00:00Z',
+    updatedAt: '2024-01-25T07:00:00Z'
+  },
+  {
+    id: 'plan_distribution_002',
+    title_en: 'DC to Store Replenishment',
+    title_ar: 'التجديد من مركز التوزيع للمتجر',
+    description_en: 'Execute retail store replenishment from distribution center.',
+    description_ar: 'تنفيذ تجديد متجر التجزئة من مركز التوزيع.',
+    category: 'distribution',
+    difficulty: 'beginner',
+    estimatedTime_en: '20 minutes',
+    estimatedTime_ar: '20 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'generate_report',
+        description_en: 'Review store stock levels and generate replenishment needs',
+        description_ar: 'مراجعة مستويات مخزون المتجر وإنشاء احتياجات التجديد',
+        args: {
+          reportType: 'Stock Replenishment',
+          dateRange: 'Current Week',
+          format: 'Excel'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'create_ticket',
+        description_en: 'Create store replenishment order',
+        description_ar: 'إنشاء طلب تجديد المتجر',
+        args: {
+          title: 'Store Replenishment - Store #045',
+          priority: 'medium',
+          description: '25 SKUs, 150 cases, next delivery window',
+          category: 'distribution'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'schedule_shipment',
+        description_en: 'Schedule delivery to store',
+        description_ar: 'جدولة التوصيل للمتجر',
+        args: {
+          origin: 'DC Riyadh',
+          destination: 'Store #045 - Al Malaz',
+          date: '2024-02-14 05:00 AM',
+          carrier: 'Internal Fleet',
+          items: '150 cases, 12 pallets'
+        },
+        status: 'pending',
+        order: 3
+      }
+    ],
+    createdAt: '2024-01-25T08:00:00Z',
+    updatedAt: '2024-01-25T08:00:00Z'
+  },
+
+  // REVERSE LOGISTICS SCENARIOS
+  {
+    id: 'plan_reverse_001',
+    title_en: 'Customer Return Processing',
+    title_ar: 'معالجة مرتجعات العميل',
+    description_en: 'Handle customer return from receipt to disposition decision.',
+    description_ar: 'التعامل مع مرتجعات العميل من الاستلام إلى قرار التصرف.',
+    category: 'reverse',
+    difficulty: 'intermediate',
+    estimatedTime_en: '25 minutes',
+    estimatedTime_ar: '25 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'create_ticket',
+        description_en: 'Log return request with RMA number',
+        description_ar: 'تسجيل طلب الإرجاع برقم RMA',
+        args: {
+          title: 'Return - RMA-2024-0089',
+          priority: 'medium',
+          description: 'Customer: XYZ Ltd, Reason: Defective unit, Original SO: 2024-0567',
+          category: 'returns'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'schedule_shipment',
+        description_en: 'Arrange return pickup from customer',
+        description_ar: 'ترتيب استلام المرتجع من العميل',
+        args: {
+          origin: 'XYZ Ltd, Jeddah',
+          destination: 'Returns Center',
+          date: '2024-02-15',
+          carrier: 'Return Logistics Co.',
+          items: '1 unit, defective electronics'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'log_inspection',
+        description_en: 'Inspect returned item and determine condition',
+        description_ar: 'فحص العنصر المرتجع وتحديد الحالة',
+        args: {
+          itemId: 'RMA-2024-0089',
+          result: 'Defective - Confirmed',
+          notes: 'Power supply failure confirmed. Route to repair or scrap.',
+          inspector: 'Returns QC'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'approve_document',
+        description_en: 'Process refund or replacement authorization',
+        description_ar: 'معالجة تفويض الاسترداد أو الاستبدال',
+        args: {
+          documentId: 'REFUND-2024-0089',
+          approverName: 'Returns Manager',
+          comments: 'Full refund approved. Customer to receive credit within 5 business days.'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-25T09:00:00Z',
+    updatedAt: '2024-01-25T09:00:00Z'
+  },
+  {
+    id: 'plan_reverse_002',
+    title_en: 'Defective Product Recall',
+    title_ar: 'استدعاء المنتج المعيب',
+    description_en: 'Execute a product recall operation for safety-related defect.',
+    description_ar: 'تنفيذ عملية استدعاء منتج بسبب عيب متعلق بالسلامة.',
+    category: 'reverse',
+    difficulty: 'advanced',
+    estimatedTime_en: '45 minutes',
+    estimatedTime_ar: '45 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'escalate_issue',
+        description_en: 'Escalate recall decision to executive team',
+        description_ar: 'تصعيد قرار الاستدعاء للفريق التنفيذي',
+        args: {
+          issueId: 'RECALL-2024-001',
+          reason: 'Safety defect identified - potential fire hazard in batch B2024-45',
+          priority: 'critical',
+          assignTo: 'VP Operations, Legal, Quality Director'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'notify_stakeholder',
+        description_en: 'Notify all affected customers and distributors',
+        description_ar: 'إخطار جميع العملاء والموزعين المتأثرين',
+        args: {
+          stakeholders: 'Customer List - Batch B2024-45',
+          message: 'URGENT: Product recall for safety. Stop use immediately. Return instructions enclosed.',
+          urgency: 'critical'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'create_ticket',
+        description_en: 'Set up recall return logistics',
+        description_ar: 'إعداد لوجستيات إرجاع الاستدعاء',
+        args: {
+          title: 'Recall Returns - Batch B2024-45',
+          priority: 'critical',
+          description: 'Free pickup from 250 locations, target 30-day completion',
+          category: 'recall'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'generate_report',
+        description_en: 'Track recall progress and report to authorities',
+        description_ar: 'تتبع تقدم الاستدعاء والإبلاغ للسلطات',
+        args: {
+          reportType: 'Recall Status Report',
+          dateRange: 'Recall B2024-45 Progress',
+          format: 'PDF - Regulatory Format'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-25T10:00:00Z',
+    updatedAt: '2024-01-25T10:00:00Z'
+  },
+
+  // INTERNATIONAL LOGISTICS SCENARIOS
+  {
+    id: 'plan_international_001',
+    title_en: 'Letter of Credit Documentation',
+    title_ar: 'توثيق خطاب الاعتماد',
+    description_en: 'Prepare and submit documents for LC payment in international trade.',
+    description_ar: 'إعداد وتقديم المستندات لدفع خطاب الاعتماد في التجارة الدولية.',
+    category: 'international',
+    difficulty: 'advanced',
+    estimatedTime_en: '40 minutes',
+    estimatedTime_ar: '40 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'approve_document',
+        description_en: 'Review LC terms and conditions',
+        description_ar: 'مراجعة شروط وأحكام خطاب الاعتماد',
+        args: {
+          documentId: 'LC-2024-BANK-567',
+          approverName: 'Trade Finance Manager',
+          comments: 'LC terms acceptable, 60 days at sight, all documents achievable'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'create_ticket',
+        description_en: 'Create document checklist per LC requirements',
+        description_ar: 'إنشاء قائمة مستندات حسب متطلبات الاعتماد',
+        args: {
+          title: 'LC Documents - LC-2024-BANK-567',
+          priority: 'high',
+          description: 'Required: B/L, Invoice, Packing List, CO, Insurance, Inspection Cert',
+          category: 'trade-finance'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'approve_document',
+        description_en: 'Verify document compliance before bank submission',
+        description_ar: 'التحقق من امتثال المستندات قبل تقديمها للبنك',
+        args: {
+          documentId: 'DOC-SET-LC-567',
+          approverName: 'Documentation Specialist',
+          comments: 'All documents compliant with LC terms, no discrepancies found'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'send_email',
+        description_en: 'Submit documents to advising bank',
+        description_ar: 'تقديم المستندات للبنك المبلغ',
+        args: {
+          to: 'tradedocs@bank.com',
+          subject: 'LC Presentation - LC-2024-BANK-567',
+          body: 'Please find attached complete document set for LC presentation. 6 documents enclosed.',
+          cc: 'tradefinance@company.com'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-26T08:00:00Z',
+    updatedAt: '2024-01-26T08:00:00Z'
+  },
+  {
+    id: 'plan_international_002',
+    title_en: 'Incoterms Transition (FOB to CIF)',
+    title_ar: 'انتقال شروط التجارة (FOB إلى CIF)',
+    description_en: 'Handle shipment when buyer requests change from FOB to CIF terms.',
+    description_ar: 'التعامل مع الشحنة عندما يطلب المشتري تغيير الشروط من FOB إلى CIF.',
+    category: 'international',
+    difficulty: 'intermediate',
+    estimatedTime_en: '30 minutes',
+    estimatedTime_ar: '30 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'create_po',
+        description_en: 'Arrange ocean freight booking',
+        description_ar: 'ترتيب حجز الشحن البحري',
+        args: {
+          supplier: 'Shipping Line - Maersk',
+          items: 'FCL 40ft, Port to Port freight',
+          deliveryDate: 'Sailing: Feb 20',
+          terms: 'Freight Collect → Freight Prepaid'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'create_po',
+        description_en: 'Obtain marine cargo insurance',
+        description_ar: 'الحصول على تأمين البضائع البحرية',
+        args: {
+          supplier: 'Marine Insurance Co.',
+          items: 'All-risk marine cargo insurance, 110% CIF value',
+          deliveryDate: 'Policy effective: Feb 18',
+          terms: 'Coverage door-to-door'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'send_email',
+        description_en: 'Send revised commercial invoice with CIF pricing',
+        description_ar: 'إرسال فاتورة تجارية معدلة بسعر CIF',
+        args: {
+          to: 'buyer@international-customer.com',
+          subject: 'Revised Invoice - CIF Terms',
+          body: 'As requested, please find revised invoice reflecting CIF terms. Freight: $2,500. Insurance: $450.',
+          cc: 'sales@company.com'
+        },
+        status: 'pending',
+        order: 3
+      }
+    ],
+    createdAt: '2024-01-26T09:00:00Z',
+    updatedAt: '2024-01-26T09:00:00Z'
+  },
+
+  // E-COMMERCE LOGISTICS SCENARIOS
+  {
+    id: 'plan_ecommerce_001',
+    title_en: 'Same-Day Delivery Processing',
+    title_ar: 'معالجة التوصيل في نفس اليوم',
+    description_en: 'Execute same-day delivery order with cutoff management.',
+    description_ar: 'تنفيذ طلب توصيل في نفس اليوم مع إدارة وقت القطع.',
+    category: 'ecommerce',
+    difficulty: 'intermediate',
+    estimatedTime_en: '20 minutes',
+    estimatedTime_ar: '20 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'create_ticket',
+        description_en: 'Priority pick for same-day order',
+        description_ar: 'التقاط ذو أولوية لطلب نفس اليوم',
+        args: {
+          title: 'URGENT: Same-Day Order - ORD-2024-8901',
+          priority: 'critical',
+          description: 'Cutoff: 12:00 PM, Customer in Riyadh, 2 items',
+          category: 'ecommerce'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'log_inspection',
+        description_en: 'Quick QC and pack verification',
+        description_ar: 'فحص جودة سريع والتحقق من التغليف',
+        args: {
+          itemId: 'ORD-2024-8901',
+          result: 'Pass',
+          notes: 'Items verified, branded packaging applied, shipping label printed',
+          inspector: 'E-com Fulfillment Team'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'schedule_shipment',
+        description_en: 'Dispatch to same-day courier',
+        description_ar: 'إرسال لمندوب نفس اليوم',
+        args: {
+          origin: 'E-commerce Hub',
+          destination: 'Customer Address, Riyadh',
+          date: 'Today before 6 PM',
+          carrier: 'Same-Day Express',
+          items: '1 package, 2 kg'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'send_email',
+        description_en: 'Send tracking notification to customer',
+        description_ar: 'إرسال إشعار التتبع للعميل',
+        args: {
+          to: 'customer@email.com',
+          subject: 'Your order is on the way! 📦',
+          body: 'Great news! Your order is out for delivery. Track: https://track.link/ABC123',
+          cc: ''
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-26T10:00:00Z',
+    updatedAt: '2024-01-26T10:00:00Z'
+  },
+  {
+    id: 'plan_ecommerce_002',
+    title_en: 'Peak Season Capacity Planning',
+    title_ar: 'تخطيط السعة لموسم الذروة',
+    description_en: 'Prepare fulfillment operations for high-volume sales event.',
+    description_ar: 'تحضير عمليات التنفيذ لحدث مبيعات كبير الحجم.',
+    category: 'ecommerce',
+    difficulty: 'advanced',
+    estimatedTime_en: '35 minutes',
+    estimatedTime_ar: '35 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'generate_report',
+        description_en: 'Forecast order volume for sale event',
+        description_ar: 'توقع حجم الطلبات لحدث التخفيضات',
+        args: {
+          reportType: 'Sales Forecast',
+          dateRange: 'Ramadan Sale 2024',
+          format: 'Excel'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'create_ticket',
+        description_en: 'Request temporary staff for peak period',
+        description_ar: 'طلب موظفين مؤقتين لفترة الذروة',
+        args: {
+          title: 'Peak Staff Request - Ramadan Sale',
+          priority: 'high',
+          description: 'Need 20 additional pickers, 10 packers for 2 weeks',
+          category: 'hr'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'notify_stakeholder',
+        description_en: 'Coordinate with carriers on capacity',
+        description_ar: 'التنسيق مع الناقلين بشأن السعة',
+        args: {
+          stakeholders: 'All carrier partners',
+          message: 'Expect 3x normal volume during Ramadan Sale. Please confirm capacity.',
+          urgency: 'high'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'update_inventory',
+        description_en: 'Pre-position fast-moving inventory',
+        description_ar: 'وضع المخزون سريع الحركة مسبقاً',
+        args: {
+          sku: 'Top 50 SKUs',
+          quantity: 'Double buffer stock',
+          location: 'Prime pick locations',
+          reason: 'Peak season preparation'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-26T11:00:00Z',
+    updatedAt: '2024-01-26T11:00:00Z'
+  },
+
+  // COLD CHAIN LOGISTICS SCENARIOS
+  {
+    id: 'plan_coldchain_001',
+    title_en: 'Temperature Excursion Response',
+    title_ar: 'الاستجابة لانحراف درجة الحرارة',
+    description_en: 'Handle temperature deviation in cold chain shipment with proper protocol.',
+    description_ar: 'التعامل مع انحراف درجة الحرارة في شحنة السلسلة الباردة بالبروتوكول المناسب.',
+    category: 'cold-chain',
+    difficulty: 'advanced',
+    estimatedTime_en: '35 minutes',
+    estimatedTime_ar: '35 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'escalate_issue',
+        description_en: 'Immediate escalation of temperature breach',
+        description_ar: 'تصعيد فوري لخرق درجة الحرارة',
+        args: {
+          issueId: 'TEMP-ALERT-2024-045',
+          reason: 'Temperature exceeded 8°C for 45 minutes. Product: Vaccines. Value: $150,000',
+          priority: 'critical',
+          assignTo: 'QA Director, Cold Chain Manager'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'log_inspection',
+        description_en: 'Document temperature excursion details',
+        description_ar: 'توثيق تفاصيل انحراف درجة الحرارة',
+        args: {
+          itemId: 'COLD-2024-VAC-045',
+          result: 'Excursion',
+          notes: 'Max temp: 12°C, Duration: 45 min, Cause: Reefer unit malfunction',
+          inspector: 'QA Officer'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'create_ticket',
+        description_en: 'Initiate product quality assessment',
+        description_ar: 'بدء تقييم جودة المنتج',
+        args: {
+          title: 'Quality Assessment - Excursion TEMP-ALERT-2024-045',
+          priority: 'critical',
+          description: 'Determine if product can be released or must be quarantined/destroyed',
+          category: 'quality'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'notify_stakeholder',
+        description_en: 'Notify customer and regulatory if required',
+        description_ar: 'إخطار العميل والجهات التنظيمية إذا لزم الأمر',
+        args: {
+          stakeholders: 'Customer QA, Regulatory Affairs',
+          message: 'Temperature excursion occurred. Assessment in progress. Will update within 24 hours.',
+          urgency: 'critical'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-27T07:00:00Z',
+    updatedAt: '2024-01-27T07:00:00Z'
+  },
+
+  // SUPPLY CHAIN SCENARIOS
+  {
+    id: 'plan_supplychain_001',
+    title_en: 'Supplier Disruption Response',
+    title_ar: 'الاستجابة لتعطل المورد',
+    description_en: 'Manage supply chain disruption when key supplier faces production issues.',
+    description_ar: 'إدارة تعطل سلسلة التوريد عندما يواجه المورد الرئيسي مشاكل إنتاجية.',
+    category: 'supply-chain',
+    difficulty: 'advanced',
+    estimatedTime_en: '40 minutes',
+    estimatedTime_ar: '40 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'escalate_issue',
+        description_en: 'Escalate supply disruption to leadership',
+        description_ar: 'تصعيد تعطل التوريد للقيادة',
+        args: {
+          issueId: 'DISRUPT-2024-SUP-008',
+          reason: 'Primary supplier factory shutdown - 4 week delay expected. 60% of our volume affected.',
+          priority: 'critical',
+          assignTo: 'Supply Chain Director, COO'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'generate_report',
+        description_en: 'Assess inventory coverage and shortfall',
+        description_ar: 'تقييم تغطية المخزون والنقص',
+        args: {
+          reportType: 'Inventory Coverage Analysis',
+          dateRange: 'Next 8 weeks',
+          format: 'Excel with scenarios'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'send_email',
+        description_en: 'Contact alternate suppliers for emergency capacity',
+        description_ar: 'الاتصال بالموردين البديلين للسعة الطارئة',
+        args: {
+          to: 'sales@alternate-supplier.com',
+          subject: 'URGENT: Emergency Supply Request',
+          body: 'We need 5,000 units urgently within 2 weeks. Please confirm availability and pricing.',
+          cc: 'procurement@company.com'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'notify_stakeholder',
+        description_en: 'Update sales team on allocation plan',
+        description_ar: 'تحديث فريق المبيعات بخطة التخصيص',
+        args: {
+          stakeholders: 'Sales Directors, Customer Service',
+          message: 'Supply constraint next 4 weeks. Priority allocation in effect. Customer communication guidelines attached.',
+          urgency: 'high'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-27T08:00:00Z',
+    updatedAt: '2024-01-27T08:00:00Z'
+  },
+
+  // LSP MODELS SCENARIOS
+  {
+    id: 'plan_lsp_001',
+    title_en: '3PL Performance Review',
+    title_ar: 'مراجعة أداء مزود الخدمات اللوجستية',
+    description_en: 'Conduct quarterly performance review of third-party logistics provider.',
+    description_ar: 'إجراء مراجعة أداء ربع سنوية لمزود الخدمات اللوجستية الخارجي.',
+    category: 'lsp-models',
+    difficulty: 'intermediate',
+    estimatedTime_en: '30 minutes',
+    estimatedTime_ar: '30 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'generate_report',
+        description_en: 'Compile 3PL KPI scorecard',
+        description_ar: 'تجميع بطاقة أداء KPI لمزود الخدمات',
+        args: {
+          reportType: '3PL Performance Scorecard',
+          dateRange: 'Q4 2024',
+          format: 'PDF with charts'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'create_ticket',
+        description_en: 'Document service failures and root causes',
+        description_ar: 'توثيق إخفاقات الخدمة والأسباب الجذرية',
+        args: {
+          title: '3PL Review - Service Issues Q4',
+          priority: 'medium',
+          description: 'Late deliveries: 12 incidents, Damage claims: 5, Inventory discrepancies: 3',
+          category: 'vendor-management'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'send_email',
+        description_en: 'Schedule quarterly business review meeting',
+        description_ar: 'جدولة اجتماع المراجعة التجارية الربع سنوية',
+        args: {
+          to: 'account-manager@3pl-provider.com',
+          subject: 'QBR Meeting - Q4 2024 Review',
+          body: 'Please schedule QBR meeting for next week. Agenda: Performance review, improvement plan, 2025 planning.',
+          cc: 'logistics-director@company.com'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'approve_document',
+        description_en: 'Finalize corrective action plan',
+        description_ar: 'إنهاء خطة الإجراءات التصحيحية',
+        args: {
+          documentId: 'CAP-3PL-Q4-2024',
+          approverName: 'Logistics Director',
+          comments: 'Approved with 30-day review checkpoint. SLA penalties to apply if not met.'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-27T09:00:00Z',
+    updatedAt: '2024-01-27T09:00:00Z'
+  },
+
+  // DECISION FRAMEWORK SCENARIOS
+  {
+    id: 'plan_decision_001',
+    title_en: 'Make vs Buy Analysis',
+    title_ar: 'تحليل التصنيع مقابل الشراء',
+    description_en: 'Evaluate whether to insource or outsource logistics operation.',
+    description_ar: 'تقييم ما إذا كان يجب إدارة العمليات اللوجستية داخلياً أو الاستعانة بمصادر خارجية.',
+    category: 'decision-framework',
+    difficulty: 'advanced',
+    estimatedTime_en: '40 minutes',
+    estimatedTime_ar: '40 دقيقة',
+    actions: [
+      {
+        id: 'step_001',
+        tool: 'generate_report',
+        description_en: 'Calculate total cost of ownership - internal vs 3PL',
+        description_ar: 'حساب التكلفة الإجمالية للملكية - داخلي مقابل 3PL',
+        args: {
+          reportType: 'TCO Analysis',
+          dateRange: '5-year projection',
+          format: 'Excel with sensitivity analysis'
+        },
+        status: 'pending',
+        order: 1
+      },
+      {
+        id: 'step_002',
+        tool: 'create_ticket',
+        description_en: 'Document qualitative factors assessment',
+        description_ar: 'توثيق تقييم العوامل النوعية',
+        args: {
+          title: 'Make vs Buy - Qualitative Assessment',
+          priority: 'medium',
+          description: 'Factors: Control, flexibility, expertise, scalability, risk',
+          category: 'strategic'
+        },
+        status: 'pending',
+        order: 2
+      },
+      {
+        id: 'step_003',
+        tool: 'notify_stakeholder',
+        description_en: 'Present options to steering committee',
+        description_ar: 'عرض الخيارات على اللجنة التوجيهية',
+        args: {
+          stakeholders: 'CFO, COO, VP Supply Chain',
+          message: 'Make vs Buy analysis complete. Recommending hybrid model. Review meeting requested.',
+          urgency: 'normal'
+        },
+        status: 'pending',
+        order: 3
+      },
+      {
+        id: 'step_004',
+        tool: 'approve_document',
+        description_en: 'Document final decision and rationale',
+        description_ar: 'توثيق القرار النهائي والمبررات',
+        args: {
+          documentId: 'DECISION-MvB-2024-001',
+          approverName: 'Steering Committee',
+          comments: 'Approved: Outsource warehousing, keep transport in-house. Implementation by Q2 2025.'
+        },
+        status: 'pending',
+        order: 4
+      }
+    ],
+    createdAt: '2024-01-27T10:00:00Z',
+    updatedAt: '2024-01-27T10:00:00Z'
   }
 ];
 

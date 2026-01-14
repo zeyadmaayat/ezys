@@ -20,7 +20,7 @@ export interface ActionPlan {
   title_ar: string;
   description_en: string;
   description_ar: string;
-  category: 'procurement' | 'logistics' | 'warehouse' | 'transport' | 'customs' | 'general';
+  category: 'procurement' | 'logistics' | 'warehouse' | 'transport' | 'customs' | 'inbound' | 'outbound' | 'distribution' | 'reverse' | 'international' | 'cold-chain' | 'ecommerce' | 'supply-chain' | 'lsp-models' | 'acronyms' | 'decision-framework' | 'general';
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   estimatedTime_en: string;
   estimatedTime_ar: string;
