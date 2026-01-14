@@ -177,7 +177,7 @@ const ActionStepCard = ({
 const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnActionUpdate, onComplete: externalOnComplete }: ActionPlanProcessorProps) => {
   const { language } = useLanguage();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_PLAN);
+  const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_ACTION_PLANS[0]);
   
   // Use external plan if provided, otherwise use internal demo plan
   const plan = externalPlan || internalPlan;
@@ -208,9 +208,10 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   };
 
   const handleReset = () => {
+    const basePlan = SAMPLE_ACTION_PLANS[0];
     setInternalPlan({
-      ...SAMPLE_PLAN,
-      actions: SAMPLE_PLAN.actions.map(a => ({ ...a, status: 'pending', notes: undefined }))
+      ...basePlan,
+      actions: basePlan.actions.map(a => ({ ...a, status: 'pending', notes: undefined }))
     });
     setCurrentStepIndex(0);
   };
