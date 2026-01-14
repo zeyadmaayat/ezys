@@ -249,7 +249,21 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   const categoryLabels: Record<string, { en: string; ar: string }> = {
     'procurement': { en: 'Procurement', ar: 'المشتريات' },
     'customs': { en: 'Customs', ar: 'الجمارك' },
-    'transportation': { en: 'Transportation', ar: 'النقل' }
+    'transport': { en: 'Transportation', ar: 'النقل' },
+    'inbound': { en: 'Inbound Logistics', ar: 'اللوجستيات الواردة' },
+    'outbound': { en: 'Outbound Logistics', ar: 'اللوجستيات الصادرة' },
+    'distribution': { en: 'Distribution & Fulfillment', ar: 'التوزيع والتنفيذ' },
+    'reverse': { en: 'Reverse Logistics', ar: 'اللوجستيات العكسية' },
+    'international': { en: 'International Logistics', ar: 'اللوجستيات الدولية' },
+    'cold-chain': { en: 'Cold Chain Logistics', ar: 'لوجستيات سلسلة التبريد' },
+    'ecommerce': { en: 'E-commerce Logistics', ar: 'لوجستيات التجارة الإلكترونية' },
+    'supply-chain': { en: 'End-to-End Supply Chain', ar: 'سلسلة التوريد الشاملة' },
+    'lsp-models': { en: '1PL – 5PL Models', ar: 'نماذج 1PL – 5PL' },
+    'acronyms': { en: 'Acronyms & Real Ops Terms', ar: 'المختصرات والمصطلحات' },
+    'decision-framework': { en: 'Decision Framework', ar: 'إطار اتخاذ القرار' },
+    'logistics': { en: 'General Logistics', ar: 'اللوجستيات العامة' },
+    'warehouse': { en: 'Warehouse', ar: 'المستودعات' },
+    'general': { en: 'General', ar: 'عام' }
   };
 
   return (
