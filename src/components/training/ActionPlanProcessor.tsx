@@ -177,6 +177,7 @@ const ActionStepCard = ({
 const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnActionUpdate, onComplete: externalOnComplete }: ActionPlanProcessorProps) => {
   const { language } = useLanguage();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [selectedScenarioId, setSelectedScenarioId] = useState(SAMPLE_ACTION_PLANS[0].id);
   const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_ACTION_PLANS[0]);
   
   // Use external plan if provided, otherwise use internal demo plan
@@ -189,6 +190,18 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   const sortedActions = [...plan.actions].sort((a, b) => a.order - b.order);
   const completedCount = sortedActions.filter(a => a.status !== 'pending').length;
   const progress = (completedCount / sortedActions.length) * 100;
+
+  const handleScenarioChange = (scenarioId: string) => {
+    const selectedPlan = SAMPLE_ACTION_PLANS.find(p => p.id === scenarioId);
+    if (selectedPlan) {
+      setSelectedScenarioId(scenarioId);
+      setInternalPlan({
+        ...selectedPlan,
+        actions: selectedPlan.actions.map(a => ({ ...a, status: 'pending', notes: undefined }))
+      });
+      setCurrentStepIndex(0);
+    }
+  };
 
   const handleActionUpdate = (actionId: string, status: ActionStep['status'], notes?: string) => {
     if (externalOnActionUpdate) {
@@ -208,7 +221,7 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   };
 
   const handleReset = () => {
-    const basePlan = SAMPLE_ACTION_PLANS[0];
+    const basePlan = SAMPLE_ACTION_PLANS.find(p => p.id === selectedScenarioId) || SAMPLE_ACTION_PLANS[0];
     setInternalPlan({
       ...basePlan,
       actions: basePlan.actions.map(a => ({ ...a, status: 'pending', notes: undefined }))
@@ -224,8 +237,65 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
 
   const allCompleted = sortedActions.every(a => a.status !== 'pending');
 
+  // Group scenarios by category for better organization
+  const scenariosByCategory = SAMPLE_ACTION_PLANS.reduce((acc, plan) => {
+    if (!acc[plan.category]) {
+      acc[plan.category] = [];
+    }
+    acc[plan.category].push(plan);
+    return acc;
+  }, {} as Record<string, ActionPlan[]>);
+
+  const categoryLabels: Record<string, { en: string; ar: string }> = {
+    'procurement': { en: 'Procurement', ar: 'المشتريات' },
+    'customs': { en: 'Customs', ar: 'الجمارك' },
+    'transportation': { en: 'Transportation', ar: 'النقل' }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Scenario Selector - Only show in demo mode */}
+      {!externalPlan && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">
+              {language === 'ar' ? 'اختر سيناريو التدريب' : 'Select Training Scenario'}
+            </CardTitle>
+            <CardDescription>
+              {language === 'ar' 
+                ? 'اختر من السيناريوهات المتاحة لبدء التدريب' 
+                : 'Choose from available scenarios to start training'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select value={selectedScenarioId} onValueChange={handleScenarioChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={language === 'ar' ? 'اختر سيناريو...' : 'Select a scenario...'} />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(scenariosByCategory).map(([category, plans]) => (
+                  <div key={category}>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
+                      {language === 'ar' ? categoryLabels[category]?.ar : categoryLabels[category]?.en}
+                    </div>
+                    {plans.map((scenarioPlan) => (
+                      <SelectItem key={scenarioPlan.id} value={scenarioPlan.id}>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className={`text-xs ${DIFFICULTY_COLORS[scenarioPlan.difficulty]} bg-opacity-20`}>
+                            {scenarioPlan.difficulty}
+                          </Badge>
+                          <span>{language === 'ar' ? scenarioPlan.title_ar : scenarioPlan.title_en}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </div>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Plan Header */}
       <Card>
         <CardHeader>
