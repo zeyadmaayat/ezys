@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ActionPlan, 
@@ -12,6 +14,9 @@ import {
   LogisticsTool 
 } from '@/types/action-plan';
 import { SAMPLE_ACTION_PLANS } from '@/data/sample-action-plans';
+import { useActionPlans } from '@/hooks/useActionPlans';
+import SavedPlansList from './SavedPlansList';
+import SavePlanDialog from './SavePlanDialog';
 import {
   CheckCircle,
   XCircle,
@@ -26,7 +31,9 @@ import {
   Package,
   Mail,
   ClipboardCheck,
-  RotateCcw
+  RotateCcw,
+  Save,
+  FolderOpen
 } from 'lucide-react';
 
 interface ActionPlanProcessorProps {
@@ -176,9 +183,14 @@ const ActionStepCard = ({
 
 const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnActionUpdate, onComplete: externalOnComplete }: ActionPlanProcessorProps) => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [selectedScenarioId, setSelectedScenarioId] = useState(SAMPLE_ACTION_PLANS[0].id);
   const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_ACTION_PLANS[0]);
+  const [activeTab, setActiveTab] = useState<'samples' | 'saved'>('samples');
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  
+  const { plans: savedPlans, loading: loadingPlans, savePlan, deletePlan } = useActionPlans();
   
   // Use external plan if provided, otherwise use internal demo plan
   const plan = externalPlan || internalPlan;
@@ -235,6 +247,15 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
     }
   };
 
+  const handleLoadSavedPlan = (savedPlan: ActionPlan) => {
+    setInternalPlan({
+      ...savedPlan,
+      actions: savedPlan.actions.map(a => ({ ...a, status: 'pending', notes: undefined }))
+    });
+    setCurrentStepIndex(0);
+    setActiveTab('samples');
+  };
+
   const allCompleted = sortedActions.every(a => a.status !== 'pending');
 
   // Group scenarios by category for better organization
@@ -277,35 +298,75 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
             </CardTitle>
             <CardDescription>
               {language === 'ar' 
-                ? 'اختر من السيناريوهات المتاحة لبدء التدريب' 
-                : 'Choose from available scenarios to start training'}
+                ? 'اختر من السيناريوهات المتاحة أو المحفوظة لبدء التدريب' 
+                : 'Choose from sample scenarios or your saved plans'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Select value={selectedScenarioId} onValueChange={handleScenarioChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={language === 'ar' ? 'اختر سيناريو...' : 'Select a scenario...'} />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(scenariosByCategory).map(([category, plans]) => (
-                  <div key={category}>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
-                      {language === 'ar' ? categoryLabels[category]?.ar : categoryLabels[category]?.en}
-                    </div>
-                    {plans.map((scenarioPlan) => (
-                      <SelectItem key={scenarioPlan.id} value={scenarioPlan.id}>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={`text-xs ${DIFFICULTY_COLORS[scenarioPlan.difficulty]} bg-opacity-20`}>
-                            {scenarioPlan.difficulty}
-                          </Badge>
-                          <span>{language === 'ar' ? scenarioPlan.title_ar : scenarioPlan.title_en}</span>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'samples' | 'saved')} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="samples" className="flex items-center gap-2">
+                  <Play className="w-4 h-4" />
+                  {language === 'ar' ? 'السيناريوهات' : 'Sample Scenarios'}
+                </TabsTrigger>
+                <TabsTrigger value="saved" className="flex items-center gap-2">
+                  <FolderOpen className="w-4 h-4" />
+                  {language === 'ar' ? 'المحفوظة' : 'My Saved Plans'}
+                  {savedPlans.length > 0 && (
+                    <Badge variant="secondary" className="ml-1">{savedPlans.length}</Badge>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="samples" className="mt-0">
+                <Select value={selectedScenarioId} onValueChange={handleScenarioChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={language === 'ar' ? 'اختر سيناريو...' : 'Select a scenario...'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(scenariosByCategory).map(([category, plans]) => (
+                      <div key={category}>
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
+                          {language === 'ar' ? categoryLabels[category]?.ar : categoryLabels[category]?.en}
                         </div>
-                      </SelectItem>
+                        {plans.map((scenarioPlan) => (
+                          <SelectItem key={scenarioPlan.id} value={scenarioPlan.id}>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className={`text-xs ${DIFFICULTY_COLORS[scenarioPlan.difficulty]} bg-opacity-20`}>
+                                {scenarioPlan.difficulty}
+                              </Badge>
+                              <span>{language === 'ar' ? scenarioPlan.title_ar : scenarioPlan.title_en}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </div>
                     ))}
-                  </div>
-                ))}
-              </SelectContent>
-            </Select>
+                  </SelectContent>
+                </Select>
+              </TabsContent>
+
+              <TabsContent value="saved" className="mt-0">
+                {user ? (
+                  <SavedPlansList
+                    plans={savedPlans}
+                    loading={loadingPlans}
+                    onSelect={handleLoadSavedPlan}
+                    onDelete={deletePlan}
+                  />
+                ) : (
+                  <Card className="border-dashed">
+                    <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+                      <FolderOpen className="w-12 h-12 text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">
+                        {language === 'ar' 
+                          ? 'سجل الدخول لحفظ وتحميل خطط العمل' 
+                          : 'Sign in to save and load action plans'}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       )}
@@ -362,12 +423,18 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
         ))}
       </div>
 
-      {/* Complete / Reset Buttons */}
+      {/* Complete / Reset / Save Buttons */}
       <div className="flex gap-4">
         {!externalPlan && (
           <Button onClick={handleReset} variant="outline" className="flex-1">
             <RotateCcw className="w-4 h-4 mr-2" />
-            {language === 'ar' ? 'إعادة التعيين' : 'Reset Demo'}
+            {language === 'ar' ? 'إعادة التعيين' : 'Reset'}
+          </Button>
+        )}
+        {!externalPlan && user && (
+          <Button onClick={() => setSaveDialogOpen(true)} variant="secondary" className="flex-1">
+            <Save className="w-4 h-4 mr-2" />
+            {language === 'ar' ? 'حفظ الخطة' : 'Save Plan'}
           </Button>
         )}
         {allCompleted && (
@@ -377,6 +444,14 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
           </Button>
         )}
       </div>
+
+      {/* Save Plan Dialog */}
+      <SavePlanDialog
+        open={saveDialogOpen}
+        onOpenChange={setSaveDialogOpen}
+        currentPlan={internalPlan}
+        onSave={savePlan}
+      />
     </div>
   );
 };

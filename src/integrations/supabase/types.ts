@@ -58,6 +58,54 @@ export type Database = {
           },
         ]
       }
+      action_plans: {
+        Row: {
+          actions: Json
+          category: string
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          difficulty: string
+          estimated_time_ar: string | null
+          estimated_time_en: string | null
+          id: string
+          title_ar: string
+          title_en: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actions?: Json
+          category?: string
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          difficulty?: string
+          estimated_time_ar?: string | null
+          estimated_time_en?: string | null
+          id?: string
+          title_ar: string
+          title_en: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actions?: Json
+          category?: string
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          difficulty?: string
+          estimated_time_ar?: string | null
+          estimated_time_en?: string | null
+          id?: string
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
