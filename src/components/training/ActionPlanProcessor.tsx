@@ -189,6 +189,7 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_ACTION_PLANS[0]);
   const [activeTab, setActiveTab] = useState<'samples' | 'saved'>('samples');
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [difficultyFilter, setDifficultyFilter] = useState<'all' | ActionPlan['difficulty']>('all');
   
   const { plans: savedPlans, loading: loadingPlans, savePlan, deletePlan } = useActionPlans();
   
@@ -258,8 +259,13 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
 
   const allCompleted = sortedActions.every(a => a.status !== 'pending');
 
+  // Filter scenarios by difficulty
+  const filteredScenarios = difficultyFilter === 'all' 
+    ? SAMPLE_ACTION_PLANS 
+    : SAMPLE_ACTION_PLANS.filter(p => p.difficulty === difficultyFilter);
+
   // Group scenarios by category for better organization
-  const scenariosByCategory = SAMPLE_ACTION_PLANS.reduce((acc, plan) => {
+  const scenariosByCategory = filteredScenarios.reduce((acc, plan) => {
     if (!acc[plan.category]) {
       acc[plan.category] = [];
     }
@@ -318,7 +324,36 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="samples" className="mt-0">
+              <TabsContent value="samples" className="mt-0 space-y-3">
+                {/* Difficulty Filter */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {language === 'ar' ? 'الصعوبة:' : 'Difficulty:'}
+                  </span>
+                  <div className="flex gap-1">
+                    {(['all', 'beginner', 'intermediate', 'advanced'] as const).map((level) => (
+                      <Button
+                        key={level}
+                        size="sm"
+                        variant={difficultyFilter === level ? 'default' : 'outline'}
+                        onClick={() => setDifficultyFilter(level)}
+                        className="text-xs h-7 px-2"
+                      >
+                        {level === 'all' 
+                          ? (language === 'ar' ? 'الكل' : 'All')
+                          : level === 'beginner'
+                          ? (language === 'ar' ? 'مبتدئ' : 'Beginner')
+                          : level === 'intermediate'
+                          ? (language === 'ar' ? 'متوسط' : 'Intermediate')
+                          : (language === 'ar' ? 'متقدم' : 'Advanced')}
+                      </Button>
+                    ))}
+                  </div>
+                  <Badge variant="secondary" className="ml-auto">
+                    {filteredScenarios.length} {language === 'ar' ? 'سيناريو' : 'scenarios'}
+                  </Badge>
+                </div>
+
                 <Select value={selectedScenarioId} onValueChange={handleScenarioChange}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={language === 'ar' ? 'اختر سيناريو...' : 'Select a scenario...'} />
