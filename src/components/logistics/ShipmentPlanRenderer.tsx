@@ -2,9 +2,12 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Package, Ship, Plane, Truck, FileText, AlertTriangle, CheckCircle2, DollarSign, ClipboardList } from 'lucide-react';
+import { Package, Ship, Plane, Truck, FileText, AlertTriangle, CheckCircle2, DollarSign, ClipboardList, ShieldCheck, Info } from 'lucide-react';
 
 interface ShipmentPlan {
+  language?: string;
+  confidence_level?: string;
+  needs_verification?: string[];
   shipment_summary: {
     origin: string;
     destination: string;
@@ -38,8 +41,10 @@ interface ShipmentPlan {
     notes: string;
   };
   cost_estimation: {
-    shipping_cost_range: string;
-    customs_and_taxes_note: string;
+    shipping_cost_level?: string;
+    shipping_cost_range?: string;
+    cost_drivers?: string[];
+    customs_and_taxes_note?: string;
     other_fees: string[];
   };
   step_by_step_checklist: string[];
@@ -83,6 +88,46 @@ export function ShipmentPlanRenderer({ content }: ShipmentPlanRendererProps) {
 
   return (
     <div className="space-y-4">
+      {/* Confidence & Verification Banner */}
+      {(plan.confidence_level || (plan.needs_verification && plan.needs_verification.length > 0)) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {plan.confidence_level && (
+            <Badge 
+              variant={
+                plan.confidence_level.toLowerCase() === 'high' ? 'default' :
+                plan.confidence_level.toLowerCase() === 'medium' ? 'secondary' : 'destructive'
+              }
+              className="flex items-center gap-1"
+            >
+              <ShieldCheck className="h-3 w-3" />
+              {plan.confidence_level} Confidence
+            </Badge>
+          )}
+          {plan.needs_verification && plan.needs_verification.length > 0 && (
+            <Badge variant="outline" className="flex items-center gap-1 text-orange-600 border-orange-500/50">
+              <Info className="h-3 w-3" />
+              {plan.needs_verification.length} items need verification
+            </Badge>
+          )}
+        </div>
+      )}
+
+      {/* Needs Verification Alert */}
+      {plan.needs_verification && plan.needs_verification.length > 0 && (
+        <Card className="border-orange-500/30 bg-orange-500/5">
+          <CardContent className="pt-4">
+            <p className="text-sm font-medium text-orange-700 dark:text-orange-400 mb-2">
+              Items requiring local verification:
+            </p>
+            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+              {plan.needs_verification.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Shipment Summary */}
       <Card className="border-primary/20">
         <CardHeader className="pb-3">
@@ -225,15 +270,31 @@ export function ShipmentPlanRenderer({ content }: ShipmentPlanRendererProps) {
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-3 pt-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Shipping Cost Range:</p>
-                <p className="font-semibold text-lg">{plan.cost_estimation.shipping_cost_range}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Customs & Taxes:</p>
-                <p>{plan.cost_estimation.customs_and_taxes_note}</p>
-              </div>
-              {plan.cost_estimation.other_fees.length > 0 && (
+              {(plan.cost_estimation.shipping_cost_level || plan.cost_estimation.shipping_cost_range) && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Cost Level:</p>
+                  <p className="font-semibold text-lg">
+                    {plan.cost_estimation.shipping_cost_level || plan.cost_estimation.shipping_cost_range}
+                  </p>
+                </div>
+              )}
+              {plan.cost_estimation.cost_drivers && plan.cost_estimation.cost_drivers.length > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Cost Drivers:</p>
+                  <ul className="list-disc list-inside text-sm">
+                    {plan.cost_estimation.cost_drivers.map((driver, i) => (
+                      <li key={i}>{driver}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {plan.cost_estimation.customs_and_taxes_note && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Customs & Taxes:</p>
+                  <p>{plan.cost_estimation.customs_and_taxes_note}</p>
+                </div>
+              )}
+              {plan.cost_estimation.other_fees && plan.cost_estimation.other_fees.length > 0 && (
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Other Fees:</p>
                   <ul className="list-disc list-inside text-sm">
