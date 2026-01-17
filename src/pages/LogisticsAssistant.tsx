@@ -1,13 +1,16 @@
 import { useState, useCallback } from 'react';
 import MainLayout from '@/components/MainLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useShipmentState } from '@/hooks/useShipmentState';
+import { useShipmentState, ShipmentState } from '@/hooks/useShipmentState';
+import { useShipmentPlans } from '@/hooks/useShipmentPlans';
 import { ShipmentWizard } from '@/components/logistics/ShipmentWizard';
 import { LogisticsChatPanel, Message } from '@/components/logistics/LogisticsChatPanel';
 import { ShipmentPlanRenderer } from '@/components/logistics/ShipmentPlanRenderer';
+import { SavedPlansDialog } from '@/components/logistics/SavedPlansDialog';
+import { SavePlanDialog } from '@/components/logistics/SavePlanDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Ship, RotateCcw } from 'lucide-react';
+import { Ship, RotateCcw, Save, FolderOpen } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/logistics-assistant`;
@@ -17,9 +20,16 @@ export default function LogisticsAssistant() {
   const isRTL = language === 'ar';
   
   const shipmentState = useShipmentState();
+  const { savedPlans, isLoading: plansLoading, fetchPlans, savePlan, deletePlan } = useShipmentPlans();
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [generatedPlan, setGeneratedPlan] = useState<string | null>(null);
+  const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
+  const [currentPlanTitle, setCurrentPlanTitle] = useState<string>('');
+  
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
 
   const generatePlan = useCallback(async () => {
     if (!shipmentState.isComplete) {
@@ -135,13 +145,40 @@ Generate the final JSON plan now.`;
     shipmentState.reset();
     setMessages([]);
     setGeneratedPlan(null);
+    setCurrentPlanId(null);
+    setCurrentPlanTitle('');
+  };
+
+  const handleSavePlan = async (title: string) => {
+    const id = await savePlan(title, shipmentState.state, generatedPlan, currentPlanId || undefined);
+    if (id) {
+      setCurrentPlanId(id);
+      setCurrentPlanTitle(title);
+      setShowSaveDialog(false);
+    }
+  };
+
+  const handleLoadPlan = (state: ShipmentState, plan: string | null, planId: string) => {
+    shipmentState.updateMultiple(state);
+    setGeneratedPlan(plan);
+    setCurrentPlanId(planId);
+    // Find the plan title
+    const loadedPlan = savedPlans.find(p => p.id === planId);
+    if (loadedPlan) {
+      setCurrentPlanTitle(loadedPlan.title);
+    }
+    setMessages([]);
+    toast({
+      title: isRTL ? 'تم التحميل' : 'Loaded',
+      description: isRTL ? 'تم تحميل الخطة بنجاح.' : 'Plan loaded successfully.',
+    });
   };
 
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-6" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
               <Ship className="w-6 h-6 text-primary" />
@@ -151,14 +188,26 @@ Generate the final JSON plan now.`;
                 {isRTL ? 'مساعد الشحن واللوجستيات' : 'Logistics & Shipping AI Assistant'}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {isRTL ? 'خطط شحناتك الدولية بسهولة' : 'Plan your international shipments with ease'}
+                {currentPlanTitle 
+                  ? `${isRTL ? 'الخطة: ' : 'Plan: '}${currentPlanTitle}`
+                  : (isRTL ? 'خطط شحناتك الدولية بسهولة' : 'Plan your international shipments with ease')}
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={resetAll} className="gap-2">
-            <RotateCcw className="h-4 w-4" />
-            {isRTL ? 'إعادة تعيين' : 'Reset'}
-          </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant="outline" onClick={() => setShowLoadDialog(true)} className="gap-2">
+              <FolderOpen className="h-4 w-4" />
+              {isRTL ? 'تحميل' : 'Load'}
+            </Button>
+            <Button variant="outline" onClick={() => setShowSaveDialog(true)} className="gap-2">
+              <Save className="h-4 w-4" />
+              {currentPlanId ? (isRTL ? 'تحديث' : 'Update') : (isRTL ? 'حفظ' : 'Save')}
+            </Button>
+            <Button variant="outline" onClick={resetAll} className="gap-2">
+              <RotateCcw className="h-4 w-4" />
+              {isRTL ? 'جديد' : 'New'}
+            </Button>
+          </div>
         </div>
 
         {/* Main Content - Two Column Layout */}
@@ -201,6 +250,25 @@ Generate the final JSON plan now.`;
           </div>
         )}
       </div>
+
+      {/* Dialogs */}
+      <SavePlanDialog
+        open={showSaveDialog}
+        onOpenChange={setShowSaveDialog}
+        onSave={handleSavePlan}
+        isLoading={plansLoading}
+        defaultTitle={currentPlanTitle || `${shipmentState.state.origin_country} → ${shipmentState.state.destination_country}`}
+      />
+
+      <SavedPlansDialog
+        open={showLoadDialog}
+        onOpenChange={setShowLoadDialog}
+        plans={savedPlans}
+        isLoading={plansLoading}
+        onLoad={handleLoadPlan}
+        onDelete={deletePlan}
+        onFetch={fetchPlans}
+      />
     </MainLayout>
   );
 }
