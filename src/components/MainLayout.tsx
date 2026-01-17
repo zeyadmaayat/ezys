@@ -9,8 +9,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench } from 'lucide-react';
+import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -59,10 +60,24 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <Link to="/categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 {t('categories')}
               </Link>
-              <Link to="/tools" className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
-                <Wrench className="w-4 h-4" />
-                {t('tools')}
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                  <Wrench className="w-4 h-4" />
+                  {t('tools')}
+                  <ChevronDown className="w-3 h-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
+                  <DropdownMenuItem onClick={() => navigate('/logistics-assistant')}>
+                    <Ship className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {t('logisticsAssistant')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/tools')}>
+                    <FileJson className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {t('trainingTools')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               {isAdmin && (
                 <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                   {t('admin')}
@@ -175,12 +190,20 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   {t('categories')}
                 </Link>
                 <Link
+                  to="/logistics-assistant"
+                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Ship className="w-4 h-4" />
+                  {t('logisticsAssistant')}
+                </Link>
+                <Link
                   to="/tools"
                   className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Wrench className="w-4 h-4" />
-                  {t('tools')}
+                  {t('trainingTools')}
                 </Link>
                 {isAdmin && (
                   <Link
