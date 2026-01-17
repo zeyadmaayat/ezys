@@ -169,6 +169,39 @@ export type Database = {
         }
         Relationships: []
       }
+      shipment_plans: {
+        Row: {
+          created_at: string
+          generated_plan: string | null
+          id: string
+          shipment_state: Json
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          generated_plan?: string | null
+          id?: string
+          shipment_state?: Json
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          generated_plan?: string | null
+          id?: string
+          shipment_state?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       topics: {
         Row: {
           category_id: string
