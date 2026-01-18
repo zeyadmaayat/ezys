@@ -18,6 +18,7 @@ const translations: Translations = {
   tools: { en: 'Tools', ar: 'الأدوات' },
   trainingTools: { en: 'Training Tools', ar: 'أدوات التدريب' },
   logisticsAssistant: { en: 'Logistics & Shipping AI', ar: 'مساعد الشحن واللوجستيات' },
+  myShipments: { en: 'My Shipments', ar: 'شحناتي' },
   login: { en: 'Login', ar: 'تسجيل الدخول' },
   logout: { en: 'Logout', ar: 'تسجيل الخروج' },
   signUp: { en: 'Sign Up', ar: 'إنشاء حساب' },
