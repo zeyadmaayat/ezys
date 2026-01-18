@@ -169,6 +169,47 @@ export type Database = {
         }
         Relationships: []
       }
+      shipment_documents: {
+        Row: {
+          created_at: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          file_url: string | null
+          id: string
+          shipment_id: string
+          status: Database["public"]["Enums"]["document_status"]
+          updated_at: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: Database["public"]["Enums"]["document_type"]
+          file_url?: string | null
+          id?: string
+          shipment_id: string
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: Database["public"]["Enums"]["document_type"]
+          file_url?: string | null
+          id?: string
+          shipment_id?: string
+          status?: Database["public"]["Enums"]["document_status"]
+          updated_at?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_documents_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipment_plans: {
         Row: {
           created_at: string
@@ -201,6 +242,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      shipments: {
+        Row: {
+          created_at: string
+          id: string
+          plan_id: string | null
+          status: Database["public"]["Enums"]["shipment_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan_id?: string | null
+          status?: Database["public"]["Enums"]["shipment_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan_id?: string | null
+          status?: Database["public"]["Enums"]["shipment_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "shipment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       topics: {
         Row: {
@@ -288,6 +364,19 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      document_status: "Missing" | "Uploaded" | "Approved"
+      document_type:
+        | "Commercial_Invoice"
+        | "Packing_List"
+        | "Bill_of_Lading"
+        | "AWB"
+        | "Other"
+      shipment_status:
+        | "Planned"
+        | "Booked"
+        | "In_Transit"
+        | "Cleared"
+        | "Delivered"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -416,6 +505,21 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      document_status: ["Missing", "Uploaded", "Approved"],
+      document_type: [
+        "Commercial_Invoice",
+        "Packing_List",
+        "Bill_of_Lading",
+        "AWB",
+        "Other",
+      ],
+      shipment_status: [
+        "Planned",
+        "Booked",
+        "In_Transit",
+        "Cleared",
+        "Delivered",
+      ],
     },
   },
 } as const

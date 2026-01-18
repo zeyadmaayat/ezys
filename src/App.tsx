@@ -16,6 +16,8 @@ import Search from "./pages/Search";
 import Tools from "./pages/Tools";
 import Admin from "./pages/Admin";
 import LogisticsAssistant from "./pages/LogisticsAssistant";
+import MyShipments from "./pages/MyShipments";
+import ShipmentDetail from "./pages/ShipmentDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
               <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
               <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
               <Route path="/logistics-assistant" element={<ProtectedRoute><LogisticsAssistant /></ProtectedRoute>} />
+              <Route path="/shipments" element={<ProtectedRoute><MyShipments /></ProtectedRoute>} />
+              <Route path="/shipments/:id" element={<ProtectedRoute><ShipmentDetail /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

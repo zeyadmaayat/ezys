@@ -8,6 +8,7 @@ import { LogisticsChatPanel, Message } from '@/components/logistics/LogisticsCha
 import { ShipmentPlanRenderer } from '@/components/logistics/ShipmentPlanRenderer';
 import { SavedPlansDialog } from '@/components/logistics/SavedPlansDialog';
 import { SavePlanDialog } from '@/components/logistics/SavePlanDialog';
+import { CreateShipmentButton } from '@/components/logistics/CreateShipmentButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Ship, RotateCcw, Save, FolderOpen } from 'lucide-react';
@@ -238,10 +239,15 @@ Generate the final JSON plan now.`;
           <div className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Ship className="h-5 w-5 text-primary" />
-                  {isRTL ? 'خطة الشحن المُنشأة' : 'Generated Shipment Plan'}
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Ship className="h-5 w-5 text-primary" />
+                    {isRTL ? 'خطة الشحن المُنشأة' : 'Generated Shipment Plan'}
+                  </CardTitle>
+                  {currentPlanId && (
+                    <CreateShipmentButton planId={currentPlanId} />
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 <ShipmentPlanRenderer content={generatedPlan} />

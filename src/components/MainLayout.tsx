@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown } from 'lucide-react';
+import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown, Boxes } from 'lucide-react';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -70,6 +70,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <DropdownMenuItem onClick={() => navigate('/logistics-assistant')}>
                     <Ship className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                     {t('logisticsAssistant')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/shipments')}>
+                    <Boxes className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {t('myShipments')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/tools')}>
@@ -196,6 +200,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 >
                   <Ship className="w-4 h-4" />
                   {t('logisticsAssistant')}
+                </Link>
+                <Link
+                  to="/shipments"
+                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Boxes className="w-4 h-4" />
+                  {t('myShipments')}
                 </Link>
                 <Link
                   to="/tools"
