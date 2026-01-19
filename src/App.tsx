@@ -18,6 +18,7 @@ import Admin from "./pages/Admin";
 import LogisticsAssistant from "./pages/LogisticsAssistant";
 import MyShipments from "./pages/MyShipments";
 import ShipmentDetail from "./pages/ShipmentDetail";
+import OpsDashboard from "./pages/OpsDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/logistics-assistant" element={<ProtectedRoute><LogisticsAssistant /></ProtectedRoute>} />
               <Route path="/shipments" element={<ProtectedRoute><MyShipments /></ProtectedRoute>} />
               <Route path="/shipments/:id" element={<ProtectedRoute><ShipmentDetail /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><OpsDashboard /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

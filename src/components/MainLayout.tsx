@@ -75,6 +75,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                     <Boxes className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                     {t('myShipments')}
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                    <Package className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {language === 'ar' ? 'لوحة العمليات' : 'Ops Dashboard'}
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/tools')}>
                     <FileJson className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />

@@ -3,7 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useShipments, ShipmentStatus, Shipment } from '@/hooks/useShipments';
 import { useShipmentDocuments, DocumentType, DocumentStatus, DOCUMENT_TYPE_LABELS } from '@/hooks/useShipmentDocuments';
 import { useShipmentAlerts } from '@/hooks/useShipmentAlerts';
+import { useShipmentTasks } from '@/hooks/useShipmentTasks';
+import { useShipmentCosts } from '@/hooks/useShipmentCosts';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { CostsSection } from '@/components/shipments/CostsSection';
+import { TasksSection } from '@/components/shipments/TasksSection';
 import MainLayout from '@/components/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -76,12 +80,14 @@ export default function ShipmentDetail() {
   const { language } = useLanguage();
   const { getShipmentById, updateShipmentStatus } = useShipments();
   const { documents, loading: docsLoading, uploading, uploadDocument, updateDocumentStatus, addDocument, deleteDocument } = useShipmentDocuments(id);
+  const { tasks, openTasksCount } = useShipmentTasks(id);
+  const { totals: costTotals } = useShipmentCosts(id);
   
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [loading, setLoading] = useState(true);
   const [addingDocType, setAddingDocType] = useState<DocumentType | null>(null);
 
-  const { alerts, hasAttention } = useShipmentAlerts(shipment, documents);
+  const { alerts, hasAttention } = useShipmentAlerts(shipment, documents, tasks, costTotals);
 
   useEffect(() => {
     const loadShipment = async () => {
@@ -237,6 +243,12 @@ export default function ShipmentDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Tasks */}
+            <TasksSection shipmentId={id!} documents={documents} />
+
+            {/* Costs */}
+            <CostsSection shipmentId={id!} />
 
             {/* Documents */}
             <Card>
