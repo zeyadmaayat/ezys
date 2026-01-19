@@ -169,6 +169,56 @@ export type Database = {
         }
         Relationships: []
       }
+      shipment_costs: {
+        Row: {
+          actual_amount: number | null
+          cost_type: Database["public"]["Enums"]["cost_type"]
+          created_at: string
+          currency: string
+          estimate_amount: number | null
+          id: string
+          notes: string | null
+          shipment_id: string
+          updated_at: string
+          user_id: string
+          vendor_name: string | null
+        }
+        Insert: {
+          actual_amount?: number | null
+          cost_type: Database["public"]["Enums"]["cost_type"]
+          created_at?: string
+          currency?: string
+          estimate_amount?: number | null
+          id?: string
+          notes?: string | null
+          shipment_id: string
+          updated_at?: string
+          user_id: string
+          vendor_name?: string | null
+        }
+        Update: {
+          actual_amount?: number | null
+          cost_type?: Database["public"]["Enums"]["cost_type"]
+          created_at?: string
+          currency?: string
+          estimate_amount?: number | null
+          id?: string
+          notes?: string | null
+          shipment_id?: string
+          updated_at?: string
+          user_id?: string
+          vendor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_costs_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipment_documents: {
         Row: {
           created_at: string
@@ -242,6 +292,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      shipment_tasks: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          id: string
+          shipment_id: string
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          shipment_id: string
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          shipment_id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_tasks_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shipments: {
         Row: {
@@ -364,6 +455,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      cost_type:
+        | "Freight"
+        | "Customs"
+        | "Clearance"
+        | "Insurance"
+        | "LastMile"
+        | "Storage"
+        | "Other"
       document_status: "Missing" | "Uploaded" | "Approved"
       document_type:
         | "Commercial_Invoice"
@@ -377,6 +476,7 @@ export type Database = {
         | "In_Transit"
         | "Cleared"
         | "Delivered"
+      task_status: "Pending" | "Done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -505,6 +605,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      cost_type: [
+        "Freight",
+        "Customs",
+        "Clearance",
+        "Insurance",
+        "LastMile",
+        "Storage",
+        "Other",
+      ],
       document_status: ["Missing", "Uploaded", "Approved"],
       document_type: [
         "Commercial_Invoice",
@@ -520,6 +629,7 @@ export const Constants = {
         "Cleared",
         "Delivered",
       ],
+      task_status: ["Pending", "Done"],
     },
   },
 } as const

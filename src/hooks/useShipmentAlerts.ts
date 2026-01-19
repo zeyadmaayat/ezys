@@ -1,19 +1,23 @@
 import { useMemo } from 'react';
 import { Shipment, ShipmentStatus } from './useShipments';
 import { ShipmentDocument, DocumentStatus, DOCUMENT_TYPE_LABELS } from './useShipmentDocuments';
+import { ShipmentTask } from './useShipmentTasks';
+import { CostTotals } from './useShipmentCosts';
 
 export interface ShipmentAlert {
   id: string;
   type: 'warning' | 'info' | 'error';
   message: string;
-  category: 'status' | 'document' | 'timeline';
+  category: 'status' | 'document' | 'timeline' | 'task' | 'cost';
 }
 
 const STATUS_ORDER: ShipmentStatus[] = ['Planned', 'Booked', 'In_Transit', 'Cleared', 'Delivered'];
 
 export function useShipmentAlerts(
   shipment: Shipment | null,
-  documents: ShipmentDocument[]
+  documents: ShipmentDocument[],
+  tasks?: ShipmentTask[],
+  costTotals?: CostTotals
 ): { alerts: ShipmentAlert[]; hasAttention: boolean } {
   const alerts = useMemo(() => {
     if (!shipment) return [];
@@ -95,8 +99,63 @@ export function useShipmentAlerts(
       }
     }
 
+    // Task-based alerts: Overdue tasks
+    if (tasks && tasks.length > 0) {
+      const overdueTasks = tasks.filter(t => {
+        if (t.status === 'Done' || !t.due_date) return false;
+        return new Date(t.due_date) < now;
+      });
+
+      if (overdueTasks.length > 0) {
+        result.push({
+          id: 'overdue-tasks',
+          type: 'error',
+          message: `${overdueTasks.length} task(s) are overdue and need attention.`,
+          category: 'task',
+        });
+      }
+
+      const pendingTasks = tasks.filter(t => t.status === 'Pending').length;
+      if (pendingTasks > 3 && shipment.status !== 'Planned') {
+        result.push({
+          id: 'many-pending-tasks',
+          type: 'warning',
+          message: `${pendingTasks} tasks still pending. Review your checklist.`,
+          category: 'task',
+        });
+      }
+    }
+
+    // Cost-based alerts: High variance
+    if (costTotals && costTotals.totalEstimate > 0 && costTotals.totalActual > 0) {
+      const variancePercent = costTotals.variancePercent || 0;
+      
+      if (variancePercent > 20) {
+        result.push({
+          id: 'high-cost-variance',
+          type: 'error',
+          message: `Actual costs exceed estimates by ${variancePercent.toFixed(1)}%. Review cost breakdown.`,
+          category: 'cost',
+        });
+      } else if (variancePercent > 10) {
+        result.push({
+          id: 'moderate-cost-variance',
+          type: 'warning',
+          message: `Costs are ${variancePercent.toFixed(1)}% over estimate. Monitor spending.`,
+          category: 'cost',
+        });
+      } else if (variancePercent < -10) {
+        result.push({
+          id: 'under-budget',
+          type: 'info',
+          message: `Costs are ${Math.abs(variancePercent).toFixed(1)}% under estimate. Good savings!`,
+          category: 'cost',
+        });
+      }
+    }
+
     return result;
-  }, [shipment, documents]);
+  }, [shipment, documents, tasks, costTotals]);
 
   const hasAttention = alerts.some(a => a.type === 'error' || a.type === 'warning');
 
