@@ -27,8 +27,10 @@ import {
   Search,
   ArrowRight,
   Eye,
+  BarChart3,
 } from 'lucide-react';
 import { format, addDays, isBefore, isAfter } from 'date-fns';
+import AnalyticsCharts from '@/components/dashboard/AnalyticsCharts';
 
 interface TaskWithShipment {
   id: string;
@@ -36,6 +38,14 @@ interface TaskWithShipment {
   due_date: string;
   shipment_id: string;
   shipment_title: string;
+}
+
+interface CostData {
+  shipment_id: string;
+  cost_type: string;
+  estimate_amount: number | null;
+  actual_amount: number | null;
+  created_at: string;
 }
 
 const STATUS_COLORS: Record<ShipmentStatus, string> = {
@@ -62,9 +72,12 @@ export default function OpsDashboard() {
   const { user } = useAuth();
   const { shipments, loading: shipmentsLoading } = useShipments();
   const [upcomingTasks, setUpcomingTasks] = useState<TaskWithShipment[]>([]);
+  const [allCosts, setAllCosts] = useState<CostData[]>([]);
   const [tasksLoading, setTasksLoading] = useState(true);
+  const [costsLoading, setCostsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<ShipmentStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAnalytics, setShowAnalytics] = useState(true);
 
   const t = {
     title: language === 'ar' ? 'لوحة العمليات' : 'Operations Dashboard',
@@ -81,6 +94,9 @@ export default function OpsDashboard() {
     viewDetails: language === 'ar' ? 'عرض' : 'View',
     openTasks: language === 'ar' ? 'مهام مفتوحة' : 'open tasks',
     missingDocs: language === 'ar' ? 'مستندات ناقصة' : 'missing docs',
+    analytics: language === 'ar' ? 'التحليلات' : 'Analytics',
+    showAnalytics: language === 'ar' ? 'عرض التحليلات' : 'Show Analytics',
+    hideAnalytics: language === 'ar' ? 'إخفاء التحليلات' : 'Hide Analytics',
   };
 
   // Fetch upcoming tasks
@@ -126,6 +142,30 @@ export default function OpsDashboard() {
     fetchUpcomingTasks();
   }, [user]);
 
+  // Fetch all costs for analytics
+  useEffect(() => {
+    const fetchAllCosts = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('shipment_costs')
+          .select('shipment_id, cost_type, estimate_amount, actual_amount, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        setAllCosts(data || []);
+      } catch (error) {
+        console.error('Error fetching costs:', error);
+      } finally {
+        setCostsLoading(false);
+      }
+    };
+
+    fetchAllCosts();
+  }, [user]);
+
   // Calculate status counts
   const statusCounts = useMemo(() => {
     const counts: Record<ShipmentStatus, number> = {
@@ -167,6 +207,29 @@ export default function OpsDashboard() {
           <h1 className="text-3xl font-bold mb-2">{t.title}</h1>
           <p className="text-muted-foreground">{t.subtitle}</p>
         </div>
+
+        {/* Analytics Toggle */}
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={() => setShowAnalytics(!showAnalytics)}
+            className="gap-2"
+          >
+            <BarChart3 className="h-4 w-4" />
+            {showAnalytics ? t.hideAnalytics : t.showAnalytics}
+          </Button>
+        </div>
+
+        {/* Analytics Charts */}
+        {showAnalytics && (
+          <div className="mb-8">
+            <AnalyticsCharts 
+              shipments={shipments} 
+              costs={allCosts} 
+              loading={shipmentsLoading || costsLoading} 
+            />
+          </div>
+        )}
 
         {/* Status Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
