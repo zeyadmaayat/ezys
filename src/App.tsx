@@ -20,6 +20,13 @@ import MyShipments from "./pages/MyShipments";
 import ShipmentDetail from "./pages/ShipmentDetail";
 import OpsDashboard from "./pages/OpsDashboard";
 import NotFound from "./pages/NotFound";
+// ERP Pages
+import CustomersPage from "./pages/erp/Customers";
+import LocationsPage from "./pages/erp/Locations";
+import ItemsPage from "./pages/erp/Items";
+import OrdersPage from "./pages/erp/Orders";
+import InventoryPage from "./pages/erp/Inventory";
+import InvoicesPage from "./pages/erp/Invoices";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +55,14 @@ const App = () => (
               <Route path="/shipments" element={<ProtectedRoute><MyShipments /></ProtectedRoute>} />
               <Route path="/shipments/:id" element={<ProtectedRoute><ShipmentDetail /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><OpsDashboard /></ProtectedRoute>} />
+              
+              {/* ERP Module Routes */}
+              <Route path="/erp/customers" element={<ProtectedRoute><CustomersPage /></ProtectedRoute>} />
+              <Route path="/erp/locations" element={<ProtectedRoute><LocationsPage /></ProtectedRoute>} />
+              <Route path="/erp/items" element={<ProtectedRoute><ItemsPage /></ProtectedRoute>} />
+              <Route path="/erp/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+              <Route path="/erp/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+              <Route path="/erp/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
