@@ -67,6 +67,26 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <ChevronDown className="w-3 h-3" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
+                  <DropdownMenuItem onClick={() => navigate('/erp/customers')}>
+                    {language === 'ar' ? 'العملاء' : 'Customers'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/orders')}>
+                    {language === 'ar' ? 'الطلبات' : 'Orders'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/inventory')}>
+                    {language === 'ar' ? 'المخزون' : 'Inventory'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/invoices')}>
+                    {language === 'ar' ? 'الفواتير' : 'Invoices'}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/erp/locations')}>
+                    {language === 'ar' ? 'المواقع' : 'Locations'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/items')}>
+                    {language === 'ar' ? 'المنتجات' : 'Items/SKUs'}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/logistics-assistant')}>
                     <Ship className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                     {t('logisticsAssistant')}
@@ -78,11 +98,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                     <Package className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                     {language === 'ar' ? 'لوحة العمليات' : 'Ops Dashboard'}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/tools')}>
-                    <FileJson className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                    {t('trainingTools')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

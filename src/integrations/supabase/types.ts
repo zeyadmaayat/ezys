@@ -106,6 +106,45 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -144,6 +183,513 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      customer_addresses: {
+        Row: {
+          address_line1: string
+          address_line2: string | null
+          city: string | null
+          country: string
+          created_at: string
+          customer_id: string
+          id: string
+          is_default: boolean
+          label: string
+          postal_code: string | null
+          state: string | null
+        }
+        Insert: {
+          address_line1: string
+          address_line2?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          postal_code?: string | null
+          state?: string | null
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          postal_code?: string | null
+          state?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_addresses_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          billing_address: Json | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_address?: Json | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_address?: Json | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          id: string
+          item_id: string
+          location_id: string
+          quantity: number
+          reserved_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          item_id: string
+          location_id: string
+          quantity?: number
+          reserved_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          item_id?: string
+          location_id?: string
+          quantity?: number
+          reserved_quantity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_ledger: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          item_id: string
+          location_id: string
+          movement_type: Database["public"]["Enums"]["inventory_movement_type"]
+          notes: string | null
+          quantity: number
+          reference_id: string | null
+          reference_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id: string
+          location_id: string
+          movement_type: Database["public"]["Enums"]["inventory_movement_type"]
+          notes?: string | null
+          quantity: number
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          location_id?: string
+          movement_type?: Database["public"]["Enums"]["inventory_movement_type"]
+          notes?: string | null
+          quantity?: number
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_ledger_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_ledger_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          invoice_id: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          invoice_id: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_id?: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_id: string | null
+          due_date: string | null
+          id: string
+          invoice_number: string
+          issue_date: string
+          notes: string | null
+          order_id: string | null
+          paid_date: string | null
+          shipment_id: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_id?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          issue_date?: string
+          notes?: string | null
+          order_id?: string | null
+          paid_date?: string | null
+          shipment_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_id?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          issue_date?: string
+          notes?: string | null
+          order_id?: string | null
+          paid_date?: string | null
+          shipment_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      items: {
+        Row: {
+          barcode: string | null
+          created_at: string
+          description: string | null
+          dimensions: Json | null
+          id: string
+          is_active: boolean
+          name: string
+          sku: string
+          unit: string
+          updated_at: string
+          weight_kg: number | null
+        }
+        Insert: {
+          barcode?: string | null
+          created_at?: string
+          description?: string | null
+          dimensions?: Json | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sku: string
+          unit?: string
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Update: {
+          barcode?: string | null
+          created_at?: string
+          description?: string | null
+          dimensions?: Json | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sku?: string
+          unit?: string
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          country: string
+          created_at: string
+          id: string
+          is_active: boolean
+          location_type: string
+          name: string
+          postal_code: string | null
+          state: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_type?: string
+          name: string
+          postal_code?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_type?: string
+          name?: string
+          postal_code?: string | null
+          state?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string | null
+          item_name: string
+          notes: string | null
+          order_id: string
+          quantity: number
+          unit: string
+          unit_price: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_name: string
+          notes?: string | null
+          order_id: string
+          quantity?: number
+          unit?: string
+          unit_price?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_name?: string
+          notes?: string | null
+          order_id?: string
+          quantity?: number
+          unit?: string
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          delivery_address: Json | null
+          delivery_location_id: string | null
+          id: string
+          notes: string | null
+          order_number: string
+          pickup_location_id: string | null
+          requested_date: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_address?: Json | null
+          delivery_location_id?: string | null
+          id?: string
+          notes?: string | null
+          order_number: string
+          pickup_location_id?: string | null
+          requested_date?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          delivery_address?: Json | null
+          delivery_location_id?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string
+          pickup_location_id?: string | null
+          requested_date?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_delivery_location_id_fkey"
+            columns: ["delivery_location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_pickup_location_id_fkey"
+            columns: ["pickup_location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -336,30 +882,83 @@ export type Database = {
       }
       shipments: {
         Row: {
+          actual_delivery_at: string | null
+          actual_pickup_at: string | null
           created_at: string
+          customer_id: string | null
+          driver_name: string | null
           id: string
+          order_id: string | null
           plan_id: string | null
+          planned_delivery_date: string | null
+          planned_pickup_date: string | null
+          pod_image_url: string | null
+          pod_notes: string | null
+          pod_receiver_name: string | null
+          pod_signature: string | null
           status: Database["public"]["Enums"]["shipment_status"]
+          tracking_number: string | null
           updated_at: string
           user_id: string
+          vehicle_plate: string | null
         }
         Insert: {
+          actual_delivery_at?: string | null
+          actual_pickup_at?: string | null
           created_at?: string
+          customer_id?: string | null
+          driver_name?: string | null
           id?: string
+          order_id?: string | null
           plan_id?: string | null
+          planned_delivery_date?: string | null
+          planned_pickup_date?: string | null
+          pod_image_url?: string | null
+          pod_notes?: string | null
+          pod_receiver_name?: string | null
+          pod_signature?: string | null
           status?: Database["public"]["Enums"]["shipment_status"]
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
+          vehicle_plate?: string | null
         }
         Update: {
+          actual_delivery_at?: string | null
+          actual_pickup_at?: string | null
           created_at?: string
+          customer_id?: string | null
+          driver_name?: string | null
           id?: string
+          order_id?: string | null
           plan_id?: string | null
+          planned_delivery_date?: string | null
+          planned_pickup_date?: string | null
+          pod_image_url?: string | null
+          pod_notes?: string | null
+          pod_receiver_name?: string | null
+          pod_signature?: string | null
           status?: Database["public"]["Enums"]["shipment_status"]
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
+          vehicle_plate?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "shipments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shipments_plan_id_fkey"
             columns: ["plan_id"]
@@ -452,6 +1051,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_audit_event: {
+        Args: {
+          p_action: string
+          p_entity_id: string
+          p_entity_type: string
+          p_new_values?: Json
+          p_old_values?: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
@@ -476,6 +1085,14 @@ export type Database = {
         | "Bill_of_Lading"
         | "AWB"
         | "Other"
+      inventory_movement_type:
+        | "Inbound"
+        | "Outbound"
+        | "Transfer"
+        | "Adjustment"
+        | "Return"
+      invoice_status: "Draft" | "Sent" | "Paid" | "Overdue" | "Cancelled"
+      order_status: "Draft" | "Confirmed" | "Cancelled" | "ConvertedToShipment"
       shipment_status:
         | "Planned"
         | "Booked"
@@ -635,6 +1252,15 @@ export const Constants = {
         "AWB",
         "Other",
       ],
+      inventory_movement_type: [
+        "Inbound",
+        "Outbound",
+        "Transfer",
+        "Adjustment",
+        "Return",
+      ],
+      invoice_status: ["Draft", "Sent", "Paid", "Overdue", "Cancelled"],
+      order_status: ["Draft", "Confirmed", "Cancelled", "ConvertedToShipment"],
       shipment_status: [
         "Planned",
         "Booked",
