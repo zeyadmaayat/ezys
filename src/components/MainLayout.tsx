@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown, Boxes } from 'lucide-react';
+import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown, Boxes, PlayCircle } from 'lucide-react';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -85,6 +85,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/erp/items')}>
                     {language === 'ar' ? 'المنتجات' : 'Items/SKUs'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/workflow-check')}>
+                    <PlayCircle className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {language === 'ar' ? 'فحص سير العمل' : 'Workflow Check'}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/logistics-assistant')}>
