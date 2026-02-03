@@ -114,16 +114,21 @@ export function useOrders() {
     }
   };
 
-  const convertToShipment = async (orderId: string): Promise<string | null> => {
+  const convertToShipment = async (orderId: string): Promise<{ id: string | null; error?: string }> => {
     if (!user) {
-      toast.error('You must be logged in');
-      return null;
+      const msg = 'You must be logged in';
+      toast.error(msg);
+      return { id: null, error: msg };
     }
 
     try {
       // Get order details
       const order = orders.find(o => o.id === orderId);
-      if (!order) throw new Error('Order not found');
+      if (!order) {
+        const msg = 'Order not found in local state';
+        toast.error(msg);
+        return { id: null, error: msg };
+      }
 
       // Create shipment
       const { data: shipment, error: shipmentError } = await supabase
@@ -137,17 +142,24 @@ export function useOrders() {
         .select()
         .single();
 
-      if (shipmentError) throw shipmentError;
+      if (shipmentError) {
+        const errorDetails = `Code: ${shipmentError.code}, Message: ${shipmentError.message}, Details: ${shipmentError.details || 'none'}, Hint: ${shipmentError.hint || 'none'}`;
+        console.error('Shipment creation error:', shipmentError);
+        toast.error(`Shipment error: ${shipmentError.message}`);
+        return { id: null, error: errorDetails };
+      }
 
       // Update order status
       await updateOrderStatus(orderId, 'ConvertedToShipment');
       
       toast.success('Order converted to shipment');
-      return shipment.id;
+      return { id: shipment.id };
     } catch (error: unknown) {
+      const err = error as { message?: string; code?: string; details?: string };
+      const errorDetails = `${err.message || 'Unknown error'} (code: ${err.code || 'N/A'})`;
       console.error('Error converting order:', error);
-      toast.error('Failed to convert order to shipment');
-      return null;
+      toast.error(`Failed to convert: ${errorDetails}`);
+      return { id: null, error: errorDetails };
     }
   };
 
