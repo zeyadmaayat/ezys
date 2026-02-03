@@ -27,6 +27,7 @@ import ItemsPage from "./pages/erp/Items";
 import OrdersPage from "./pages/erp/Orders";
 import InventoryPage from "./pages/erp/Inventory";
 import InvoicesPage from "./pages/erp/Invoices";
+import WorkflowCheckPage from "./pages/erp/WorkflowCheck";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/erp/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
               <Route path="/erp/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
               <Route path="/erp/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
+              <Route path="/erp/workflow-check" element={<ProtectedRoute><WorkflowCheckPage /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
