@@ -48,7 +48,18 @@ const WorkflowCheck = () => {
   const runStepCustomer = async () => {
     updateStep('customer', { status: 'running' });
     try {
-      // Check if customer already exists
+      // Look for existing test customer first
+      const testCustomer = customers.find(c => c.name.startsWith('Test '));
+      if (testCustomer) {
+        updateStep('customer', { 
+          status: 'done', 
+          message: `Using existing: ${testCustomer.name}`,
+          id: testCustomer.id 
+        });
+        return testCustomer.id;
+      }
+      
+      // Use any customer if no test customer
       if (customers.length > 0) {
         updateStep('customer', { 
           status: 'done', 
@@ -84,7 +95,10 @@ const WorkflowCheck = () => {
   const runStepWarehouse = async () => {
     updateStep('warehouse', { status: 'running' });
     try {
-      const existingWarehouse = locations.find(l => l.location_type === 'warehouse');
+      // Look for existing test warehouse first
+      const existingWarehouse = locations.find(l => 
+        l.name.startsWith('Test ') && l.location_type === 'warehouse'
+      ) || locations.find(l => l.location_type === 'warehouse');
       if (existingWarehouse) {
         updateStep('warehouse', { 
           status: 'done', 
@@ -95,12 +109,12 @@ const WorkflowCheck = () => {
       }
       
       const location = await createLocation({
-        name: 'Main Warehouse',
+        name: 'Test Main Warehouse',
         location_type: 'warehouse',
         city: 'Riyadh',
-        country: 'Saudi Arabia',
+        country: 'SA',
       });
-      
+
       if (location) {
         await refetchLocations();
         updateStep('warehouse', { 
@@ -121,7 +135,10 @@ const WorkflowCheck = () => {
   const runStepDelivery = async () => {
     updateStep('delivery', { status: 'running' });
     try {
-      const existingDelivery = locations.find(l => l.location_type === 'customer_site');
+      // Look for existing test delivery location or distribution center
+      const existingDelivery = locations.find(l => 
+        l.name.startsWith('Test Delivery') || l.location_type === 'distribution_center'
+      );
       if (existingDelivery) {
         updateStep('delivery', { 
           status: 'done', 
@@ -130,14 +147,14 @@ const WorkflowCheck = () => {
         });
         return existingDelivery.id;
       }
-      
+
       const location = await createLocation({
-        name: 'Customer Delivery Site',
-        location_type: 'customer_site',
+        name: 'Test Delivery Site',
+        location_type: 'distribution_center',
         city: 'Jeddah',
-        country: 'Saudi Arabia',
+        country: 'SA',
       });
-      
+
       if (location) {
         await refetchLocations();
         updateStep('delivery', { 
@@ -158,6 +175,17 @@ const WorkflowCheck = () => {
   const runStepItem = async () => {
     updateStep('item', { status: 'running' });
     try {
+      // Look for test item first
+      const testItem = items.find(i => i.sku === 'TEST-SKU-001');
+      if (testItem) {
+        updateStep('item', { 
+          status: 'done', 
+          message: `Using existing: ${testItem.name}`,
+          id: testItem.id 
+        });
+        return testItem;
+      }
+      
       if (items.length > 0) {
         updateStep('item', { 
           status: 'done', 
@@ -252,17 +280,21 @@ const WorkflowCheck = () => {
   const runStepShipment = async (orderId: string) => {
     updateStep('shipment', { status: 'running' });
     try {
-      const shipmentId = await convertToShipment(orderId);
-      if (shipmentId) {
+      const result = await convertToShipment(orderId);
+      if (result.id) {
         await refetchOrders();
         updateStep('shipment', { 
           status: 'done', 
-          message: `Shipment created: ${shipmentId.substring(0, 8)}...`,
-          id: shipmentId 
+          message: `Shipment created: ${result.id.substring(0, 8)}...`,
+          id: result.id 
         });
-        return shipmentId;
+        return result.id;
       }
-      throw new Error('Failed to convert to shipment');
+      updateStep('shipment', { 
+        status: 'error', 
+        message: result.error || 'Failed to convert to shipment' 
+      });
+      return null;
     } catch (error) {
       updateStep('shipment', { status: 'error', message: String(error) });
       return null;
