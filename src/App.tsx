@@ -28,6 +28,15 @@ import OrdersPage from "./pages/erp/Orders";
 import InventoryPage from "./pages/erp/Inventory";
 import InvoicesPage from "./pages/erp/Invoices";
 import WorkflowCheckPage from "./pages/erp/WorkflowCheck";
+// SaaS ERP Pages
+import CompanySetup from "./pages/saas/CompanySetup";
+import SaaSDashboard from "./pages/saas/Dashboard";
+import SaaSShipments from "./pages/saas/Shipments";
+import SaaSClients from "./pages/saas/Clients";
+import SaaSWarehouses from "./pages/saas/Warehouses";
+import SaaSInvoices from "./pages/saas/Invoices";
+import RoleManagement from "./pages/saas/RoleManagement";
+import AuditLog from "./pages/saas/AuditLog";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +74,16 @@ const App = () => (
               <Route path="/erp/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
               <Route path="/erp/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
               <Route path="/erp/workflow-check" element={<ProtectedRoute><WorkflowCheckPage /></ProtectedRoute>} />
+              
+              {/* SaaS ERP Routes */}
+              <Route path="/saas/setup" element={<ProtectedRoute><CompanySetup /></ProtectedRoute>} />
+              <Route path="/saas/dashboard" element={<ProtectedRoute><SaaSDashboard /></ProtectedRoute>} />
+              <Route path="/saas/shipments" element={<ProtectedRoute><SaaSShipments /></ProtectedRoute>} />
+              <Route path="/saas/clients" element={<ProtectedRoute><SaaSClients /></ProtectedRoute>} />
+              <Route path="/saas/warehouses" element={<ProtectedRoute><SaaSWarehouses /></ProtectedRoute>} />
+              <Route path="/saas/invoices" element={<ProtectedRoute><SaaSInvoices /></ProtectedRoute>} />
+              <Route path="/saas/roles" element={<AdminRoute><RoleManagement /></AdminRoute>} />
+              <Route path="/saas/audit-log" element={<AdminRoute><AuditLog /></AdminRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

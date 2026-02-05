@@ -109,6 +109,7 @@ export type Database = {
       audit_log: {
         Row: {
           action: string
+          company_id: string | null
           created_at: string
           entity_id: string | null
           entity_type: string
@@ -121,6 +122,7 @@ export type Database = {
         }
         Insert: {
           action: string
+          company_id?: string | null
           created_at?: string
           entity_id?: string | null
           entity_type: string
@@ -133,6 +135,7 @@ export type Database = {
         }
         Update: {
           action?: string
+          company_id?: string | null
           created_at?: string
           entity_id?: string | null
           entity_type?: string
@@ -143,7 +146,15 @@ export type Database = {
           user_email?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       categories: {
         Row: {
@@ -180,6 +191,86 @@ export type Database = {
           name_en?: string
           slug?: string
           sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      clients: {
+        Row: {
+          address: Json | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          type: Database["public"]["Enums"]["client_type"]
+          updated_at: string
+        }
+        Insert: {
+          address?: Json | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          type?: Database["public"]["Enums"]["client_type"]
+          updated_at?: string
+        }
+        Update: {
+          address?: Json | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          type?: Database["public"]["Enums"]["client_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      companies: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          logo: string | null
+          name: string
+          plan: Database["public"]["Enums"]["company_plan"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo?: string | null
+          name: string
+          plan?: Database["public"]["Enums"]["company_plan"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo?: string | null
+          name?: string
+          plan?: Database["public"]["Enums"]["company_plan"]
           updated_at?: string
         }
         Relationships: []
@@ -486,6 +577,69 @@ export type Database = {
           },
         ]
       }
+      invoices_v2: {
+        Row: {
+          amount: number
+          company_id: string
+          created_at: string
+          created_by: string | null
+          due_date: string | null
+          id: string
+          invoice_number: string
+          issued_at: string | null
+          notes: string | null
+          paid_at: string | null
+          shipment_id: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          issued_at?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          shipment_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          issued_at?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          shipment_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_v2_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_v2_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       items: {
         Row: {
           barcode: string | null
@@ -691,8 +845,60 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          invoice_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          paid_at: string
+          reference: string | null
+        }
+        Insert: {
+          amount: number
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invoice_id: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          paid_at?: string
+          reference?: string | null
+        }
+        Update: {
+          amount?: number
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invoice_id?: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          paid_at?: string
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          company_id: string | null
           created_at: string
           display_name: string | null
           email: string | null
@@ -700,6 +906,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -707,13 +914,22 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shipment_costs: {
         Row: {
@@ -968,6 +1184,79 @@ export type Database = {
           },
         ]
       }
+      shipments_v2: {
+        Row: {
+          actual_delivery: string | null
+          client_id: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          destination: string
+          expected_delivery: string | null
+          id: string
+          notes: string | null
+          origin: string
+          status: Database["public"]["Enums"]["shipment_status_v2"]
+          tracking_number: string | null
+          updated_at: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          actual_delivery?: string | null
+          client_id?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          destination: string
+          expected_delivery?: string | null
+          id?: string
+          notes?: string | null
+          origin: string
+          status?: Database["public"]["Enums"]["shipment_status_v2"]
+          tracking_number?: string | null
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          actual_delivery?: string | null
+          client_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          destination?: string
+          expected_delivery?: string | null
+          id?: string
+          notes?: string | null
+          origin?: string
+          status?: Database["public"]["Enums"]["shipment_status_v2"]
+          tracking_number?: string | null
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_v2_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_v2_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_v2_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       topics: {
         Row: {
           category_id: string
@@ -1039,11 +1328,59 @@ export type Database = {
         }
         Relationships: []
       }
+      warehouses: {
+        Row: {
+          address_line1: string | null
+          city: string | null
+          company_id: string
+          country: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          location: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string | null
+          city?: string | null
+          company_id: string
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string | null
+          city?: string | null
+          company_id?: string
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warehouses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_user_company_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1070,6 +1407,8 @@ export type Database = {
         | "warehouse"
         | "finance"
         | "viewer"
+      client_type: "CLIENT" | "VENDOR"
+      company_plan: "free" | "starter" | "pro" | "enterprise"
       cost_type:
         | "Freight"
         | "Customs"
@@ -1093,12 +1432,19 @@ export type Database = {
         | "Return"
       invoice_status: "Draft" | "Sent" | "Paid" | "Overdue" | "Cancelled"
       order_status: "Draft" | "Confirmed" | "Cancelled" | "ConvertedToShipment"
+      payment_method: "cash" | "bank_transfer" | "credit_card" | "check"
       shipment_status:
         | "Planned"
         | "Booked"
         | "In_Transit"
         | "Cleared"
         | "Delivered"
+      shipment_status_v2:
+        | "CREATED"
+        | "PICKED_UP"
+        | "IN_WAREHOUSE"
+        | "OUT_FOR_DELIVERY"
+        | "DELIVERED"
       task_status: "Pending" | "Done"
     }
     CompositeTypes: {
@@ -1235,6 +1581,8 @@ export const Constants = {
         "finance",
         "viewer",
       ],
+      client_type: ["CLIENT", "VENDOR"],
+      company_plan: ["free", "starter", "pro", "enterprise"],
       cost_type: [
         "Freight",
         "Customs",
@@ -1261,12 +1609,20 @@ export const Constants = {
       ],
       invoice_status: ["Draft", "Sent", "Paid", "Overdue", "Cancelled"],
       order_status: ["Draft", "Confirmed", "Cancelled", "ConvertedToShipment"],
+      payment_method: ["cash", "bank_transfer", "credit_card", "check"],
       shipment_status: [
         "Planned",
         "Booked",
         "In_Transit",
         "Cleared",
         "Delivered",
+      ],
+      shipment_status_v2: [
+        "CREATED",
+        "PICKED_UP",
+        "IN_WAREHOUSE",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
       ],
       task_status: ["Pending", "Done"],
     },
