@@ -1,0 +1,193 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import MainLayout from '@/components/MainLayout';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserRoles } from '@/hooks/useUserRoles';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft, Loader2, Shield, UserCog } from 'lucide-react';
+import type { AppRole } from '@/types/erp';
+
+const roleColors: Record<AppRole, string> = {
+  admin: 'bg-red-100 text-red-800',
+  operations: 'bg-blue-100 text-blue-800',
+  warehouse: 'bg-purple-100 text-purple-800',
+  finance: 'bg-green-100 text-green-800',
+  viewer: 'bg-gray-100 text-gray-800',
+  user: 'bg-gray-100 text-gray-600',
+};
+
+const roleDescriptions: Record<AppRole, string> = {
+  admin: 'Full system access, manage users, view audit logs',
+  operations: 'Manage shipments, clients, vendors',
+  warehouse: 'Update shipment status only',
+  finance: 'Create invoices and payments only',
+  viewer: 'Read-only access to all data',
+  user: 'Basic user access',
+};
+
+const assignableRoles: AppRole[] = ['admin', 'operations', 'warehouse', 'finance', 'viewer'];
+
+export default function RoleManagement() {
+  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+  const { users, loading, assignRole, removeRole } = useUserRoles();
+  const [selectedRole, setSelectedRole] = useState<AppRole | ''>('');
+  const [assigningUserId, setAssigningUserId] = useState<string | null>(null);
+
+  const handleAssignRole = async (userId: string) => {
+    if (!selectedRole) return;
+    setAssigningUserId(userId);
+    await assignRole(userId, selectedRole);
+    setAssigningUserId(null);
+    setSelectedRole('');
+  };
+
+  const handleRemoveRole = async (userId: string, role: AppRole) => {
+    if (confirm(`Remove ${role} role from this user?`)) {
+      await removeRole(userId, role);
+    }
+  };
+
+  if (!isAdmin) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <Shield className="h-12 w-12 text-muted-foreground mb-4" />
+          <h2 className="text-xl font-semibold">Access Denied</h2>
+          <p className="text-muted-foreground">You need admin privileges to access this page.</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  return (
+    <MainLayout>
+      <div className="space-y-6 p-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/saas/dashboard')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold">Role Management</h1>
+            <p className="text-muted-foreground">Assign roles to control user access</p>
+          </div>
+        </div>
+
+        {/* Role Legend */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserCog className="h-5 w-5" />
+              Role Permissions
+            </CardTitle>
+            <CardDescription>
+              Each role grants specific permissions within the system
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {assignableRoles.map(role => (
+                <div key={role} className="flex items-start gap-3 p-3 rounded-lg border">
+                  <Badge className={roleColors[role]}>{role}</Badge>
+                  <span className="text-sm text-muted-foreground">{roleDescriptions[role]}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Users Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Users ({users.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Current Roles</TableHead>
+                  <TableHead>Assign Role</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">
+                      {user.display_name || user.email?.split('@')[0] || 'Unknown'}
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles.length === 0 ? (
+                          <span className="text-muted-foreground text-sm">No roles</span>
+                        ) : (
+                          user.roles.map(role => (
+                            <Badge 
+                              key={role} 
+                              className={`${roleColors[role]} cursor-pointer`}
+                              onClick={() => handleRemoveRole(user.id, role)}
+                            >
+                              {role} ×
+                            </Badge>
+                          ))
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Select 
+                          value={selectedRole} 
+                          onValueChange={(v: AppRole) => setSelectedRole(v)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {assignableRoles
+                              .filter(r => !user.roles.includes(r))
+                              .map(role => (
+                                <SelectItem key={role} value={role}>
+                                  {role}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        <Button 
+                          size="sm"
+                          disabled={!selectedRole || assigningUserId === user.id}
+                          onClick={() => handleAssignRole(user.id)}
+                        >
+                          {assigningUserId === user.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            'Assign'
+                          )}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </MainLayout>
+  );
+}
