@@ -175,9 +175,23 @@ const WorkflowCheck = () => {
   const runStepItem = async () => {
     updateStep('item', { status: 'running' });
     try {
-      // Look for test item first
-      const testItem = items.find(i => i.sku === 'TEST-SKU-001');
-      if (testItem) {
+      // Refetch to ensure we have latest data
+      await refetchItems();
+      
+      // Small delay to allow state to update
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Check for existing test item using fresh query
+      const { data: existingItems } = await import('@/integrations/supabase/client')
+        .then(({ supabase }) => supabase
+          .from('items')
+          .select('*')
+          .or('sku.eq.TEST-SKU-001,name.ilike.%test%')
+          .limit(1)
+        );
+      
+      if (existingItems && existingItems.length > 0) {
+        const testItem = existingItems[0];
         updateStep('item', { 
           status: 'done', 
           message: `Using existing: ${testItem.name}`,
@@ -186,17 +200,27 @@ const WorkflowCheck = () => {
         return testItem;
       }
       
-      if (items.length > 0) {
+      // Try to use any existing item
+      const { data: anyItems } = await import('@/integrations/supabase/client')
+        .then(({ supabase }) => supabase
+          .from('items')
+          .select('*')
+          .limit(1)
+        );
+      
+      if (anyItems && anyItems.length > 0) {
         updateStep('item', { 
           status: 'done', 
-          message: `Using existing: ${items[0].name}`,
-          id: items[0].id 
+          message: `Using existing: ${anyItems[0].name}`,
+          id: anyItems[0].id 
         });
-        return items[0];
+        return anyItems[0];
       }
       
+      // Generate unique SKU to avoid conflicts
+      const uniqueSku = `TEST-SKU-${Date.now()}`;
       const item = await createItem({
-        sku: 'TEST-SKU-001',
+        sku: uniqueSku,
         name: 'Test Product',
         unit: 'pcs',
         description: 'Sample item for workflow testing',
@@ -213,6 +237,7 @@ const WorkflowCheck = () => {
       }
       throw new Error('Failed to create item');
     } catch (error) {
+      console.error('Error creating item:', error);
       updateStep('item', { status: 'error', message: String(error) });
       return null;
     }
