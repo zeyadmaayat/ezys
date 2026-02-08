@@ -56,41 +56,15 @@ export function useCompany() {
     }
 
     try {
-      // Create company - trigger will auto-assign admin role and link profile
-      const { error: companyError } = await supabase
-        .from('companies')
-        .insert({ name });
+      const { data, error } = await supabase
+        .rpc('create_company_and_assign_admin', { _name: name });
 
-      if (companyError) throw companyError;
+      if (error) throw error;
 
-      // Wait briefly for trigger to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Fetch the newly created company via updated profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user.id)
-        .single();
-      
-      if (profile?.company_id) {
-        const { data: newCompany } = await supabase
-          .from('companies')
-          .select('*')
-          .eq('id', profile.company_id)
-          .single();
-        
-        if (newCompany) {
-          setCompany(newCompany as Company);
-          toast.success('Company created successfully');
-          return newCompany as Company;
-        }
-      }
-      
-      // Fallback: refetch normally
-      await fetchCompany();
+      const newCompany = data as unknown as Company;
+      setCompany(newCompany);
       toast.success('Company created successfully');
-      return company;
+      return newCompany;
     } catch (error: unknown) {
       console.error('Error creating company:', error);
       toast.error('Failed to create company');
