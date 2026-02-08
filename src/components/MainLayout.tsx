@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown, Boxes, PlayCircle } from 'lucide-react';
+import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown, Boxes, PlayCircle, Users, Warehouse, Truck, FileText } from 'lucide-react';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -22,8 +22,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { t, language, setLanguage, isRTL } = useLanguage();
   const { user, isAdmin, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Check if we're on a SaaS page
+  const isSaaSPage = location.pathname.startsWith('/saas');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +64,41 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <Link to="/categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 {t('categories')}
               </Link>
+              
+              {/* SaaS Navigation - shown when on SaaS pages */}
+              {isSaaSPage && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                    <Package className="w-4 h-4" />
+                    SaaS
+                    <ChevronDown className="w-3 h-3" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
+                    <DropdownMenuItem onClick={() => navigate('/saas/dashboard')}>
+                      <Package className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/saas/clients')}>
+                      <Users className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      Clients
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/saas/warehouses')}>
+                      <Warehouse className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      Warehouses
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/saas/shipments')}>
+                      <Truck className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      Shipments
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/saas/invoices')}>
+                      <FileText className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      Invoices
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              
               <DropdownMenu>
                 <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
                   <Wrench className="w-4 h-4" />
