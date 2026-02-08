@@ -1,13 +1,25 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
-
-const benefits = [
-  "14-day free trial",
-  "No credit card required",
-  "Cancel anytime",
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CTASection = () => {
+  const { language, isRTL } = useLanguage();
+
+  const benefits = language === 'ar' 
+    ? ["تجربة مجانية 14 يوماً", "لا حاجة لبطاقة ائتمان", "إلغاء في أي وقت"]
+    : ["14-day free trial", "No credit card required", "Cancel anytime"];
+
+  const t = {
+    title1: language === 'ar' ? 'هل أنت مستعد لتحويل' : 'Ready to Transform Your',
+    titleHighlight: language === 'ar' ? 'عملياتك اللوجستية؟' : 'Logistics Operations?',
+    subtitle: language === 'ar'
+      ? 'انضم إلى آلاف الشركات التي تستخدم منصتنا لتبسيط سلسلة التوريد وزيادة الكفاءة.'
+      : 'Join thousands of companies already using LogiPro Hub to streamline their supply chain and boost efficiency.',
+    startTrial: language === 'ar' ? 'ابدأ تجربتك المجانية' : 'Start Your Free Trial',
+    scheduleDemo: language === 'ar' ? 'جدولة عرض توضيحي' : 'Schedule a Demo',
+  };
+
   return (
     <section className="py-20 lg:py-32 bg-background">
       <div className="container mx-auto px-4">
@@ -20,11 +32,11 @@ const CTASection = () => {
 
           <div className="relative z-10 px-6 py-16 lg:px-16 lg:py-24 text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground mb-6 max-w-3xl mx-auto">
-              Ready to Transform Your{" "}
-              <span className="text-gradient">Logistics Operations?</span>
+              {t.title1}{" "}
+              <span className="text-gradient">{t.titleHighlight}</span>
             </h2>
             <p className="text-lg text-primary-foreground/70 mb-8 max-w-2xl mx-auto">
-              Join thousands of companies already using LogiPro Hub to streamline their supply chain and boost efficiency.
+              {t.subtitle}
             </p>
 
             {/* Benefits */}
@@ -39,12 +51,16 @@ const CTASection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="hero" size="xl" className="group">
-                Start Your Free Trial
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <Button variant="hero" size="xl" className="group" asChild>
+                <Link to="/auth">
+                  {t.startTrial}
+                  <ArrowRight className={`w-5 h-5 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-transform`} />
+                </Link>
               </Button>
-              <Button variant="heroOutline" size="xl">
-                Schedule a Demo
+              <Button variant="heroOutline" size="xl" asChild>
+                <Link to="/categories">
+                  {t.scheduleDemo}
+                </Link>
               </Button>
             </div>
           </div>
