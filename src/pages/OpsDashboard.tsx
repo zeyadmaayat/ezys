@@ -1,44 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useShipments, ShipmentStatus, Shipment } from '@/hooks/useShipments';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useShipments, ShipmentStatus } from '@/hooks/useShipments';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import MainLayout from '@/components/MainLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Package,
-  AlertTriangle,
-  Clock,
-  CheckCircle,
-  Truck,
-  FileCheck,
-  Search,
-  ArrowRight,
-  Eye,
-  BarChart3,
-} from 'lucide-react';
-import { format, addDays, isBefore, isAfter } from 'date-fns';
-import AnalyticsCharts from '@/components/dashboard/AnalyticsCharts';
+import { BarChart3, Plus } from 'lucide-react';
+import { addDays } from 'date-fns';
 
-interface TaskWithShipment {
-  id: string;
-  title: string;
-  due_date: string;
-  shipment_id: string;
-  shipment_title: string;
-}
+// Dashboard components
+import KPICards, { KPIData } from '@/components/dashboard/KPICards';
+import StatusCards from '@/components/dashboard/StatusCards';
+import TaskInbox, { TaskItem } from '@/components/dashboard/TaskInbox';
+import ActivityFeed, { ActivityItem } from '@/components/dashboard/ActivityFeed';
+import ShipmentsList from '@/components/dashboard/ShipmentsList';
+import AnalyticsCharts from '@/components/dashboard/AnalyticsCharts';
 
 interface CostData {
   shipment_id: string;
@@ -48,123 +24,175 @@ interface CostData {
   created_at: string;
 }
 
-const STATUS_COLORS: Record<ShipmentStatus, string> = {
-  Planned: 'bg-muted text-muted-foreground',
-  Booked: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  In_Transit: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  Cleared: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  Delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-};
-
-const STATUS_ICONS: Record<ShipmentStatus, React.ComponentType<{ className?: string }>> = {
-  Planned: Clock,
-  Booked: FileCheck,
-  In_Transit: Truck,
-  Cleared: CheckCircle,
-  Delivered: Package,
-};
-
-const STATUS_OPTIONS: ShipmentStatus[] = ['Planned', 'Booked', 'In_Transit', 'Cleared', 'Delivered'];
-
 export default function OpsDashboard() {
   const { language } = useLanguage();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { shipments, loading: shipmentsLoading } = useShipments();
-  const [upcomingTasks, setUpcomingTasks] = useState<TaskWithShipment[]>([]);
+  
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [allCosts, setAllCosts] = useState<CostData[]>([]);
   const [tasksLoading, setTasksLoading] = useState(true);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [costsLoading, setCostsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<ShipmentStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAnalytics, setShowAnalytics] = useState(true);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const t = {
-    title: language === 'ar' ? 'لوحة العمليات' : 'Operations Dashboard',
-    subtitle: language === 'ar' ? 'نظرة عامة على جميع الشحنات والمهام' : 'Overview of all shipments and tasks',
-    shipmentsByStatus: language === 'ar' ? 'الشحنات حسب الحالة' : 'Shipments by Status',
-    attentionNeeded: language === 'ar' ? 'تحتاج انتباه' : 'Needs Attention',
-    upcomingTasks: language === 'ar' ? 'المهام القادمة' : 'Upcoming Tasks',
-    next7Days: language === 'ar' ? 'الأيام 7 القادمة' : 'Next 7 days',
-    filterByStatus: language === 'ar' ? 'تصفية حسب الحالة' : 'Filter by Status',
-    allStatuses: language === 'ar' ? 'جميع الحالات' : 'All Statuses',
-    search: language === 'ar' ? 'بحث...' : 'Search...',
-    noShipments: language === 'ar' ? 'لا توجد شحنات' : 'No shipments found',
-    noTasks: language === 'ar' ? 'لا توجد مهام قادمة' : 'No upcoming tasks',
-    viewDetails: language === 'ar' ? 'عرض' : 'View',
-    openTasks: language === 'ar' ? 'مهام مفتوحة' : 'open tasks',
-    missingDocs: language === 'ar' ? 'مستندات ناقصة' : 'missing docs',
-    analytics: language === 'ar' ? 'التحليلات' : 'Analytics',
+    title: language === 'ar' ? 'مركز العمليات' : 'Operations Command Center',
+    subtitle: language === 'ar' ? 'نظرة عامة شاملة على عملياتك اللوجستية' : 'Complete overview of your logistics operations',
     showAnalytics: language === 'ar' ? 'عرض التحليلات' : 'Show Analytics',
     hideAnalytics: language === 'ar' ? 'إخفاء التحليلات' : 'Hide Analytics',
+    newShipment: language === 'ar' ? 'شحنة جديدة' : 'New Shipment',
   };
 
-  // Fetch upcoming tasks
-  useEffect(() => {
-    const fetchUpcomingTasks = async () => {
-      if (!user) return;
+  // Fetch upcoming tasks with priority mapping
+  const fetchTasks = useCallback(async () => {
+    if (!user) return;
 
-      try {
-        const sevenDaysLater = addDays(new Date(), 7);
-        const { data, error } = await supabase
-          .from('shipment_tasks')
-          .select(`
-            id,
-            title,
-            due_date,
-            shipment_id,
-            shipments!inner(plan_id, shipment_plans(title))
-          `)
-          .eq('user_id', user.id)
-          .eq('status', 'Pending')
-          .not('due_date', 'is', null)
-          .lte('due_date', sevenDaysLater.toISOString().split('T')[0])
-          .order('due_date', { ascending: true });
+    try {
+      const sevenDaysLater = addDays(new Date(), 7);
+      const { data, error } = await supabase
+        .from('shipment_tasks')
+        .select(`
+          id,
+          title,
+          due_date,
+          shipment_id,
+          shipments!inner(plan_id, shipment_plans(title))
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'Pending')
+        .order('due_date', { ascending: true })
+        .limit(10);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        const tasks: TaskWithShipment[] = (data || []).map((t: any) => ({
+      const taskItems: TaskItem[] = (data || []).map((t: any) => {
+        // Determine priority based on due date
+        const dueDate = t.due_date ? new Date(t.due_date) : null;
+        const now = new Date();
+        let priority: TaskItem['priority'] = 'Medium';
+        
+        if (dueDate) {
+          const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (daysUntilDue < 0) priority = 'High';
+          else if (daysUntilDue <= 2) priority = 'High';
+          else if (daysUntilDue <= 5) priority = 'Medium';
+          else priority = 'Low';
+        }
+
+        // Determine type based on title keywords
+        let type: TaskItem['type'] = 'Document';
+        const titleLower = t.title.toLowerCase();
+        if (titleLower.includes('invoice') || titleLower.includes('bill')) type = 'Billing';
+        else if (titleLower.includes('approve') || titleLower.includes('confirm')) type = 'Approval';
+        else if (titleLower.includes('inventory') || titleLower.includes('stock')) type = 'Inventory';
+        else if (titleLower.includes('exception') || titleLower.includes('issue')) type = 'Exception';
+
+        return {
           id: t.id,
           title: t.title,
-          due_date: t.due_date,
-          shipment_id: t.shipment_id,
-          shipment_title: t.shipments?.shipment_plans?.title || 'Unknown Shipment',
-        }));
+          type,
+          priority,
+          dueDate: t.due_date,
+          shipmentId: t.shipment_id,
+          shipmentTitle: t.shipments?.shipment_plans?.title || 'Shipment',
+        };
+      });
 
-        setUpcomingTasks(tasks);
-      } catch (error) {
-        console.error('Error fetching tasks:', error);
-      } finally {
-        setTasksLoading(false);
-      }
-    };
+      // Sort by priority (High first)
+      taskItems.sort((a, b) => {
+        const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      });
 
-    fetchUpcomingTasks();
+      setTasks(taskItems);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    } finally {
+      setTasksLoading(false);
+    }
   }, [user]);
 
-  // Fetch all costs for analytics
+  // Fetch recent activities from audit_log and shipment updates
+  const fetchActivities = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      // Get recent shipment updates as activity items
+      const { data: recentShipments, error: shipmentsError } = await supabase
+        .from('shipments')
+        .select('id, status, updated_at, plan_id, shipment_plans(title)')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+        .limit(10);
+
+      if (shipmentsError) throw shipmentsError;
+
+      const activityItems: ActivityItem[] = (recentShipments || []).map((s: any) => {
+        let tone: ActivityItem['tone'] = 'info';
+        let type: ActivityItem['type'] = 'shipment';
+        
+        if (s.status === 'Delivered') tone = 'success';
+        else if (s.status === 'In_Transit') tone = 'warn';
+
+        return {
+          id: s.id,
+          message: `Shipment ${s.status.replace('_', ' ')}`,
+          meta: s.shipment_plans?.title || 'Unknown shipment',
+          timestamp: s.updated_at,
+          tone,
+          type,
+        };
+      });
+
+      setActivities(activityItems);
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+    } finally {
+      setActivitiesLoading(false);
+    }
+  }, [user]);
+
+  // Fetch all costs for KPIs and analytics
+  const fetchCosts = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('shipment_costs')
+        .select('shipment_id, cost_type, estimate_amount, actual_amount, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setAllCosts(data || []);
+    } catch (error) {
+      console.error('Error fetching costs:', error);
+    } finally {
+      setCostsLoading(false);
+    }
+  }, [user]);
+
   useEffect(() => {
-    const fetchAllCosts = async () => {
-      if (!user) return;
+    fetchTasks();
+    fetchActivities();
+    fetchCosts();
+  }, [fetchTasks, fetchActivities, fetchCosts]);
 
-      try {
-        const { data, error } = await supabase
-          .from('shipment_costs')
-          .select('shipment_id, cost_type, estimate_amount, actual_amount, created_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-        setAllCosts(data || []);
-      } catch (error) {
-        console.error('Error fetching costs:', error);
-      } finally {
-        setCostsLoading(false);
-      }
+  // Calculate KPI data
+  const kpiData: KPIData = useMemo(() => {
+    const totalCosts = allCosts.reduce((sum, c) => sum + (c.actual_amount || c.estimate_amount || 0), 0);
+    
+    return {
+      totalShipments: shipments.length,
+      inTransitCount: shipments.filter(s => s.status === 'In_Transit').length,
+      pendingTasks: tasks.length,
+      totalCosts: Math.round(totalCosts),
     };
-
-    fetchAllCosts();
-  }, [user]);
+  }, [shipments, tasks, allCosts]);
 
   // Calculate status counts
   const statusCounts = useMemo(() => {
@@ -175,9 +203,7 @@ export default function OpsDashboard() {
       Cleared: 0,
       Delivered: 0,
     };
-    shipments.forEach(s => {
-      counts[s.status]++;
-    });
+    shipments.forEach(s => counts[s.status]++);
     return counts;
   }, [shipments]);
 
@@ -185,7 +211,7 @@ export default function OpsDashboard() {
   const filteredShipments = useMemo(() => {
     return shipments.filter(s => {
       const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
-      const matchesSearch = !searchQuery || 
+      const matchesSearch = !searchQuery ||
         s.shipment_state?.origin_country?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.shipment_state?.destination_country?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.shipment_state?.product_category?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -193,242 +219,68 @@ export default function OpsDashboard() {
     });
   }, [shipments, statusFilter, searchQuery]);
 
-  // Shipments needing attention (simplified - would need document/task data for full implementation)
-  const attentionShipments = shipments.filter(s => {
-    // Simple heuristic: Planned for too long or In Transit for too long
-    const daysSinceUpdate = Math.floor((new Date().getTime() - new Date(s.updated_at).getTime()) / (1000 * 60 * 60 * 24));
-    return (s.status === 'Planned' && daysSinceUpdate > 3) || (s.status === 'In_Transit' && daysSinceUpdate > 7);
-  });
+  const isLoading = shipmentsLoading || tasksLoading || costsLoading;
 
   return (
     <MainLayout>
-      <div className="container mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{t.title}</h1>
-          <p className="text-muted-foreground">{t.subtitle}</p>
-        </div>
-
-        {/* Analytics Toggle */}
-        <div className="mb-6">
-          <Button
-            variant="outline"
-            onClick={() => setShowAnalytics(!showAnalytics)}
-            className="gap-2"
-          >
-            <BarChart3 className="h-4 w-4" />
-            {showAnalytics ? t.hideAnalytics : t.showAnalytics}
-          </Button>
-        </div>
-
-        {/* Analytics Charts */}
-        {showAnalytics && (
-          <div className="mb-8">
-            <AnalyticsCharts 
-              shipments={shipments} 
-              costs={allCosts} 
-              loading={shipmentsLoading || costsLoading} 
-            />
+      <div className="container mx-auto py-6 px-4 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">{t.title}</h1>
+            <p className="text-muted-foreground text-sm">{t.subtitle}</p>
           </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAnalytics(!showAnalytics)}
+              className="gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              {showAnalytics ? t.hideAnalytics : t.showAnalytics}
+            </Button>
+          </div>
+        </div>
+
+        {/* KPI Cards */}
+        <KPICards data={kpiData} loading={isLoading} />
+
+        {/* Status Cards */}
+        <StatusCards
+          counts={statusCounts}
+          loading={shipmentsLoading}
+          activeStatus={statusFilter}
+          onStatusClick={setStatusFilter}
+        />
+
+        {/* Analytics Charts (collapsible) */}
+        {showAnalytics && (
+          <AnalyticsCharts
+            shipments={shipments}
+            costs={allCosts}
+            loading={shipmentsLoading || costsLoading}
+          />
         )}
 
-        {/* Status Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          {STATUS_OPTIONS.map(status => {
-            const Icon = STATUS_ICONS[status];
-            return (
-              <Card 
-                key={status} 
-                className={`cursor-pointer transition-all hover:shadow-md ${statusFilter === status ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setStatusFilter(statusFilter === status ? 'all' : status)}
-              >
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">{status.replace('_', ' ')}</p>
-                      <p className="text-3xl font-bold">{statusCounts[status]}</p>
-                    </div>
-                    <Icon className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
+        {/* Main Content Grid */}
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Main Shipments List */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Filters */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder={t.search}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
-                  <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ShipmentStatus | 'all')}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder={t.filterByStatus} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t.allStatuses}</SelectItem>
-                      {STATUS_OPTIONS.map(status => (
-                        <SelectItem key={status} value={status}>
-                          {status.replace('_', ' ')}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Shipments List */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  {language === 'ar' ? 'الشحنات' : 'Shipments'} ({filteredShipments.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {shipmentsLoading ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
-                  </div>
-                ) : filteredShipments.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">{t.noShipments}</p>
-                ) : (
-                  <div className="space-y-3">
-                    {filteredShipments.map(shipment => (
-                      <div
-                        key={shipment.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <Badge className={STATUS_COLORS[shipment.status]}>
-                            {shipment.status.replace('_', ' ')}
-                          </Badge>
-                          <div>
-                            <div className="flex items-center gap-2 font-medium">
-                              <span>{shipment.shipment_state?.origin_country || '—'}</span>
-                              <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                              <span>{shipment.shipment_state?.destination_country || '—'}</span>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {shipment.shipment_state?.product_category || '—'}
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate(`/shipments/${shipment.id}`)}
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          {t.viewDetails}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {/* Shipments List - 2 columns */}
+          <div className="lg:col-span-2">
+            <ShipmentsList
+              shipments={filteredShipments}
+              loading={shipmentsLoading}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar - 1 column */}
           <div className="space-y-6">
-            {/* Attention Needed */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
-                  {t.attentionNeeded}
-                  {attentionShipments.length > 0 && (
-                    <Badge className="bg-orange-100 text-orange-800">
-                      {attentionShipments.length}
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {attentionShipments.length === 0 ? (
-                  <div className="text-center py-6">
-                    <CheckCircle className="h-8 w-8 mx-auto text-green-500 mb-2" />
-                    <p className="text-muted-foreground">All clear!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {attentionShipments.slice(0, 5).map(shipment => (
-                      <div
-                        key={shipment.id}
-                        className="p-3 border border-orange-200 bg-orange-50 dark:bg-orange-950/30 dark:border-orange-900 rounded-lg cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-950/50"
-                        onClick={() => navigate(`/shipments/${shipment.id}`)}
-                      >
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                          <span>{shipment.shipment_state?.origin_country}</span>
-                          <ArrowRight className="h-3 w-3" />
-                          <span>{shipment.shipment_state?.destination_country}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {shipment.status.replace('_', ' ')} • Updated {format(new Date(shipment.updated_at), 'MMM d')}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Upcoming Tasks */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  {t.upcomingTasks}
-                  <span className="text-sm font-normal text-muted-foreground">({t.next7Days})</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {tasksLoading ? (
-                  <div className="space-y-2">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
-                  </div>
-                ) : upcomingTasks.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-6">{t.noTasks}</p>
-                ) : (
-                  <div className="space-y-3">
-                    {upcomingTasks.map(task => {
-                      const isOverdue = isBefore(new Date(task.due_date), new Date());
-                      return (
-                        <div
-                          key={task.id}
-                          className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                            isOverdue 
-                              ? 'border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900 hover:bg-red-100'
-                              : 'hover:bg-muted/50'
-                          }`}
-                          onClick={() => navigate(`/shipments/${task.shipment_id}`)}
-                        >
-                          <p className="font-medium text-sm">{task.title}</p>
-                          <div className="flex items-center justify-between mt-1">
-                            <p className="text-xs text-muted-foreground">{task.shipment_title}</p>
-                            <Badge variant={isOverdue ? 'destructive' : 'secondary'} className="text-xs">
-                              {format(new Date(task.due_date), 'MMM d')}
-                            </Badge>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <TaskInbox tasks={tasks} loading={tasksLoading} />
+            <ActivityFeed activities={activities} loading={activitiesLoading} />
           </div>
         </div>
       </div>
