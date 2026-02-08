@@ -33,7 +33,7 @@ const FeaturesSection = () => {
         ? 'تتبع كل شحنة في الوقت الفعلي عبر دورة حياة التسليم بأكملها.'
         : 'Track every shipment in real-time across the entire delivery lifecycle with status management.',
       color: "bg-orange-500/10 text-orange-500",
-      link: "/shipments",
+      link: "/saas/shipments",
     },
     {
       icon: Warehouse,
@@ -51,25 +51,25 @@ const FeaturesSection = () => {
         ? 'أنشئ الفواتير تلقائياً وتتبع المدفوعات وأدر التدفق النقدي بسهولة.'
         : 'Generate invoices automatically, track payments, and manage cash flow with ease.',
       color: "bg-green-500/10 text-green-500",
-      link: "/erp/invoices",
+      link: "/saas/invoices",
     },
     {
       icon: BarChart3,
-      title: language === 'ar' ? 'التحليلات والتقارير' : 'Analytics & Reports',
+      title: language === 'ar' ? 'لوحة القيادة' : 'Dashboard',
       description: language === 'ar'
         ? 'احصل على رؤى قابلة للتنفيذ مع لوحات معلومات قوية وتحليلات تنبؤية.'
         : 'Gain actionable insights with powerful dashboards and operational analytics.',
       color: "bg-blue-500/10 text-blue-500",
-      link: "/dashboard",
+      link: "/saas/dashboard",
     },
     {
       icon: Users,
-      title: language === 'ar' ? 'إدارة العملاء' : 'Customer Management',
+      title: language === 'ar' ? 'إدارة العملاء' : 'Client Management',
       description: language === 'ar'
         ? 'أدر قاعدة عملائك مع سجلات كاملة وتتبع العناوين والتواصل.'
-        : 'Manage your customer base with complete records, address tracking, and communication.',
+        : 'Manage your clients and vendors with complete records, address tracking, and communication.',
       color: "bg-pink-500/10 text-pink-500",
-      link: "/erp/customers",
+      link: "/saas/clients",
     },
     {
       icon: BookOpen,
