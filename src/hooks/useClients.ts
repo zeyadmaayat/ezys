@@ -121,12 +121,27 @@ export function useClients() {
 
   const deleteClient = async (id: string): Promise<boolean> => {
     try {
+      // Fetch old data before delete for audit
+      const { data: oldData } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { error } = await supabase
         .from('clients')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
+
+      // Log audit event for deletion
+      await supabase.rpc('log_audit_event', {
+        p_action: 'DELETE',
+        p_entity_type: 'client',
+        p_entity_id: id,
+        p_old_values: oldData ? JSON.parse(JSON.stringify(oldData)) : null,
+      });
 
       toast.success('Client deleted');
       await fetchClients();
