@@ -9,7 +9,7 @@ import { BarChart3, Plus } from 'lucide-react';
 import { addDays } from 'date-fns';
 
 // Dashboard components
-import KPICards, { KPIData } from '@/components/dashboard/KPICards';
+import KPICards, { KPIItem } from '@/components/dashboard/KPICards';
 import StatusCards from '@/components/dashboard/StatusCards';
 import TaskInbox, { TaskItem } from '@/components/dashboard/TaskInbox';
 import ActivityFeed, { ActivityItem } from '@/components/dashboard/ActivityFeed';
@@ -183,16 +183,28 @@ export default function OpsDashboard() {
   }, [fetchTasks, fetchActivities, fetchCosts]);
 
   // Calculate KPI data
-  const kpiData: KPIData = useMemo(() => {
+  const kpis: KPIItem[] = useMemo(() => {
     const totalCosts = allCosts.reduce((sum, c) => sum + (c.actual_amount || c.estimate_amount || 0), 0);
     
-    return {
-      totalShipments: shipments.length,
-      inTransitCount: shipments.filter(s => s.status === 'In_Transit').length,
-      pendingTasks: tasks.length,
-      totalCosts: Math.round(totalCosts),
-    };
-  }, [shipments, tasks, allCosts]);
+    return [
+      {
+        label: language === 'ar' ? 'إجمالي الشحنات' : 'Total Shipments',
+        value: shipments.length,
+      },
+      {
+        label: language === 'ar' ? 'في الطريق' : 'In Transit',
+        value: shipments.filter(s => s.status === 'In_Transit').length,
+      },
+      {
+        label: language === 'ar' ? 'مهام معلقة' : 'Pending Tasks',
+        value: tasks.length,
+      },
+      {
+        label: language === 'ar' ? 'إجمالي التكاليف' : 'Total Costs',
+        value: `$${Math.round(totalCosts).toLocaleString()}`,
+      },
+    ];
+  }, [shipments, tasks, allCosts, language]);
 
   // Calculate status counts
   const statusCounts = useMemo(() => {
@@ -244,7 +256,7 @@ export default function OpsDashboard() {
         </div>
 
         {/* KPI Cards */}
-        <KPICards data={kpiData} loading={isLoading} />
+        <KPICards kpis={kpis} loading={isLoading} />
 
         {/* Status Cards */}
         <StatusCards
