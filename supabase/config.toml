@@ -1,1 +1,4 @@
 project_id = "zzwhshjevftnlrcewzas"
+
+[functions.logistics-assistant]
+verify_jwt = false
