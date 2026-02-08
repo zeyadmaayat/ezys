@@ -1,16 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from './useCompany';
 import { toast } from 'sonner';
 import type { Location, LocationType } from '@/types/erp';
 
 export function useLocations() {
   const { user } = useAuth();
+  const { company } = useCompany();
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchLocations = useCallback(async () => {
-    if (!user) return;
+    if (!user || !company) {
+      setLocations([]);
+      setLoading(false);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -27,11 +33,11 @@ export function useLocations() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, company]);
 
   const createLocation = async (location: Partial<Location>): Promise<Location | null> => {
-    if (!user) {
-      toast.error('You must be logged in');
+    if (!user || !company) {
+      toast.error('You must be logged in with a company');
       return null;
     }
 
@@ -47,6 +53,7 @@ export function useLocations() {
           state: location.state,
           postal_code: location.postal_code,
           country: location.country || 'SA',
+          company_id: company.id,
         })
         .select()
         .single();

@@ -1,16 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from './useCompany';
 import { toast } from 'sonner';
 import type { Invoice, InvoiceItem, InvoiceStatus } from '@/types/erp';
 
 export function useInvoices() {
   const { user } = useAuth();
+  const { company } = useCompany();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchInvoices = useCallback(async () => {
-    if (!user) return;
+    if (!user || !company) {
+      setInvoices([]);
+      setLoading(false);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -30,14 +36,14 @@ export function useInvoices() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, company]);
 
   const createInvoice = async (
     invoice: Partial<Invoice>,
     items: Omit<InvoiceItem, 'id' | 'invoice_id' | 'created_at'>[]
   ): Promise<Invoice | null> => {
-    if (!user) {
-      toast.error('You must be logged in');
+    if (!user || !company) {
+      toast.error('You must be logged in with a company');
       return null;
     }
 
@@ -61,6 +67,7 @@ export function useInvoices() {
         notes: invoice.notes || null,
         created_by: user.id,
         invoice_number: '', // Will be set by trigger
+        company_id: company.id,
       };
       
       const { data: invoiceData, error: invoiceError } = await supabase

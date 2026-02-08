@@ -1,17 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from './useCompany';
 import { toast } from 'sonner';
 import type { Order, OrderItem, OrderStatus } from '@/types/erp';
 import type { Json } from '@/integrations/supabase/types';
 
 export function useOrders() {
   const { user } = useAuth();
+  const { company } = useCompany();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = useCallback(async () => {
-    if (!user) return;
+    if (!user || !company) {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -33,14 +39,14 @@ export function useOrders() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, company]);
 
   const createOrder = async (
     order: Partial<Order>,
     items: Omit<OrderItem, 'id' | 'order_id' | 'created_at'>[]
   ): Promise<Order | null> => {
-    if (!user) {
-      toast.error('You must be logged in');
+    if (!user || !company) {
+      toast.error('You must be logged in with a company');
       return null;
     }
 
@@ -57,6 +63,7 @@ export function useOrders() {
         requested_date: order.requested_date || null,
         created_by: user.id,
         order_number: '',
+        company_id: company.id,
       };
       
       const { data: orderData, error: orderError } = await supabase
