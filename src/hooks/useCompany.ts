@@ -56,33 +56,41 @@ export function useCompany() {
     }
 
     try {
-      // Create company
-      const { data: newCompany, error: companyError } = await supabase
+      // Create company - trigger will auto-assign admin role and link profile
+      const { error: companyError } = await supabase
         .from('companies')
-        .insert({ name })
-        .select()
-        .single();
+        .insert({ name });
 
       if (companyError) throw companyError;
 
-      // Link user to company
-      const { error: profileError } = await supabase
+      // Wait briefly for trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Fetch the newly created company via updated profile
+      const { data: profile } = await supabase
         .from('profiles')
-        .update({ company_id: newCompany.id })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-
-      // Grant admin role to company creator
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .upsert({ user_id: user.id, role: 'admin' }, { onConflict: 'user_id,role' });
-
-      if (roleError) console.warn('Role assignment warning:', roleError);
-
+        .select('company_id')
+        .eq('id', user.id)
+        .single();
+      
+      if (profile?.company_id) {
+        const { data: newCompany } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('id', profile.company_id)
+          .single();
+        
+        if (newCompany) {
+          setCompany(newCompany as Company);
+          toast.success('Company created successfully');
+          return newCompany as Company;
+        }
+      }
+      
+      // Fallback: refetch normally
+      await fetchCompany();
       toast.success('Company created successfully');
-      setCompany(newCompany as Company);
-      return newCompany as Company;
+      return company;
     } catch (error: unknown) {
       console.error('Error creating company:', error);
       toast.error('Failed to create company');
