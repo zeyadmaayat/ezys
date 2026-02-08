@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/MainLayout';
 import { useWarehouses } from '@/hooks/useWarehouses';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
+import { RequireRole, RoleBadge } from '@/components/auth/RequireRole';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +17,7 @@ import { CreateWarehouseInput } from '@/types/saas-erp';
 export default function WarehousesPage() {
   const navigate = useNavigate();
   const { warehouses, loading, createWarehouse, updateWarehouse, deleteWarehouse } = useWarehouses();
+  const { canManageWarehouses } = useCurrentUserRoles();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -66,14 +69,22 @@ export default function WarehousesPage() {
             <h1 className="text-2xl font-bold">Warehouses</h1>
             <p className="text-muted-foreground">Manage your storage locations</p>
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Warehouse
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          {/* Only Admin/Warehouse can manage warehouses */}
+          <RequireRole 
+            roles={['admin', 'warehouse']} 
+            fallback={
+              <RoleBadge roles={['admin', 'warehouse']} className="ml-2" />
+            }
+            hideWhenForbidden={false}
+          >
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Warehouse
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add Warehouse</DialogTitle>
                 <DialogDescription>
@@ -137,6 +148,7 @@ export default function WarehousesPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </RequireRole>
         </div>
 
         <Card>
@@ -178,22 +190,28 @@ export default function WarehousesPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button 
-                            size="icon" 
-                            variant="ghost"
-                            onClick={() => updateWarehouse(wh.id, { is_active: !wh.is_active })}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            size="icon" 
-                            variant="ghost"
-                            onClick={() => handleDelete(wh.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
+                        <RequireRole 
+                          roles={['admin', 'warehouse']}
+                          fallback={<span className="text-xs text-muted-foreground">View only</span>}
+                          hideWhenForbidden={false}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              size="icon" 
+                              variant="ghost"
+                              onClick={() => updateWarehouse(wh.id, { is_active: !wh.is_active })}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              size="icon" 
+                              variant="ghost"
+                              onClick={() => handleDelete(wh.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </RequireRole>
                       </TableCell>
                     </TableRow>
                   ))}
