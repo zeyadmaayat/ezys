@@ -1,13 +1,14 @@
+// src/components/dashboard/KPICards.tsx
 import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowDown, ArrowUp, ClipboardList, DollarSign, Truck, Package } from "lucide-react";
+import { ArrowDown, ArrowUp, ClipboardList, DollarSign, Package, Truck } from "lucide-react";
 
 export type KPIItem = {
   label: string;
   value: string | number;
-  delta?: number; // percentage delta (+/-)
+  delta?: number; // percentage (+/-)
   icon?: React.ComponentType<{ className?: string }>;
 };
 
@@ -78,6 +79,11 @@ export default function KPICards({ kpis, loading }: Props) {
                 </span>
               )}
             </div>
+
+            {/* optional localized helper text if you want later */}
+            {/* <p className="text-xs text-muted-foreground mt-2">
+              {language === "ar" ? "مقارنة بالفترة السابقة" : "vs previous period"}
+            </p> */}
           </Card>
         );
       })}
