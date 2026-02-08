@@ -145,12 +145,27 @@ export function useInvoicesV2() {
 
   const deleteInvoice = async (id: string): Promise<boolean> => {
     try {
+      // Fetch old data before delete for audit
+      const { data: oldData } = await supabase
+        .from('invoices_v2')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { error } = await supabase
         .from('invoices_v2')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
+
+      // Log audit event for deletion
+      await supabase.rpc('log_audit_event', {
+        p_action: 'DELETE',
+        p_entity_type: 'invoice',
+        p_entity_id: id,
+        p_old_values: oldData ? JSON.parse(JSON.stringify(oldData)) : null,
+      });
 
       toast.success('Invoice deleted');
       await fetchInvoices();

@@ -30,6 +30,8 @@ const actionColors: Record<string, string> = {
   DELETE: 'bg-red-100 text-red-800',
   STATUS_UPDATE: 'bg-orange-100 text-orange-800',
   LOGIN: 'bg-purple-100 text-purple-800',
+  ROLE_ASSIGN: 'bg-indigo-100 text-indigo-800',
+  ROLE_REMOVE: 'bg-pink-100 text-pink-800',
 };
 
 export default function AuditLogViewer() {

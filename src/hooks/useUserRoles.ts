@@ -80,6 +80,14 @@ export function useUserRoles() {
         }
         throw error;
       }
+
+      // Log audit event for role assignment
+      await supabase.rpc('log_audit_event', {
+        p_action: 'ROLE_ASSIGN',
+        p_entity_type: 'user_role',
+        p_entity_id: userId,
+        p_new_values: { user_id: userId, role },
+      });
       
       toast.success('Role assigned');
       await fetchUsers();
@@ -105,6 +113,14 @@ export function useUserRoles() {
         .eq('role', role);
 
       if (error) throw error;
+
+      // Log audit event for role removal
+      await supabase.rpc('log_audit_event', {
+        p_action: 'ROLE_REMOVE',
+        p_entity_type: 'user_role',
+        p_entity_id: userId,
+        p_old_values: { user_id: userId, role },
+      });
       
       toast.success('Role removed');
       await fetchUsers();
