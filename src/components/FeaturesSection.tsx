@@ -7,7 +7,8 @@ import {
   Users,
   Clock,
   ShieldCheck,
-  ArrowRight
+  ArrowRight,
+  BookOpen
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
@@ -69,6 +70,15 @@ const FeaturesSection = () => {
         : 'Manage your customer base with complete records, address tracking, and communication.',
       color: "bg-pink-500/10 text-pink-500",
       link: "/erp/customers",
+    },
+    {
+      icon: BookOpen,
+      title: language === 'ar' ? 'أدوات التدريب' : 'Training Tools',
+      description: language === 'ar'
+        ? 'تدرب على سيناريوهات اللوجستيات الحقيقية باستخدام محاكاة تفاعلية وخطط عمل عملية.'
+        : 'Train on real logistics scenarios with interactive simulations and practical action plans.',
+      color: "bg-indigo-500/10 text-indigo-500",
+      link: "/tools",
     },
   ];
 
