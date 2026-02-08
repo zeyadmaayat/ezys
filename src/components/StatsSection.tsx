@@ -1,15 +1,33 @@
 import { useEffect, useState, useRef } from "react";
-
-const stats = [
-  { value: 2500, suffix: "+", label: "Companies Trust Us" },
-  { value: 50, suffix: "M+", label: "Shipments Tracked" },
-  { value: 99.9, suffix: "%", label: "Platform Uptime" },
-  { value: 150, suffix: "+", label: "Countries Covered" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const StatsSection = () => {
+  const { language } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  const stats = [
+    { 
+      value: 2500, 
+      suffix: "+", 
+      label: language === 'ar' ? 'شركة تثق بنا' : 'Companies Trust Us' 
+    },
+    { 
+      value: 50, 
+      suffix: "M+", 
+      label: language === 'ar' ? 'شحنة تم تتبعها' : 'Shipments Tracked' 
+    },
+    { 
+      value: 99.9, 
+      suffix: "%", 
+      label: language === 'ar' ? 'وقت تشغيل المنصة' : 'Platform Uptime' 
+    },
+    { 
+      value: 150, 
+      suffix: "+", 
+      label: language === 'ar' ? 'دولة مغطاة' : 'Countries Covered' 
+    },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(

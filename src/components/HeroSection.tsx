@@ -1,7 +1,34 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, TrendingUp, Truck, MapPin } from "lucide-react";
+import { ArrowRight, Play, TrendingUp, Truck, MapPin, Package, FileText, Users } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
+  const { language, isRTL } = useLanguage();
+  const ArrowIcon = isRTL ? ArrowRight : ArrowRight;
+
+  const t = {
+    badge: language === 'ar' ? 'موثوق من قبل +2,500 شركة لوجستية' : 'Trusted by 2,500+ logistics companies',
+    title1: language === 'ar' ? 'منصة' : 'Enterprise',
+    titleHighlight: language === 'ar' ? 'لوجستية متكاملة' : 'Logistics Platform',
+    title2: language === 'ar' ? 'للمؤسسات' : 'for Modern Supply Chains',
+    subtitle: language === 'ar' 
+      ? 'منصة لوجستية شاملة تساعدك على تتبع وإدارة وتحسين سلسلة التوريد بأكملها مع رؤية فورية وتحليلات قوية.'
+      : 'The all-in-one logistics ERP that helps you manage orders, shipments, inventory, and billing with real-time visibility and powerful analytics.',
+    getStarted: language === 'ar' ? 'ابدأ الآن' : 'Get Started',
+    watchDemo: language === 'ar' ? 'شاهد العرض' : 'Watch Demo',
+    trustedBy: language === 'ar' ? 'موثوق من قادة الصناعة' : 'Trusted by industry leaders',
+    liveTracking: language === 'ar' ? 'التتبع المباشر' : 'Live Dashboard',
+    activeShipments: language === 'ar' ? '24 شحنة نشطة' : '24 active shipments',
+    live: language === 'ar' ? 'مباشر' : 'Live',
+    inTransit: language === 'ar' ? 'في الطريق' : 'In Transit',
+    delivered: language === 'ar' ? 'تم التسليم' : 'Delivered',
+    onTime: language === 'ar' ? 'في الوقت' : 'On Time',
+    efficiency: language === 'ar' ? 'الكفاءة' : 'Efficiency',
+    shipment: language === 'ar' ? 'شحنة #4521' : 'Shipment #4521',
+    arriving: language === 'ar' ? 'يصل خلال ساعتين' : 'Arriving in 2h',
+  };
+
   return (
     <section className="relative min-h-screen bg-hero overflow-hidden pt-16">
       {/* Background Pattern */}
@@ -19,79 +46,102 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
-          <div className="text-center lg:text-left">
+          <div className={`text-center lg:text-${isRTL ? 'right' : 'left'}`}>
             <div className="inline-flex items-center gap-2 bg-accent/20 text-accent-foreground/90 px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
               <TrendingUp className="w-4 h-4 text-accent" />
-              <span className="text-primary-foreground">Trusted by 2,500+ logistics companies</span>
+              <span className="text-primary-foreground">{t.badge}</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground leading-tight mb-6 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              Streamline Your{" "}
-              <span className="text-gradient">Supply Chain</span>{" "}
-              Operations
+              {t.title1}{" "}
+              <span className="text-gradient">{t.titleHighlight}</span>{" "}
+              {t.title2}
             </h1>
             
-            <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-              The all-in-one logistics platform that helps you track, manage, and optimize your entire supply chain with real-time visibility and powerful analytics.
+            <p className={`text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-xl ${isRTL ? 'mr-0 ml-auto lg:ml-0' : 'mx-auto lg:mx-0'} animate-fade-up`} style={{ animationDelay: "0.3s" }}>
+              {t.subtitle}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-up" style={{ animationDelay: "0.4s" }}>
-              <Button variant="hero" size="xl" className="group">
-                Start Free Trial
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-${isRTL ? 'end' : 'start'} animate-fade-up`} style={{ animationDelay: "0.4s" }}>
+              <Button variant="hero" size="xl" className="group" asChild>
+                <Link to="/auth">
+                  {t.getStarted}
+                  <ArrowIcon className={`w-5 h-5 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-transform`} />
+                </Link>
               </Button>
-              <Button variant="heroOutline" size="xl" className="group">
-                <Play className="w-5 h-5" />
-                Watch Demo
+              <Button variant="heroOutline" size="xl" className="group" asChild>
+                <Link to="/categories">
+                  <Play className="w-5 h-5" />
+                  {t.watchDemo}
+                </Link>
               </Button>
             </div>
 
             {/* Trust Indicators */}
             <div className="mt-12 pt-8 border-t border-primary-foreground/10 animate-fade-up" style={{ animationDelay: "0.5s" }}>
-              <p className="text-primary-foreground/50 text-sm mb-4">Trusted by industry leaders</p>
-              <div className="flex items-center gap-8 justify-center lg:justify-start opacity-60">
+              <p className="text-primary-foreground/50 text-sm mb-4">{t.trustedBy}</p>
+              <div className={`flex items-center gap-8 justify-center lg:justify-${isRTL ? 'end' : 'start'} opacity-60`}>
+                <span className="text-primary-foreground font-bold text-lg">Aramex</span>
                 <span className="text-primary-foreground font-bold text-lg">DHL</span>
-                <span className="text-primary-foreground font-bold text-lg">FedEx</span>
-                <span className="text-primary-foreground font-bold text-lg">UPS</span>
                 <span className="text-primary-foreground font-bold text-lg">Maersk</span>
+                <span className="text-primary-foreground font-bold text-lg hidden sm:block">NAQEL</span>
               </div>
             </div>
           </div>
 
           {/* Right Content - Dashboard Preview */}
           <div className="relative animate-fade-up" style={{ animationDelay: "0.6s" }}>
-            <div className="relative z-10 bg-card/90 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-border">
+            <div className="relative z-10 bg-card/95 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-border">
               {/* Dashboard Header */}
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="font-bold text-foreground">Live Tracking</h3>
-                  <p className="text-sm text-muted-foreground">24 active shipments</p>
+                  <h3 className="font-bold text-foreground">{t.liveTracking}</h3>
+                  <p className="text-sm text-muted-foreground">{t.activeShipments}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-sm text-muted-foreground">Live</span>
+                  <span className="text-sm text-muted-foreground">{t.live}</span>
                 </div>
               </div>
 
-              {/* Map Placeholder */}
-              <div className="relative h-48 bg-muted rounded-xl mb-6 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-navy/5 to-transparent" />
-                {/* Animated Route Points */}
-                <div className="absolute top-8 left-8 w-4 h-4 bg-accent rounded-full shadow-glow animate-pulse" />
-                <div className="absolute top-16 left-24 w-3 h-3 bg-orange-light rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
-                <div className="absolute top-12 right-20 w-4 h-4 bg-accent rounded-full shadow-glow animate-pulse" style={{ animationDelay: "1s" }} />
-                <div className="absolute bottom-12 right-12 w-3 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: "0.3s" }} />
-                
-                {/* Route Lines */}
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 200">
-                  <path 
-                    d="M 40 40 Q 100 80 160 70 T 280 50 T 350 100" 
-                    fill="none" 
-                    stroke="hsl(25 95% 53% / 0.4)" 
-                    strokeWidth="2"
-                    strokeDasharray="8,4"
-                  />
-                </svg>
+              {/* Mini Dashboard Grid */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-secondary/50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Package className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-sm text-muted-foreground">Orders</span>
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">142</p>
+                </div>
+                <div className="bg-secondary/50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                      <Truck className="w-4 h-4 text-orange-500" />
+                    </div>
+                    <span className="text-sm text-muted-foreground">{t.inTransit}</span>
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">38</p>
+                </div>
+                <div className="bg-secondary/50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+                      <MapPin className="w-4 h-4 text-green-500" />
+                    </div>
+                    <span className="text-sm text-muted-foreground">{t.delivered}</span>
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">1,847</p>
+                </div>
+                <div className="bg-secondary/50 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-blue-500" />
+                    </div>
+                    <span className="text-sm text-muted-foreground">Invoices</span>
+                  </div>
+                  <p className="text-2xl font-bold text-foreground">$24K</p>
+                </div>
               </div>
 
               {/* Stats Row */}
@@ -99,17 +149,17 @@ const HeroSection = () => {
                 <div className="bg-secondary rounded-lg p-3 text-center">
                   <Truck className="w-5 h-5 mx-auto mb-1 text-accent" />
                   <p className="text-lg font-bold text-foreground">847</p>
-                  <p className="text-xs text-muted-foreground">In Transit</p>
+                  <p className="text-xs text-muted-foreground">{t.inTransit}</p>
                 </div>
                 <div className="bg-secondary rounded-lg p-3 text-center">
                   <MapPin className="w-5 h-5 mx-auto mb-1 text-green-500" />
                   <p className="text-lg font-bold text-foreground">1,234</p>
-                  <p className="text-xs text-muted-foreground">Delivered</p>
+                  <p className="text-xs text-muted-foreground">{t.delivered}</p>
                 </div>
                 <div className="bg-secondary rounded-lg p-3 text-center">
                   <TrendingUp className="w-5 h-5 mx-auto mb-1 text-blue-500" />
                   <p className="text-lg font-bold text-foreground">98.5%</p>
-                  <p className="text-xs text-muted-foreground">On Time</p>
+                  <p className="text-xs text-muted-foreground">{t.onTime}</p>
                 </div>
               </div>
             </div>
@@ -122,7 +172,7 @@ const HeroSection = () => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">+23%</p>
-                  <p className="text-xs text-muted-foreground">Efficiency</p>
+                  <p className="text-xs text-muted-foreground">{t.efficiency}</p>
                 </div>
               </div>
             </div>
@@ -133,8 +183,8 @@ const HeroSection = () => {
                   <Truck className="w-5 h-5 text-accent" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Shipment #4521</p>
-                  <p className="text-xs text-muted-foreground">Arriving in 2h</p>
+                  <p className="text-sm font-semibold text-foreground">{t.shipment}</p>
+                  <p className="text-xs text-muted-foreground">{t.arriving}</p>
                 </div>
               </div>
             </div>
@@ -144,7 +194,7 @@ const HeroSection = () => {
 
       {/* Bottom Wave */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" className="w-full">
+        <svg viewBox="0 0 1440 120" fill="none" className="w-full" style={{ transform: isRTL ? 'scaleX(-1)' : 'none' }}>
           <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="hsl(var(--background))" />
         </svg>
       </div>
