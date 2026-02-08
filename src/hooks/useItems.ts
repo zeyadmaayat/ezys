@@ -1,17 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from './useCompany';
 import { toast } from 'sonner';
 import type { Item } from '@/types/erp';
 import type { Json } from '@/integrations/supabase/types';
 
 export function useItems() {
   const { user } = useAuth();
+  const { company } = useCompany();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchItems = useCallback(async () => {
-    if (!user) return;
+    if (!user || !company) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -28,11 +34,11 @@ export function useItems() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, company]);
 
   const createItem = async (item: Partial<Item>): Promise<Item | null> => {
-    if (!user) {
-      toast.error('You must be logged in');
+    if (!user || !company) {
+      toast.error('You must be logged in with a company');
       return null;
     }
 
@@ -47,6 +53,7 @@ export function useItems() {
           barcode: item.barcode || null,
           weight_kg: item.weight_kg || null,
           dimensions: (item.dimensions || {}) as Json,
+          company_id: company.id,
         })
         .select()
         .single();

@@ -1,17 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from './useCompany';
 import { toast } from 'sonner';
 import type { Customer, CustomerAddress } from '@/types/erp';
 import type { Json } from '@/integrations/supabase/types';
 
 export function useCustomers() {
   const { user } = useAuth();
+  const { company } = useCompany();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchCustomers = useCallback(async () => {
-    if (!user) return;
+    if (!user || !company) {
+      setCustomers([]);
+      setLoading(false);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -28,11 +34,11 @@ export function useCustomers() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, company]);
 
   const createCustomer = async (customer: Partial<Customer>): Promise<Customer | null> => {
-    if (!user) {
-      toast.error('You must be logged in');
+    if (!user || !company) {
+      toast.error('You must be logged in with a company');
       return null;
     }
 
@@ -45,6 +51,7 @@ export function useCustomers() {
           email: customer.email || null,
           billing_address: (customer.billing_address || {}) as Json,
           created_by: user.id,
+          company_id: company.id,
         })
         .select()
         .single();

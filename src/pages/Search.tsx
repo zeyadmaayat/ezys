@@ -35,7 +35,9 @@ const Search = () => {
 
   useEffect(() => {
     const searchData = async () => {
-      if (!query.trim()) {
+      // Input validation: limit query length and reject empty queries
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery || trimmedQuery.length > 200) {
         setTopics([]);
         setAbbreviations([]);
         setLoading(false);
@@ -44,7 +46,9 @@ const Search = () => {
 
       setLoading(true);
 
-      const searchTerm = `%${query}%`;
+      // Escape special ILIKE characters for safety
+      const sanitizedQuery = trimmedQuery.replace(/[%_]/g, '\\$&');
+      const searchTerm = `%${sanitizedQuery}%`;
 
       // Search topics
       const { data: topicsData } = await supabase
