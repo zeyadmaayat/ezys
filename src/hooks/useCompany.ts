@@ -56,17 +56,18 @@ export function useCompany() {
     }
 
     try {
-      const { data, error } = await supabase
-        .rpc('create_company_and_assign_admin', { _name: name });
+      const { data, error } = await supabase.rpc('create_company_and_assign_admin', {
+        _name: name,
+      });
 
       if (error) throw error;
 
-      const newCompany = data as unknown as Company;
+      const newCompany = data as Company;
       setCompany(newCompany);
       toast.success('Company created successfully');
       return newCompany;
-    } catch (error: unknown) {
-      console.error('Error creating company:', error);
+    } catch (err) {
+      console.error('Error creating company:', err);
       toast.error('Failed to create company');
       return null;
     }
