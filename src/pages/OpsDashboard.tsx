@@ -222,7 +222,7 @@ export default function OpsDashboard() {
     });
   }, [shipments, statusFilter, searchQuery]);
 
-  const isLoading = shipmentsLoading || tasksLoading || costsLoading;
+  const isLoading = shipmentsLoading || tasksLoading || activitiesLoading || costsLoading;
 
   return (
     <MainLayout>
