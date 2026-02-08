@@ -1380,6 +1380,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_company_and_assign_admin: {
+        Args: { _name: string }
+        Returns: {
+          created_at: string
+          id: string
+          is_active: boolean
+          logo: string | null
+          name: string
+          plan: Database["public"]["Enums"]["company_plan"]
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "companies"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       get_user_company_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
