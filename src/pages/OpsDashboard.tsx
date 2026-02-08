@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import MainLayout from '@/components/MainLayout';
 import { Button } from '@/components/ui/button';
-import { BarChart3, Plus } from 'lucide-react';
+import { BarChart3, Package, Truck, ClipboardList, DollarSign } from 'lucide-react';
 import { addDays } from 'date-fns';
 
 // Dashboard components
@@ -183,28 +183,19 @@ export default function OpsDashboard() {
   }, [fetchTasks, fetchActivities, fetchCosts]);
 
   // Calculate KPI data
-  const kpis: KPIItem[] = useMemo(() => {
-    const totalCosts = allCosts.reduce((sum, c) => sum + (c.actual_amount || c.estimate_amount || 0), 0);
-    
-    return [
-      {
-        label: language === 'ar' ? 'إجمالي الشحنات' : 'Total Shipments',
-        value: shipments.length,
-      },
-      {
-        label: language === 'ar' ? 'في الطريق' : 'In Transit',
-        value: shipments.filter(s => s.status === 'In_Transit').length,
-      },
-      {
-        label: language === 'ar' ? 'مهام معلقة' : 'Pending Tasks',
-        value: tasks.length,
-      },
-      {
-        label: language === 'ar' ? 'إجمالي التكاليف' : 'Total Costs',
-        value: `$${Math.round(totalCosts).toLocaleString()}`,
-      },
-    ];
-  }, [shipments, tasks, allCosts, language]);
+  const inTransitCount = shipments.filter((s) => s.status === 'In_Transit').length;
+  const totalCostsNumber = allCosts.reduce((sum, c) => sum + (c.actual_amount || c.estimate_amount || 0), 0) || 0;
+
+  const kpis: KPIItem[] = useMemo(() => [
+    { label: language === 'ar' ? 'إجمالي الشحنات' : 'Total Shipments', value: shipments.length, icon: Package },
+    { label: language === 'ar' ? 'في الطريق' : 'In Transit', value: inTransitCount, icon: Truck },
+    { label: language === 'ar' ? 'مهام معلقة' : 'Pending Tasks', value: tasks.length, icon: ClipboardList },
+    {
+      label: language === 'ar' ? 'إجمالي التكاليف' : 'Total Costs',
+      value: `JOD ${Math.round(totalCostsNumber).toLocaleString()}`,
+      icon: DollarSign,
+    },
+  ], [shipments.length, inTransitCount, tasks.length, totalCostsNumber, language]);
 
   // Calculate status counts
   const statusCounts = useMemo(() => {
