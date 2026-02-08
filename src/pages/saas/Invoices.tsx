@@ -4,6 +4,8 @@ import MainLayout from '@/components/MainLayout';
 import { useInvoicesV2 } from '@/hooks/useInvoicesV2';
 import { usePayments } from '@/hooks/usePayments';
 import { useShipmentsV2 } from '@/hooks/useShipmentsV2';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
+import { RequireRole, RoleBadge, PermissionButtonWrapper } from '@/components/auth/RequireRole';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Loader2, ArrowLeft, DollarSign, Send, CheckCircle } from 'lucide-react';
+import { Plus, Loader2, ArrowLeft, DollarSign, Send, CheckCircle, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import { InvoiceStatusV2, PaymentMethod } from '@/types/saas-erp';
 
@@ -30,6 +32,7 @@ export default function InvoicesPage() {
   const { invoices, loading, createInvoice, updateInvoiceStatus } = useInvoicesV2();
   const { createPayment } = usePayments();
   const { shipments, getDeliveredShipments } = useShipmentsV2();
+  const { canManageInvoices, canRecordPayments } = useCurrentUserRoles();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -122,13 +125,21 @@ export default function InvoicesPage() {
             <h1 className="text-2xl font-bold">Invoices</h1>
             <p className="text-muted-foreground">Manage invoices and payments</p>
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button disabled={deliveredShipments.length === 0}>
-                <Plus className="mr-2 h-4 w-4" />
-                New Invoice
-              </Button>
-            </DialogTrigger>
+          {/* Only Admin/Finance can create invoices */}
+          <RequireRole 
+            roles={['admin', 'finance']} 
+            fallback={
+              <RoleBadge roles={['admin', 'finance']} className="ml-2" />
+            }
+            hideWhenForbidden={false}
+          >
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button disabled={deliveredShipments.length === 0 || !canManageInvoices}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Invoice
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create Invoice</DialogTitle>
@@ -184,6 +195,7 @@ export default function InvoicesPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </RequireRole>
 
           {/* Payment Dialog */}
           <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
@@ -286,24 +298,36 @@ export default function InvoicesPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {invoice.status === 'Draft' && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => updateInvoiceStatus(invoice.id, 'Sent')}
+                            <PermissionButtonWrapper 
+                              roles={['admin', 'finance']}
+                              tooltip="Admin or Finance role required"
                             >
-                              <Send className="mr-1 h-3 w-3" />
-                              Send
-                            </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => canManageInvoices && updateInvoiceStatus(invoice.id, 'Sent')}
+                                disabled={!canManageInvoices}
+                              >
+                                <Send className="mr-1 h-3 w-3" />
+                                Send
+                              </Button>
+                            </PermissionButtonWrapper>
                           )}
                           {(invoice.status === 'Draft' || invoice.status === 'Sent') && (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => openPaymentDialog(invoice.id, invoice.amount)}
+                            <PermissionButtonWrapper 
+                              roles={['admin', 'finance']}
+                              tooltip="Admin or Finance role required to record payments"
                             >
-                              <DollarSign className="mr-1 h-3 w-3" />
-                              Pay
-                            </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => canRecordPayments && openPaymentDialog(invoice.id, invoice.amount)}
+                                disabled={!canRecordPayments}
+                              >
+                                <DollarSign className="mr-1 h-3 w-3" />
+                                Pay
+                              </Button>
+                            </PermissionButtonWrapper>
                           )}
                           {invoice.status === 'Paid' && (
                             <CheckCircle className="h-4 w-4 text-primary" />

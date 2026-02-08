@@ -4,6 +4,8 @@ import MainLayout from '@/components/MainLayout';
 import { useShipmentsV2 } from '@/hooks/useShipmentsV2';
 import { useClients } from '@/hooks/useClients';
 import { useWarehouses } from '@/hooks/useWarehouses';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
+import { RequireRole, RoleBadge, PermissionButtonWrapper } from '@/components/auth/RequireRole';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Loader2, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Plus, Loader2, ChevronRight, ArrowLeft, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import { SHIPMENT_STATUS_LABELS, ShipmentStatusV2, ShipmentV2 } from '@/types/saas-erp';
 
@@ -30,6 +32,7 @@ export default function ShipmentsPage() {
   const { shipments, loading, createShipment, updateShipmentStatus, getNextStatus } = useShipmentsV2();
   const { clients } = useClients();
   const { warehouses } = useWarehouses();
+  const { canManageShipments, canUpdateShipmentStatus } = useCurrentUserRoles();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -90,13 +93,21 @@ export default function ShipmentsPage() {
             <h1 className="text-2xl font-bold">Shipments</h1>
             <p className="text-muted-foreground">Manage your shipments and track their status</p>
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                New Shipment
-              </Button>
-            </DialogTrigger>
+          {/* Only Admin/Operations can create shipments */}
+          <RequireRole 
+            roles={['admin', 'operations']} 
+            fallback={
+              <RoleBadge roles={['admin', 'operations']} className="ml-2" />
+            }
+            hideWhenForbidden={false}
+          >
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Shipment
+                </Button>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Create Shipment</DialogTitle>
@@ -180,6 +191,7 @@ export default function ShipmentsPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </RequireRole>
         </div>
 
         <Card>
@@ -225,23 +237,40 @@ export default function ShipmentsPage() {
                       </TableCell>
                       <TableCell>
                         {shipment.status !== 'DELIVERED' && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleAdvanceStatus(shipment)}
+                          <PermissionButtonWrapper 
+                            roles={['admin', 'operations', 'warehouse']}
+                            tooltip="Admin, Operations, or Warehouse role required to update status"
                           >
-                            <ChevronRight className="mr-1 h-3 w-3" />
-                            {SHIPMENT_STATUS_LABELS[getNextStatus(shipment.status) || 'DELIVERED']}
-                          </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => canUpdateShipmentStatus && handleAdvanceStatus(shipment)}
+                              disabled={!canUpdateShipmentStatus}
+                            >
+                              <ChevronRight className="mr-1 h-3 w-3" />
+                              {SHIPMENT_STATUS_LABELS[getNextStatus(shipment.status) || 'DELIVERED']}
+                            </Button>
+                          </PermissionButtonWrapper>
                         )}
                         {shipment.status === 'DELIVERED' && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => navigate(`/saas/invoices?shipment=${shipment.id}`)}
+                          <RequireRole 
+                            roles={['admin', 'finance']}
+                            fallback={
+                              <Badge variant="secondary" className="text-xs">
+                                <Lock className="w-3 h-3 mr-1" />
+                                Finance
+                              </Badge>
+                            }
+                            hideWhenForbidden={false}
                           >
-                            Create Invoice
-                          </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => navigate(`/saas/invoices?shipment=${shipment.id}`)}
+                            >
+                              Create Invoice
+                            </Button>
+                          </RequireRole>
                         )}
                       </TableCell>
                     </TableRow>

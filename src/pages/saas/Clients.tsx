@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/MainLayout';
 import { useClients } from '@/hooks/useClients';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
+import { RequireRole, RoleBadge, PermissionButtonWrapper } from '@/components/auth/RequireRole';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +19,7 @@ import { ClientType, CreateClientInput } from '@/types/saas-erp';
 export default function ClientsPage() {
   const navigate = useNavigate();
   const { clients, loading, createClient, updateClient, deleteClient, getClientsByType } = useClients();
+  const { canManageClients } = useCurrentUserRoles();
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -90,22 +93,28 @@ export default function ClientsPage() {
                 </Badge>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button 
-                    size="icon" 
-                    variant="ghost"
-                    onClick={() => updateClient(client.id, { is_active: !client.is_active })}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    size="icon" 
-                    variant="ghost"
-                    onClick={() => handleDelete(client.id)}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </div>
+                <RequireRole 
+                  roles={['admin', 'operations']}
+                  fallback={<span className="text-xs text-muted-foreground">View only</span>}
+                  hideWhenForbidden={false}
+                >
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      size="icon" 
+                      variant="ghost"
+                      onClick={() => updateClient(client.id, { is_active: !client.is_active })}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="icon" 
+                      variant="ghost"
+                      onClick={() => handleDelete(client.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </RequireRole>
               </TableCell>
             </TableRow>
           ))
@@ -125,14 +134,22 @@ export default function ClientsPage() {
             <h1 className="text-2xl font-bold">Clients & Vendors</h1>
             <p className="text-muted-foreground">Manage your business relationships</p>
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add New
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
+          {/* Only Admin/Operations can create clients */}
+          <RequireRole 
+            roles={['admin', 'operations']} 
+            fallback={
+              <RoleBadge roles={['admin', 'operations']} className="ml-2" />
+            }
+            hideWhenForbidden={false}
+          >
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add New
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add Client or Vendor</DialogTitle>
                 <DialogDescription>
@@ -194,6 +211,7 @@ export default function ClientsPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </RequireRole>
         </div>
 
         <Tabs defaultValue="clients">
