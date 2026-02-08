@@ -10,8 +10,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import { Package, Search, Globe, Menu, X, User, LogOut, Settings, Wrench, Ship, FileJson, ChevronDown, Boxes, PlayCircle, Users, Warehouse, Truck, FileText } from 'lucide-react';
+import { 
+  Package, Search, Globe, Menu, X, User, LogOut, Settings, 
+  Ship, ChevronDown, Boxes, PlayCircle, Users, Warehouse, 
+  Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
+  ClipboardList, BookOpen, Bot, History
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -25,9 +31,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Check if we're on a SaaS page
-  const isSaaSPage = location.pathname.startsWith('/saas');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +44,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     await signOut();
     navigate('/');
   };
+
+  const iconClass = isRTL ? 'ml-2' : 'mr-2';
 
   return (
     <div className="min-h-screen bg-background" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -57,97 +62,168 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-4">
               <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 {t('home')}
               </Link>
-              <Link to="/categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                {t('categories')}
-              </Link>
               
-              {/* SaaS Navigation - shown when on SaaS pages */}
-              {isSaaSPage && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
-                    <Package className="w-4 h-4" />
-                    SaaS
-                    <ChevronDown className="w-3 h-3" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
-                    <DropdownMenuItem onClick={() => navigate('/saas/dashboard')}>
-                      <Package className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => navigate('/saas/clients')}>
-                      <Users className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      Clients
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/saas/warehouses')}>
-                      <Warehouse className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      Warehouses
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/saas/shipments')}>
-                      <Truck className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      Shipments
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/saas/invoices')}>
-                      <FileText className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      Invoices
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              
+              {/* Operations Menu - الشحن والعمليات */}
               <DropdownMenu>
                 <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
-                  <Wrench className="w-4 h-4" />
-                  {t('tools')}
+                  <Truck className="w-4 h-4" />
+                  {language === 'ar' ? 'العمليات' : 'Operations'}
                   <ChevronDown className="w-3 h-3" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
-                  <DropdownMenuItem onClick={() => navigate('/erp/customers')}>
-                    {language === 'ar' ? 'العملاء' : 'Customers'}
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-56">
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'إدارة الشحنات' : 'Shipment Management'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/saas/shipments')}>
+                    <Truck className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'الشحنات' : 'Shipments'}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/erp/orders')}>
+                    <ShoppingCart className={`w-4 h-4 ${iconClass}`} />
                     {language === 'ar' ? 'الطلبات' : 'Orders'}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/erp/inventory')}>
-                    {language === 'ar' ? 'المخزون' : 'Inventory'}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/erp/invoices')}>
-                    {language === 'ar' ? 'الفواتير' : 'Invoices'}
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/erp/locations')}>
-                    {language === 'ar' ? 'المواقع' : 'Locations'}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/erp/items')}>
-                    {language === 'ar' ? 'المنتجات' : 'Items/SKUs'}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/erp/workflow-check')}>
-                    <PlayCircle className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                    {language === 'ar' ? 'فحص سير العمل' : 'Workflow Check'}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/logistics-assistant')}>
-                    <Ship className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                    {t('logisticsAssistant')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/shipments')}>
-                    <Boxes className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                    {t('myShipments')}
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'لوحة التحكم' : 'Command Center'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/saas/dashboard')}>
+                    <BarChart3 className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'لوحة القيادة' : 'Dashboard'}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                    <Package className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                    {language === 'ar' ? 'لوحة العمليات' : 'Ops Dashboard'}
+                    <ClipboardList className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'مركز العمليات' : 'Ops Center'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Master Data Menu - البيانات الأساسية */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  {language === 'ar' ? 'البيانات' : 'Master Data'}
+                  <ChevronDown className="w-3 h-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-56">
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'العملاء والموردين' : 'Clients & Vendors'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/saas/clients')}>
+                    <Users className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'العملاء' : 'Clients'}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'المخازن والمنتجات' : 'Inventory & Items'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/saas/warehouses')}>
+                    <Warehouse className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'المستودعات' : 'Warehouses'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/locations')}>
+                    <MapPin className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'المواقع' : 'Locations'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/items')}>
+                    <Boxes className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'المنتجات' : 'Items/SKUs'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/erp/inventory')}>
+                    <Package className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'المخزون' : 'Inventory'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Finance Menu - المالية */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                  <FileText className="w-4 h-4" />
+                  {language === 'ar' ? 'المالية' : 'Finance'}
+                  <ChevronDown className="w-3 h-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-56">
+                  <DropdownMenuItem onClick={() => navigate('/saas/invoices')}>
+                    <FileText className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'الفواتير' : 'Invoices'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Tools & Training Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                  <BookOpen className="w-4 h-4" />
+                  {language === 'ar' ? 'التدريب' : 'Training'}
+                  <ChevronDown className="w-3 h-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-56">
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'المحتوى التعليمي' : 'Learning Content'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/categories')}>
+                    <BookOpen className={`w-4 h-4 ${iconClass}`} />
+                    {t('categories')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/tools')}>
+                    <PlayCircle className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'أدوات التدريب' : 'Training Tools'}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'المساعد الذكي' : 'AI Assistant'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/logistics-assistant')}>
+                    <Bot className={`w-4 h-4 ${iconClass}`} />
+                    {t('logisticsAssistant')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/shipments')}>
+                    <Ship className={`w-4 h-4 ${iconClass}`} />
+                    {t('myShipments')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>
+                    {language === 'ar' ? 'اختبار النظام' : 'System Testing'}
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate('/erp/workflow-check')}>
+                    <PlayCircle className={`w-4 h-4 ${iconClass}`} />
+                    {language === 'ar' ? 'فحص سير العمل' : 'Workflow Check'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Admin Menu */}
               {isAdmin && (
-                <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  {t('admin')}
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground transition-colors font-medium flex items-center gap-1">
+                    <Shield className="w-4 h-4" />
+                    {language === 'ar' ? 'الإدارة' : 'Admin'}
+                    <ChevronDown className="w-3 h-3" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-56">
+                    <DropdownMenuItem onClick={() => navigate('/saas/setup')}>
+                      <Settings className={`w-4 h-4 ${iconClass}`} />
+                      {language === 'ar' ? 'إعداد الشركة' : 'Company Setup'}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/saas/roles')}>
+                      <Shield className={`w-4 h-4 ${iconClass}`} />
+                      {language === 'ar' ? 'إدارة الأدوار' : 'Role Management'}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/saas/audit-log')}>
+                      <History className={`w-4 h-4 ${iconClass}`} />
+                      {language === 'ar' ? 'سجل التدقيق' : 'Audit Log'}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      <Settings className={`w-4 h-4 ${iconClass}`} />
+                      {language === 'ar' ? 'إدارة المحتوى' : 'Content Admin'}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </nav>
 
@@ -192,14 +268,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                     <DropdownMenuItem className="text-muted-foreground" disabled>
                       {user.email}
                     </DropdownMenuItem>
-                    {isAdmin && (
-                      <DropdownMenuItem onClick={() => navigate('/admin')}>
-                        <Settings className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                        {t('admin')}
-                      </DropdownMenuItem>
-                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/saas/setup')}>
+                      <Settings className={`w-4 h-4 ${iconClass}`} />
+                      {language === 'ar' ? 'إعدادات الشركة' : 'Company Settings'}
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      <LogOut className={`w-4 h-4 ${iconClass}`} />
                       {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -240,53 +315,86 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 </div>
               </form>
 
-              <nav className="flex flex-col gap-2">
-                <Link
-                  to="/"
-                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {t('home')}
+              <nav className="flex flex-col gap-1">
+                {/* Operations Section */}
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  {language === 'ar' ? 'العمليات' : 'Operations'}
+                </div>
+                <Link to="/saas/shipments" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Truck className="w-4 h-4" />
+                  {language === 'ar' ? 'الشحنات' : 'Shipments'}
                 </Link>
-                <Link
-                  to="/categories"
-                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
+                <Link to="/erp/orders" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <ShoppingCart className="w-4 h-4" />
+                  {language === 'ar' ? 'الطلبات' : 'Orders'}
+                </Link>
+                <Link to="/saas/dashboard" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <BarChart3 className="w-4 h-4" />
+                  {language === 'ar' ? 'لوحة القيادة' : 'Dashboard'}
+                </Link>
+
+                {/* Master Data Section */}
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
+                  {language === 'ar' ? 'البيانات' : 'Master Data'}
+                </div>
+                <Link to="/saas/clients" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Users className="w-4 h-4" />
+                  {language === 'ar' ? 'العملاء' : 'Clients'}
+                </Link>
+                <Link to="/saas/warehouses" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Warehouse className="w-4 h-4" />
+                  {language === 'ar' ? 'المستودعات' : 'Warehouses'}
+                </Link>
+                <Link to="/erp/inventory" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Package className="w-4 h-4" />
+                  {language === 'ar' ? 'المخزون' : 'Inventory'}
+                </Link>
+
+                {/* Finance Section */}
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
+                  {language === 'ar' ? 'المالية' : 'Finance'}
+                </div>
+                <Link to="/saas/invoices" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <FileText className="w-4 h-4" />
+                  {language === 'ar' ? 'الفواتير' : 'Invoices'}
+                </Link>
+
+                {/* Training Section */}
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
+                  {language === 'ar' ? 'التدريب' : 'Training'}
+                </div>
+                <Link to="/categories" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <BookOpen className="w-4 h-4" />
                   {t('categories')}
                 </Link>
-                <Link
-                  to="/logistics-assistant"
-                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Ship className="w-4 h-4" />
+                <Link to="/logistics-assistant" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Bot className="w-4 h-4" />
                   {t('logisticsAssistant')}
                 </Link>
-                <Link
-                  to="/shipments"
-                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Boxes className="w-4 h-4" />
-                  {t('myShipments')}
+                <Link to="/tools" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <PlayCircle className="w-4 h-4" />
+                  {language === 'ar' ? 'أدوات التدريب' : 'Training Tools'}
                 </Link>
-                <Link
-                  to="/tools"
-                  className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium flex items-center gap-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Wrench className="w-4 h-4" />
-                  {t('trainingTools')}
-                </Link>
+
+                {/* Admin Section */}
                 {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {t('admin')}
-                  </Link>
+                  <>
+                    <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
+                      {language === 'ar' ? 'الإدارة' : 'Admin'}
+                    </div>
+                    <Link to="/saas/setup" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                      <Settings className="w-4 h-4" />
+                      {language === 'ar' ? 'إعداد الشركة' : 'Company Setup'}
+                    </Link>
+                    <Link to="/saas/roles" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                      <Shield className="w-4 h-4" />
+                      {language === 'ar' ? 'إدارة الأدوار' : 'Role Management'}
+                    </Link>
+                    <Link to="/admin" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                      <Settings className="w-4 h-4" />
+                      {language === 'ar' ? 'إدارة المحتوى' : 'Content Admin'}
+                    </Link>
+                  </>
                 )}
               </nav>
             </div>
