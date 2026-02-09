@@ -956,6 +956,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          is_approved: boolean
           updated_at: string
         }
         Insert: {
@@ -964,6 +965,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          is_approved?: boolean
           updated_at?: string
         }
         Update: {
@@ -972,6 +974,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          is_approved?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -1459,6 +1462,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_user_approved: { Args: { _user_id: string }; Returns: boolean }
       log_audit_event: {
         Args: {
           p_action: string
