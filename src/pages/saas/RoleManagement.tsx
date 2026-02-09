@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Loader2, Shield, UserCog } from 'lucide-react';
+import { ArrowLeft, Loader2, Shield, UserCog, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import type { AppRole } from '@/types/erp';
 
 const roleColors: Record<AppRole, string> = {
@@ -34,9 +34,10 @@ const assignableRoles: AppRole[] = ['admin', 'operations', 'warehouse', 'finance
 export default function RoleManagement() {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
-  const { users, loading, assignRole, removeRole } = useUserRoles();
+  const { users, loading, assignRole, removeRole, setApproval } = useUserRoles();
   const [selectedRole, setSelectedRole] = useState<AppRole | ''>('');
   const [assigningUserId, setAssigningUserId] = useState<string | null>(null);
+  const [approvingUserId, setApprovingUserId] = useState<string | null>(null);
 
   const handleAssignRole = async (userId: string) => {
     if (!selectedRole) return;
@@ -50,6 +51,12 @@ export default function RoleManagement() {
     if (confirm(`Remove ${role} role from this user?`)) {
       await removeRole(userId, role);
     }
+  };
+
+  const handleApproval = async (userId: string, approved: boolean) => {
+    setApprovingUserId(userId);
+    await setApproval(userId, approved);
+    setApprovingUserId(null);
   };
 
   if (!isAdmin) {
@@ -74,6 +81,9 @@ export default function RoleManagement() {
     );
   }
 
+  const pendingUsers = users.filter(u => !u.is_approved);
+  const approvedUsers = users.filter(u => u.is_approved);
+
   return (
     <MainLayout>
       <div className="space-y-6 p-6">
@@ -83,9 +93,65 @@ export default function RoleManagement() {
           </Button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold">Role Management</h1>
-            <p className="text-muted-foreground">Assign roles to control user access</p>
+            <p className="text-muted-foreground">Assign roles and approve new users</p>
           </div>
         </div>
+
+        {/* Pending Approvals */}
+        {pendingUsers.length > 0 && (
+          <Card className="border-amber-200 bg-amber-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-amber-800">
+                <Clock className="h-5 w-5" />
+                Pending Approvals ({pendingUsers.length})
+              </CardTitle>
+              <CardDescription>
+                These users have registered and are waiting for your approval
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">
+                        {user.display_name || user.email?.split('@')[0] || 'Unknown'}
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="default"
+                            className="bg-green-600 hover:bg-green-700"
+                            disabled={approvingUserId === user.id}
+                            onClick={() => handleApproval(user.id, true)}
+                          >
+                            {approvingUserId === user.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <CheckCircle2 className="h-4 w-4 mr-1" />
+                                Approve
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Role Legend */}
         <Card>
@@ -113,7 +179,7 @@ export default function RoleManagement() {
         {/* Users Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Users ({users.length})</CardTitle>
+            <CardTitle>Approved Users ({approvedUsers.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -121,17 +187,38 @@ export default function RoleManagement() {
                 <TableRow>
                   <TableHead>User</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Current Roles</TableHead>
                   <TableHead>Assign Role</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {approvedUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">
                       {user.display_name || user.email?.split('@')[0] || 'Unknown'}
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-green-700 border-green-300 bg-green-50">
+                          <CheckCircle2 className="h-3 w-3 mr-1" /> Approved
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive h-6 px-2 text-xs"
+                          onClick={() => {
+                            if (confirm('Revoke access for this user?')) {
+                              handleApproval(user.id, false);
+                            }
+                          }}
+                        >
+                          <XCircle className="h-3 w-3 mr-1" />
+                          Revoke
+                        </Button>
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {user.roles.length === 0 ? (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -77,6 +78,14 @@ const Auth = () => {
         if (result.error) {
           setGeneralError(result.error);
         } else {
+          // Send notification email to admin
+          try {
+            await supabase.functions.invoke('notify-new-signup', {
+              body: { email, displayName: displayName || email.split('@')[0] },
+            });
+          } catch (e) {
+            console.error('Failed to send signup notification:', e);
+          }
           navigate('/');
         }
       }

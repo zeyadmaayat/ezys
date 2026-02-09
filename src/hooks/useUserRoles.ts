@@ -15,6 +15,7 @@ interface UserWithRole {
   email: string;
   display_name: string | null;
   roles: AppRole[];
+  is_approved: boolean;
 }
 
 export function useUserRoles() {
@@ -32,7 +33,7 @@ export function useUserRoles() {
       // Fetch profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, email, display_name');
+        .select('id, email, display_name, is_approved');
 
       if (profilesError) throw profilesError;
 
@@ -48,6 +49,7 @@ export function useUserRoles() {
         id: profile.id,
         email: profile.email || '',
         display_name: profile.display_name,
+        is_approved: profile.is_approved ?? false,
         roles: (roles || [])
           .filter(r => r.user_id === profile.id)
           .map(r => r.role as AppRole),
@@ -114,7 +116,6 @@ export function useUserRoles() {
 
       if (error) throw error;
 
-      // Log audit event for role removal
       await supabase.rpc('log_audit_event', {
         p_action: 'ROLE_REMOVE',
         p_entity_type: 'user_role',
@@ -132,6 +133,37 @@ export function useUserRoles() {
     }
   };
 
+  const setApproval = async (userId: string, approved: boolean): Promise<boolean> => {
+    if (!isAdmin) {
+      toast.error('Admin access required');
+      return false;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_approved: approved })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await supabase.rpc('log_audit_event', {
+        p_action: approved ? 'USER_APPROVED' : 'USER_REJECTED',
+        p_entity_type: 'profile',
+        p_entity_id: userId,
+        p_new_values: { is_approved: approved },
+      });
+
+      toast.success(approved ? 'User approved' : 'User access revoked');
+      await fetchUsers();
+      return true;
+    } catch (error: unknown) {
+      console.error('Error setting approval:', error);
+      toast.error('Failed to update approval');
+      return false;
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -141,6 +173,7 @@ export function useUserRoles() {
     loading,
     assignRole,
     removeRole,
+    setApproval,
     refetch: fetchUsers,
   };
 }
