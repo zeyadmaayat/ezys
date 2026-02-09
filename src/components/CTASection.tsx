@@ -52,13 +52,13 @@ const CTASection = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="hero" size="xl" className="group" asChild>
-                <Link to="/auth">
+                <Link to="/saas/dashboard">
                   {t.startTrial}
                   <ArrowRight className={`w-5 h-5 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-transform`} />
                 </Link>
               </Button>
               <Button variant="heroOutline" size="xl" asChild>
-                <Link to="/categories">
+                <Link to="/logistics-assistant">
                   {t.scheduleDemo}
                 </Link>
               </Button>
