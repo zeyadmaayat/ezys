@@ -67,14 +67,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <span className="text-xl font-bold text-foreground hidden sm:inline">LogiPro Hub</span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            {/* Desktop Navigation - Pill Container */}
+            <nav className="hidden md:flex items-center gap-0.5 bg-muted/30 rounded-xl p-1 border border-border/50">
               <Link 
                 to="/" 
-                className={`px-3 py-2 rounded-lg transition-all font-medium ${
+                className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold ${
                   location.pathname === '/' 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'bg-card text-foreground shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}
               >
                 {t('home')}
@@ -82,72 +82,72 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               
               {/* Operations Menu */}
               <DropdownMenu>
-                <DropdownMenuTrigger className={`px-3 py-2 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+                <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
                   isActivePath('/saas/shipments') || isActivePath('/erp/orders') || isActivePath('/saas/dashboard') || isActivePath('/dashboard')
-                    ? 'bg-orange-500/10 text-orange-600' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'bg-card text-orange-600 shadow-sm ring-1 ring-orange-200/60' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
-                  <Truck className="w-4 h-4" />
+                  <Truck className="w-3.5 h-3.5" />
                   {language === 'ar' ? 'العمليات' : 'Operations'}
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-64 p-2">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 font-semibold px-2">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'إدارة الشحنات' : 'Shipment Management'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/shipments')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/shipments') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/shipments') ? 'bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center mr-3">
-                        <Truck className="w-4 h-4 text-orange-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Truck className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'الشحنات' : 'Shipments'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'تتبع وإدارة الشحنات' : 'Track & manage shipments'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'الشحنات' : 'Shipments'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تتبع وإدارة الشحنات' : 'Track & manage shipments'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/erp/orders')}
-                      className={`rounded-lg mx-1 ${isActivePath('/erp/orders') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/orders') ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mr-3">
-                        <ShoppingCart className="w-4 h-4 text-blue-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mr-3 shadow-sm">
+                        <ShoppingCart className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'الطلبات' : 'Orders'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إنشاء وتتبع الطلبات' : 'Create & track orders'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'الطلبات' : 'Orders'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إنشاء وتتبع الطلبات' : 'Create & track orders'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 font-semibold px-2">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'لوحة التحكم' : 'Command Center'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/dashboard')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/dashboard') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/dashboard') ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center mr-3">
-                        <BarChart3 className="w-4 h-4 text-green-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'لوحة القيادة' : 'Dashboard'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'نظرة عامة على الأعمال' : 'Business overview'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'لوحة القيادة' : 'Dashboard'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'نظرة عامة على الأعمال' : 'Business overview'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/dashboard')}
-                      className={`rounded-lg mx-1 ${isActivePath('/dashboard') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dashboard') ? 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center mr-3">
-                        <ClipboardList className="w-4 h-4 text-purple-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mr-3 shadow-sm">
+                        <ClipboardList className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'مركز العمليات' : 'Ops Center'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إدارة المهام والتنبيهات' : 'Tasks & alerts'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'مركز العمليات' : 'Ops Center'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة المهام والتنبيهات' : 'Tasks & alerts'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -156,84 +156,84 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
               {/* Master Data Menu */}
               <DropdownMenu>
-                <DropdownMenuTrigger className={`px-3 py-2 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+                <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
                   isActivePath('/saas/clients') || isActivePath('/saas/warehouses') || isActivePath('/erp/')
-                    ? 'bg-blue-500/10 text-blue-600' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'bg-card text-blue-600 shadow-sm ring-1 ring-blue-200/60' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
-                  <Layers className="w-4 h-4" />
+                  <Layers className="w-3.5 h-3.5" />
                   {language === 'ar' ? 'البيانات' : 'Data'}
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-64 p-2">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 font-semibold px-2">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'العملاء والموردين' : 'Clients & Vendors'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/clients')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/clients') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/clients') ? 'bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center mr-3">
-                        <Users className="w-4 h-4 text-pink-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Users className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'العملاء' : 'Clients'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إدارة العملاء والموردين' : 'Manage clients & vendors'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'العملاء' : 'Clients'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة العملاء والموردين' : 'Manage clients & vendors'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 font-semibold px-2">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'المخازن والمنتجات' : 'Inventory & Items'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/warehouses')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/warehouses') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/warehouses') ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center mr-3">
-                        <Building2 className="w-4 h-4 text-amber-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Building2 className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'المستودعات' : 'Warehouses'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إدارة المستودعات' : 'Manage warehouses'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المستودعات' : 'Warehouses'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة المستودعات' : 'Manage warehouses'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/erp/locations')}
-                      className={`rounded-lg mx-1 ${isActivePath('/erp/locations') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/locations') ? 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center mr-3">
-                        <MapPin className="w-4 h-4 text-teal-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mr-3 shadow-sm">
+                        <MapPin className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'المواقع' : 'Locations'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'مواقع التحميل والتفريغ' : 'Pickup & delivery sites'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المواقع' : 'Locations'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'مواقع التحميل والتفريغ' : 'Pickup & delivery sites'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/erp/items')}
-                      className={`rounded-lg mx-1 ${isActivePath('/erp/items') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/items') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center mr-3">
-                        <Boxes className="w-4 h-4 text-indigo-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Boxes className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'المنتجات' : 'Items/SKUs'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'كتالوج المنتجات' : 'Product catalog'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المنتجات' : 'Items/SKUs'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'كتالوج المنتجات' : 'Product catalog'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/erp/inventory')}
-                      className={`rounded-lg mx-1 ${isActivePath('/erp/inventory') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/inventory') ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center mr-3">
-                        <Package className="w-4 h-4 text-cyan-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Package className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'المخزون' : 'Inventory'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'مستويات المخزون' : 'Stock levels'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المخزون' : 'Inventory'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'مستويات المخزون' : 'Stock levels'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -242,26 +242,26 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
               {/* Finance Menu */}
               <DropdownMenu>
-                <DropdownMenuTrigger className={`px-3 py-2 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+                <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
                   isActivePath('/saas/invoices')
-                    ? 'bg-green-500/10 text-green-600' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'bg-card text-emerald-600 shadow-sm ring-1 ring-emerald-200/60' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
-                  <CreditCard className="w-4 h-4" />
+                  <CreditCard className="w-3.5 h-3.5" />
                   {language === 'ar' ? 'المالية' : 'Finance'}
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-64 p-2">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
                   <DropdownMenuItem 
                     onClick={() => navigate('/saas/invoices')}
-                    className={`rounded-lg mx-1 ${isActivePath('/saas/invoices') ? 'bg-primary/10 text-primary' : ''}`}
+                    className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/invoices') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center mr-3">
-                      <FileText className="w-4 h-4 text-green-500" />
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                      <FileText className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <div className="font-medium">{language === 'ar' ? 'الفواتير' : 'Invoices'}</div>
-                      <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إنشاء وإدارة الفواتير' : 'Create & manage invoices'}</div>
+                      <div className="font-semibold text-sm">{language === 'ar' ? 'الفواتير' : 'Invoices'}</div>
+                      <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إنشاء وإدارة الفواتير' : 'Create & manage invoices'}</div>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -269,86 +269,86 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
               {/* Training Menu */}
               <DropdownMenu>
-                <DropdownMenuTrigger className={`px-3 py-2 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+                <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
                   isActivePath('/categories') || isActivePath('/tools') || isActivePath('/logistics-assistant') || isActivePath('/shipments')
-                    ? 'bg-indigo-500/10 text-indigo-600' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'bg-card text-indigo-600 shadow-sm ring-1 ring-indigo-200/60' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
-                  <GraduationCap className="w-4 h-4" />
+                  <GraduationCap className="w-3.5 h-3.5" />
                   {language === 'ar' ? 'التدريب' : 'Training'}
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-64 p-2">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 font-semibold px-2">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'المحتوى التعليمي' : 'Learning Content'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
                       onClick={() => navigate('/categories')}
-                      className={`rounded-lg mx-1 ${isActivePath('/categories') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/categories') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center mr-3">
-                        <BookOpen className="w-4 h-4 text-indigo-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center mr-3 shadow-sm">
+                        <BookOpen className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{t('categories')}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'فئات المحتوى' : 'Content categories'}</div>
+                        <div className="font-semibold text-sm">{t('categories')}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'فئات المحتوى' : 'Content categories'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/tools')}
-                      className={`rounded-lg mx-1 ${isActivePath('/tools') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/tools') ? 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center mr-3">
-                        <PlayCircle className="w-4 h-4 text-purple-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mr-3 shadow-sm">
+                        <PlayCircle className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'أدوات التدريب' : 'Training Tools'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'محاكاة وتدريب' : 'Simulations & exercises'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'أدوات التدريب' : 'Training Tools'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'محاكاة وتدريب' : 'Simulations & exercises'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground/70 font-semibold px-2">
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'المساعد الذكي' : 'AI Assistant'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
                       onClick={() => navigate('/logistics-assistant')}
-                      className={`rounded-lg mx-1 ${isActivePath('/logistics-assistant') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/logistics-assistant') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mr-3">
-                        <Bot className="w-4 h-4 text-emerald-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Bot className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{t('logisticsAssistant')}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'مساعد ذكي' : 'AI-powered help'}</div>
+                        <div className="font-semibold text-sm">{t('logisticsAssistant')}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'مساعد ذكي' : 'AI-powered help'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/shipments')}
-                      className={`rounded-lg mx-1 ${isActivePath('/shipments') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/shipments') ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center mr-3">
-                        <Ship className="w-4 h-4 text-sky-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Ship className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{t('myShipments')}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'خطط الشحن المحفوظة' : 'Saved shipment plans'}</div>
+                        <div className="font-semibold text-sm">{t('myShipments')}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'خطط الشحن المحفوظة' : 'Saved shipment plans'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
-                  <DropdownMenuSeparator className="my-2" />
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
                   <DropdownMenuItem 
                     onClick={() => navigate('/erp/workflow-check')}
-                    className={`rounded-lg mx-1 ${isActivePath('/erp/workflow-check') ? 'bg-primary/10 text-primary' : ''}`}
+                    className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/workflow-check') ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' : ''}`}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center mr-3">
-                      <PlayCircle className="w-4 h-4 text-rose-500" />
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center mr-3 shadow-sm">
+                      <PlayCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <div className="font-medium">{language === 'ar' ? 'فحص سير العمل' : 'Workflow Check'}</div>
-                      <div className="text-xs text-muted-foreground">{language === 'ar' ? 'اختبار النظام' : 'Test ERP workflow'}</div>
+                      <div className="font-semibold text-sm">{language === 'ar' ? 'فحص سير العمل' : 'Workflow Check'}</div>
+                      <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'اختبار النظام' : 'Test ERP workflow'}</div>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -357,63 +357,63 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {/* Admin Menu */}
               {isAdmin && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className={`px-3 py-2 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+                  <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
                     isActivePath('/saas/setup') || isActivePath('/saas/roles') || isActivePath('/admin')
-                      ? 'bg-red-500/10 text-red-600' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      ? 'bg-card text-red-600 shadow-sm ring-1 ring-red-200/60' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                   }`}>
-                    <Shield className="w-4 h-4" />
+                    <Shield className="w-3.5 h-3.5" />
                     {language === 'ar' ? 'الإدارة' : 'Admin'}
-                    <ChevronDown className="w-3 h-3 opacity-60" />
+                    <ChevronDown className="w-3 h-3 opacity-50" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-64 p-2">
+                  <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/setup')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/setup') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/setup') ? 'bg-slate-50 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-slate-500/10 flex items-center justify-center mr-3">
-                        <Building2 className="w-4 h-4 text-slate-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Building2 className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'إعداد الشركة' : 'Company Setup'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إعدادات المؤسسة' : 'Organization settings'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'إعداد الشركة' : 'Company Setup'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إعدادات المؤسسة' : 'Organization settings'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/roles')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/roles') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/roles') ? 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center mr-3">
-                        <Shield className="w-4 h-4 text-violet-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Shield className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'إدارة الأدوار' : 'Role Management'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'صلاحيات المستخدمين' : 'User permissions'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'إدارة الأدوار' : 'Role Management'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'صلاحيات المستخدمين' : 'User permissions'}</div>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => navigate('/saas/audit-log')}
-                      className={`rounded-lg mx-1 ${isActivePath('/saas/audit-log') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/audit-log') ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center mr-3">
-                        <History className="w-4 h-4 text-amber-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-3 shadow-sm">
+                        <History className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'سجل التدقيق' : 'Audit Log'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'تتبع الإجراءات' : 'Activity tracking'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'سجل التدقيق' : 'Audit Log'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تتبع الإجراءات' : 'Activity tracking'}</div>
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="my-2" />
+                    <DropdownMenuSeparator className="my-2 bg-border/40" />
                     <DropdownMenuItem 
                       onClick={() => navigate('/admin')}
-                      className={`rounded-lg mx-1 ${isActivePath('/admin') ? 'bg-primary/10 text-primary' : ''}`}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/admin') ? 'bg-gray-50 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400' : ''}`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-gray-500/10 flex items-center justify-center mr-3">
-                        <Settings className="w-4 h-4 text-gray-500" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Settings className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <div className="font-medium">{language === 'ar' ? 'إدارة المحتوى' : 'Content Admin'}</div>
-                        <div className="text-xs text-muted-foreground">{language === 'ar' ? 'إدارة الفئات والمواضيع' : 'Categories & topics'}</div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'إدارة المحتوى' : 'Content Admin'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة الفئات والمواضيع' : 'Categories & topics'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
