@@ -42,6 +42,9 @@ const translations: Translations = {
   invalidEmail: { en: 'Please enter a valid email', ar: 'الرجاء إدخال بريد إلكتروني صحيح' },
   enterCredentials: { en: 'Enter your credentials to continue', ar: 'أدخل بيانات الاعتماد الخاصة بك للمتابعة' },
   fillDetails: { en: 'Fill in your details to get started', ar: 'أدخل بياناتك للبدء' },
+  pendingApproval: { en: 'Account Pending Approval', ar: 'الحساب بانتظار الموافقة' },
+  pendingApprovalMessage: { en: 'Your account has been created successfully. An administrator will review and approve your account shortly.', ar: 'تم إنشاء حسابك بنجاح. سيقوم المسؤول بمراجعة حسابك والموافقة عليه قريباً.' },
+  signOut: { en: 'Sign Out', ar: 'تسجيل الخروج' },
 
   // Home
   heroTitle: { en: 'Your Professional Logistics Hub', ar: 'مركزك المهني للخدمات اللوجستية' },
