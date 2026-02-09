@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
+  isApproved: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null }>;
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -43,6 +45,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const checkApproval = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_approved')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking approval:', error);
+        return false;
+      }
+      return data?.is_approved ?? false;
+    } catch {
+      return false;
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -50,13 +70,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Defer admin check with setTimeout
+        // Defer admin/approval check with setTimeout
         if (session?.user) {
           setTimeout(() => {
             checkAdminRole(session.user.id).then(setIsAdmin);
+            checkApproval(session.user.id).then(setIsApproved);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsApproved(false);
         }
         
         setLoading(false);
@@ -70,6 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         checkAdminRole(session.user.id).then(setIsAdmin);
+        checkApproval(session.user.id).then(setIsApproved);
       }
       
       setLoading(false);
@@ -131,7 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
