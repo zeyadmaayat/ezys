@@ -308,7 +308,7 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
   };
 
   return (
-    <div className="flex flex-col h-full" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col min-h-full" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="p-4 border-b bg-card">
         <h2 className="font-semibold text-lg">
@@ -351,7 +351,7 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
       </div>
 
       {/* Step Content */}
-      <div className="flex-1 overflow-y-auto p-5">
+      <div className="flex-1 p-5">
         <div className="flex items-center gap-2 mb-4">
           {(() => {
             const StepIcon = STEPS[currentStep - 1].icon;
