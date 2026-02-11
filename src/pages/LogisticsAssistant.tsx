@@ -199,7 +199,7 @@ Generate the final JSON plan now.`;
         </div>
 
         {/* Main Content with Tabs */}
-        <Tabs defaultValue="wizard" className="h-[calc(100vh-140px)] flex flex-col">
+        <Tabs defaultValue="wizard" className="min-h-[calc(100vh-140px)] flex flex-col">
           <TabsList className="w-full h-14 p-1.5 bg-muted/60 rounded-xl mb-3 grid grid-cols-2 gap-1.5">
             <TabsTrigger 
               value="wizard" 
