@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { ShipmentStateHook } from '@/hooks/useShipmentState';
 import { ChatMessage } from './ChatMessage';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export type Message = {
   role: 'user' | 'assistant';
@@ -91,11 +92,19 @@ export function LogisticsChatPanel({
         msgWithContext
       ];
 
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) {
+        toast({ title: 'Error', description: 'Please log in to use the assistant.', variant: 'destructive' });
+        setIsLoading(false);
+        return;
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ messages: allMessages }),
       });
