@@ -11,7 +11,8 @@ import { SavePlanDialog } from '@/components/logistics/SavePlanDialog';
 import { CreateShipmentButton } from '@/components/logistics/CreateShipmentButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, RotateCcw, Save, FolderOpen, Ship } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sparkles, RotateCcw, Save, FolderOpen, Ship, MessageSquare, ClipboardList } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/logistics-assistant`;
@@ -188,29 +189,48 @@ Generate the final JSON plan now.`;
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-5 gap-4 h-[calc(100vh-180px)]">
-          {/* Left - Wizard */}
-          <div className="lg:col-span-3 rounded-xl border shadow-sm overflow-hidden bg-card">
-            <ShipmentWizard
-              shipmentState={shipmentState}
-              onGeneratePlan={generatePlan}
-              isGenerating={isLoading}
-            />
-          </div>
+        {/* Main Content with Tabs */}
+        <Tabs defaultValue="wizard" className="h-[calc(100vh-180px)] flex flex-col">
+          <TabsList className="w-full h-14 p-1.5 bg-muted/60 rounded-xl mb-3 grid grid-cols-2 gap-1.5">
+            <TabsTrigger 
+              value="wizard" 
+              className="h-full rounded-lg text-sm font-semibold gap-2.5 data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary"
+            >
+              <ClipboardList className="h-5 w-5" />
+              {isRTL ? 'معالج الشحنة' : 'Shipment Wizard'}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="chat" 
+              className="h-full rounded-lg text-sm font-semibold gap-2.5 data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary"
+            >
+              <MessageSquare className="h-5 w-5" />
+              {isRTL ? 'LogiPro AI' : 'LogiPro AI'}
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Right - Chat */}
-          <div className="lg:col-span-2 rounded-xl border shadow-sm overflow-hidden bg-card">
-            <LogisticsChatPanel
-              shipmentState={shipmentState}
-              messages={messages}
-              setMessages={setMessages}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-              shipmentId={currentPlanId || undefined}
-            />
-          </div>
-        </div>
+          <TabsContent value="wizard" className="flex-1 mt-0 overflow-hidden">
+            <div className="rounded-xl border shadow-sm overflow-hidden bg-card h-full">
+              <ShipmentWizard
+                shipmentState={shipmentState}
+                onGeneratePlan={generatePlan}
+                isGenerating={isLoading}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="chat" className="flex-1 mt-0 overflow-hidden">
+            <div className="rounded-xl border shadow-sm overflow-hidden bg-card h-full">
+              <LogisticsChatPanel
+                shipmentState={shipmentState}
+                messages={messages}
+                setMessages={setMessages}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+                shipmentId={currentPlanId || undefined}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Generated Plan */}
         {generatedPlan && (
