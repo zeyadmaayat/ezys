@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, MapPin, Navigation, Package, Box, Scale, Target, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -321,8 +320,8 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
       </div>
 
       {/* Step Indicators */}
-      <div className="p-4 border-b overflow-x-auto">
-        <div className="flex items-center gap-1 min-w-max">
+      <div className="p-3 border-b overflow-x-auto">
+        <div className="flex items-center gap-2 min-w-max">
           {STEPS.map((step, idx) => {
             const StepIcon = step.icon;
             const isActive = currentStep === step.id;
@@ -333,19 +332,18 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
                 key={step.id}
                 onClick={() => setCurrentStep(step.id)}
                 className={cn(
-                  "flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors",
-                  isActive && "bg-primary text-primary-foreground",
+                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  isActive && "bg-primary text-primary-foreground shadow-sm",
                   !isActive && isCompleted && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
                   !isActive && !isCompleted && "bg-muted text-muted-foreground"
                 )}
               >
                 {isCompleted && !isActive ? (
-                  <CheckCircle2 className="h-3 w-3" />
+                  <CheckCircle2 className="h-4 w-4" />
                 ) : (
-                  <StepIcon className="h-3 w-3" />
+                  <StepIcon className="h-4 w-4" />
                 )}
-                <span className="hidden sm:inline">{isRTL ? step.titleAr : step.title}</span>
-                <span className="sm:hidden">{step.id}</span>
+                <span>{isRTL ? step.titleAr : step.title}</span>
               </button>
             );
           })}
@@ -353,24 +351,20 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
       </div>
 
       {/* Step Content */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              {(() => {
-                const StepIcon = STEPS[currentStep - 1].icon;
-                return <StepIcon className="h-4 w-4 text-primary" />;
-              })()}
-              {isRTL ? STEPS[currentStep - 1].titleAr : STEPS[currentStep - 1].title}
-              <Badge variant="outline" className="ms-auto">
-                {currentStep} / 6
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {renderStepContent()}
-          </CardContent>
-        </Card>
+      <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex items-center gap-2 mb-4">
+          {(() => {
+            const StepIcon = STEPS[currentStep - 1].icon;
+            return <StepIcon className="h-5 w-5 text-primary" />;
+          })()}
+          <h3 className="font-semibold text-lg">
+            {isRTL ? STEPS[currentStep - 1].titleAr : STEPS[currentStep - 1].title}
+          </h3>
+          <Badge variant="outline" className="ms-auto text-sm px-3 py-1">
+            {currentStep} / 6
+          </Badge>
+        </div>
+        {renderStepContent()}
       </div>
 
       {/* Navigation */}
