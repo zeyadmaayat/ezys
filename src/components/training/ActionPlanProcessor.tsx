@@ -228,8 +228,28 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
         )
       }));
     }
+  };
+
+  const handleStepAction = (actionId: string, status: ActionStep['status'], notes?: string) => {
+    handleActionUpdate(actionId, status, notes);
+    // Only advance step when user takes an action (approve/reject/skip), not on notes change
     if (currentStepIndex < sortedActions.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
+    }
+  };
+
+  const handleNotesUpdate = (actionId: string, notes: string) => {
+    // Update notes without advancing step
+    if (externalOnActionUpdate) {
+      const step = sortedActions.find(s => s.id === actionId);
+      if (step) externalOnActionUpdate(actionId, step.status, notes);
+    } else {
+      setInternalPlan(prev => ({
+        ...prev,
+        actions: prev.actions.map(action => 
+          action.id === actionId ? { ...action, notes } : action
+        )
+      }));
     }
   };
 
@@ -358,10 +378,10 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={language === 'ar' ? 'اختر سيناريو...' : 'Select a scenario...'} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-[300px]">
                     {Object.entries(scenariosByCategory).map(([category, plans]) => (
-                      <div key={category}>
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">
+                      <div key={category} role="group">
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">
                           {language === 'ar' ? categoryLabels[category]?.ar : categoryLabels[category]?.en}
                         </div>
                         {plans.map((scenarioPlan) => (
@@ -450,10 +470,10 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
             step={step}
             index={index}
             isActive={index === currentStepIndex}
-            onApprove={() => handleActionUpdate(step.id, 'approved', step.notes)}
-            onReject={() => handleActionUpdate(step.id, 'rejected', step.notes)}
-            onSkip={() => handleActionUpdate(step.id, 'skipped', step.notes)}
-            onNotesChange={(notes) => handleActionUpdate(step.id, step.status, notes)}
+            onApprove={() => handleStepAction(step.id, 'approved', step.notes)}
+            onReject={() => handleStepAction(step.id, 'rejected', step.notes)}
+            onSkip={() => handleStepAction(step.id, 'skipped', step.notes)}
+            onNotesChange={(notes) => handleNotesUpdate(step.id, notes)}
           />
         ))}
       </div>
