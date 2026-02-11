@@ -86,6 +86,7 @@ export interface InvoiceV2 {
   shipment_id: string | null;
   invoice_number: string;
   amount: number;
+  currency: string;
   status: InvoiceStatusV2;
   issued_at: string | null;
   due_date: string | null;
@@ -152,9 +153,12 @@ export interface CreateWarehouseInput {
 export interface CreateInvoiceInput {
   shipment_id: string;
   amount: number;
+  currency?: string;
   due_date?: string;
   notes?: string;
 }
+
+export const SUPPORTED_CURRENCIES = ['SAR', 'USD', 'EUR', 'GBP', 'AED', 'JOD', 'EGP', 'KWD', 'QAR', 'BHD', 'OMR'] as const;
 
 export interface CreatePaymentInput {
   invoice_id: string;
