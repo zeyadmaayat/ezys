@@ -11,7 +11,7 @@ import { SavePlanDialog } from '@/components/logistics/SavePlanDialog';
 import { CreateShipmentButton } from '@/components/logistics/CreateShipmentButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Ship, RotateCcw, Save, FolderOpen } from 'lucide-react';
+import { Sparkles, RotateCcw, Save, FolderOpen, Ship } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/logistics-assistant`;
@@ -64,28 +64,16 @@ Generate the final JSON plan now.`;
       });
 
       if (resp.status === 429) {
-        toast({
-          title: isRTL ? 'تم تجاوز الحد' : 'Rate Limited',
-          description: isRTL ? 'الرجاء الانتظار.' : 'Please wait and try again.',
-          variant: 'destructive',
-        });
+        toast({ title: 'Rate Limited', description: 'Please wait and try again.', variant: 'destructive' });
         setIsLoading(false);
         return;
       }
-
       if (resp.status === 402) {
-        toast({
-          title: isRTL ? 'مطلوب رصيد' : 'Credits Required',
-          description: isRTL ? 'يرجى إضافة رصيد.' : 'Please add credits.',
-          variant: 'destructive',
-        });
+        toast({ title: 'Credits Required', description: 'Please add credits.', variant: 'destructive' });
         setIsLoading(false);
         return;
       }
-
-      if (!resp.ok || !resp.body) {
-        throw new Error('Failed to generate plan');
-      }
+      if (!resp.ok || !resp.body) throw new Error('Failed to generate plan');
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -123,7 +111,6 @@ Generate the final JSON plan now.`;
         }
       }
 
-      // Add the plan to chat history
       setMessages(prev => [
         ...prev,
         { role: 'user', content: isRTL ? 'أنشئ خطة الشحن' : 'Generate shipping plan' },
@@ -132,11 +119,7 @@ Generate the final JSON plan now.`;
 
     } catch (error) {
       console.error('Plan generation error:', error);
-      toast({
-        title: isRTL ? 'خطأ' : 'Error',
-        description: isRTL ? 'فشل إنشاء الخطة.' : 'Failed to generate plan.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'Failed to generate plan.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -163,58 +146,52 @@ Generate the final JSON plan now.`;
     shipmentState.updateMultiple(state);
     setGeneratedPlan(plan);
     setCurrentPlanId(planId);
-    // Find the plan title
     const loadedPlan = savedPlans.find(p => p.id === planId);
-    if (loadedPlan) {
-      setCurrentPlanTitle(loadedPlan.title);
-    }
+    if (loadedPlan) setCurrentPlanTitle(loadedPlan.title);
     setMessages([]);
-    toast({
-      title: isRTL ? 'تم التحميل' : 'Loaded',
-      description: isRTL ? 'تم تحميل الخطة بنجاح.' : 'Plan loaded successfully.',
-    });
+    toast({ title: isRTL ? 'تم التحميل' : 'Loaded', description: isRTL ? 'تم تحميل الخطة بنجاح.' : 'Plan loaded successfully.' });
   };
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-6" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="container mx-auto px-4 py-4" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Ship className="w-6 h-6 text-primary" />
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                {isRTL ? 'مساعد الشحن واللوجستيات' : 'Logistics & Shipping AI Assistant'}
+              <h1 className="text-xl font-bold text-foreground">
+                {isRTL ? 'مساعد الشحن الذكي' : 'LogiPro AI Assistant'}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {currentPlanTitle 
                   ? `${isRTL ? 'الخطة: ' : 'Plan: '}${currentPlanTitle}`
-                  : (isRTL ? 'خطط شحناتك الدولية بسهولة' : 'Plan your international shipments with ease')}
+                  : (isRTL ? 'خطط وأنشئ مستندات الشحن تلقائياً' : 'Plan shipments & generate documents automatically')}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" onClick={() => setShowLoadDialog(true)} className="gap-2">
-              <FolderOpen className="h-4 w-4" />
+          <div className="flex items-center gap-1.5">
+            <Button variant="ghost" size="sm" onClick={() => setShowLoadDialog(true)} className="gap-1.5 h-8 text-xs">
+              <FolderOpen className="h-3.5 w-3.5" />
               {isRTL ? 'تحميل' : 'Load'}
             </Button>
-            <Button variant="outline" onClick={() => setShowSaveDialog(true)} className="gap-2">
-              <Save className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={() => setShowSaveDialog(true)} className="gap-1.5 h-8 text-xs">
+              <Save className="h-3.5 w-3.5" />
               {currentPlanId ? (isRTL ? 'تحديث' : 'Update') : (isRTL ? 'حفظ' : 'Save')}
             </Button>
-            <Button variant="outline" onClick={resetAll} className="gap-2">
-              <RotateCcw className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={resetAll} className="gap-1.5 h-8 text-xs">
+              <RotateCcw className="h-3.5 w-3.5" />
               {isRTL ? 'جديد' : 'New'}
             </Button>
           </div>
         </div>
 
-        {/* Main Content - Two Column Layout */}
-        <div className="grid lg:grid-cols-5 gap-6 h-[calc(100vh-220px)]">
-          {/* Left Column - Wizard (60%) */}
-          <div className="lg:col-span-3 bg-card rounded-xl border shadow-sm overflow-hidden">
+        {/* Main Content */}
+        <div className="grid lg:grid-cols-5 gap-4 h-[calc(100vh-180px)]">
+          {/* Left - Wizard */}
+          <div className="lg:col-span-3 rounded-xl border shadow-sm overflow-hidden bg-card">
             <ShipmentWizard
               shipmentState={shipmentState}
               onGeneratePlan={generatePlan}
@@ -222,27 +199,28 @@ Generate the final JSON plan now.`;
             />
           </div>
 
-          {/* Right Column - Chat (40%) */}
-          <div className="lg:col-span-2 bg-card rounded-xl border shadow-sm overflow-hidden">
+          {/* Right - Chat */}
+          <div className="lg:col-span-2 rounded-xl border shadow-sm overflow-hidden bg-card">
             <LogisticsChatPanel
               shipmentState={shipmentState}
               messages={messages}
               setMessages={setMessages}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
+              shipmentId={currentPlanId || undefined}
             />
           </div>
         </div>
 
-        {/* Generated Plan Results */}
+        {/* Generated Plan */}
         {generatedPlan && (
-          <div className="mt-6">
-            <Card>
-              <CardHeader>
+          <div className="mt-4">
+            <Card className="border-blue-500/20">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Ship className="h-5 w-5 text-primary" />
-                    {isRTL ? 'خطة الشحن المُنشأة' : 'Generated Shipment Plan'}
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Ship className="h-4 w-4 text-blue-500" />
+                    {isRTL ? 'خطة الشحن' : 'Shipment Plan'}
                   </CardTitle>
                   {currentPlanId && (
                     <CreateShipmentButton planId={currentPlanId} />
@@ -265,7 +243,6 @@ Generate the final JSON plan now.`;
         isLoading={plansLoading}
         defaultTitle={currentPlanTitle || `${shipmentState.state.origin_country} → ${shipmentState.state.destination_country}`}
       />
-
       <SavedPlansDialog
         open={showLoadDialog}
         onOpenChange={setShowLoadDialog}

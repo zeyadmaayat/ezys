@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Trash2, Loader2, Ship } from 'lucide-react';
+import { Send, Trash2, Loader2, Sparkles, FileText, Ship, Plane, Truck, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ShipmentStateHook } from '@/hooks/useShipmentState';
 import { ChatMessage } from './ChatMessage';
@@ -16,12 +15,27 @@ export type Message = {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/logistics-assistant`;
 
+const QUICK_ACTIONS = [
+  { icon: FileText, label: 'Commercial Invoice', labelAr: 'فاتورة تجارية', prompt: 'Generate a Commercial Invoice for this shipment' },
+  { icon: FileText, label: 'Packing List', labelAr: 'قائمة تعبئة', prompt: 'Generate a Packing List for this shipment' },
+  { icon: FileText, label: 'Bill of Lading', labelAr: 'بوليصة شحن', prompt: 'Generate a Bill of Lading for this shipment' },
+  { icon: FileText, label: 'Customs Declaration', labelAr: 'بيان جمركي', prompt: 'Generate a Customs Declaration for this shipment' },
+];
+
+const QUICK_STARTS = [
+  { icon: Ship, label: 'Sea Freight', labelAr: 'شحن بحري', prompt: 'I need to ship goods by sea' },
+  { icon: Plane, label: 'Air Freight', labelAr: 'شحن جوي', prompt: 'I need urgent air shipping' },
+  { icon: Truck, label: 'Road Transport', labelAr: 'نقل بري', prompt: 'I need road freight within a region' },
+  { icon: Package, label: 'FCL Container', labelAr: 'حاوية كاملة', prompt: 'I need to ship a full container load (FCL)' },
+];
+
 interface LogisticsChatPanelProps {
   shipmentState: ShipmentStateHook;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  shipmentId?: string;
 }
 
 export function LogisticsChatPanel({
@@ -30,11 +44,11 @@ export function LogisticsChatPanel({
   setMessages,
   isLoading,
   setIsLoading,
+  shipmentId,
 }: LogisticsChatPanelProps) {
   const [input, setInput] = useState('');
   const { language } = useLanguage();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isRTL = language === 'ar';
 
@@ -44,9 +58,8 @@ export function LogisticsChatPanel({
     }
   }, [messages]);
 
-  const sendMessage = useCallback(async (userInput: string, includeContext: boolean = true) => {
-    // Build context from shipment state
-    const contextPrefix = includeContext && shipmentState.state.origin_country
+  const sendMessage = useCallback(async (userInput: string) => {
+    const contextPrefix = shipmentState.state.origin_country
       ? `[Current Shipment Data]\n${shipmentState.toContextString()}\n\n[User Message]\n`
       : '';
 
@@ -73,7 +86,6 @@ export function LogisticsChatPanel({
     };
 
     try {
-      // Build messages array - include context with current user message
       const allMessages = [
         ...messages.map(m => ({ role: m.role, content: m.content })),
         msgWithContext
@@ -89,28 +101,16 @@ export function LogisticsChatPanel({
       });
 
       if (resp.status === 429) {
-        toast({
-          title: isRTL ? 'تم تجاوز الحد' : 'Rate Limited',
-          description: isRTL ? 'الرجاء الانتظار والمحاولة مرة أخرى.' : 'Too many requests. Please wait and try again.',
-          variant: 'destructive',
-        });
+        toast({ title: 'Rate Limited', description: 'Please wait and try again.', variant: 'destructive' });
         setIsLoading(false);
         return;
       }
-
       if (resp.status === 402) {
-        toast({
-          title: isRTL ? 'مطلوب رصيد' : 'Credits Required',
-          description: isRTL ? 'يرجى إضافة رصيد للمتابعة.' : 'Please add credits to continue.',
-          variant: 'destructive',
-        });
+        toast({ title: 'Credits Required', description: 'Please add credits to continue.', variant: 'destructive' });
         setIsLoading(false);
         return;
       }
-
-      if (!resp.ok || !resp.body) {
-        throw new Error('Failed to start stream');
-      }
+      if (!resp.ok || !resp.body) throw new Error('Failed to start stream');
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -132,10 +132,7 @@ export function LogisticsChatPanel({
           if (!line.startsWith('data: ')) continue;
 
           const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') {
-            streamDone = true;
-            break;
-          }
+          if (jsonStr === '[DONE]') { streamDone = true; break; }
 
           try {
             const parsed = JSON.parse(jsonStr);
@@ -161,22 +158,16 @@ export function LogisticsChatPanel({
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) upsertAssistant(content);
-          } catch {
-            /* ignore */
-          }
+          } catch { /* ignore */ }
         }
       }
     } catch (error) {
       console.error('Chat error:', error);
-      toast({
-        title: isRTL ? 'خطأ' : 'Error',
-        description: isRTL ? 'فشل الاتصال. يرجى المحاولة مرة أخرى.' : 'Failed to get a response. Please try again.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Error', description: 'Failed to get a response.', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
-  }, [messages, shipmentState, isRTL, setMessages, setIsLoading]);
+  }, [messages, shipmentState, setMessages, setIsLoading]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -192,30 +183,24 @@ export function LogisticsChatPanel({
     }
   };
 
-  const clearChat = () => {
-    setMessages([]);
-  };
-
   return (
     <div className="flex flex-col h-full" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-card">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <Ship className="h-4 w-4 text-primary" />
+      <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-blue-600/5 to-indigo-600/5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+            <Sparkles className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h3 className="font-medium text-sm">
-              {isRTL ? 'المساعد الذكي' : 'AI Assistant'}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {isRTL ? 'اسأل أي سؤال' : 'Ask any question'}
+            <h3 className="font-semibold text-sm">LogiPro AI</h3>
+            <p className="text-[10px] text-muted-foreground">
+              {isRTL ? 'مساعد الشحن والمستندات' : 'Shipping & Documents Assistant'}
             </p>
           </div>
         </div>
         {messages.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={clearChat}>
-            <Trash2 className="h-4 w-4" />
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMessages([])}>
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         )}
       </div>
@@ -223,36 +208,78 @@ export function LogisticsChatPanel({
       {/* Messages */}
       <ScrollArea className="flex-1" ref={scrollRef}>
         {messages.length === 0 ? (
-          <div className="p-4 space-y-4">
-            <Card className="border-primary/20">
-              <CardContent className="pt-4 text-sm text-muted-foreground">
-                <p>
-                  {isRTL
-                    ? 'يمكنك طرح الأسئلة أو تقديم معلومات إضافية هنا. سأساعدك في التخطيط لشحنتك.'
-                    : 'You can ask questions or provide additional info here. I\'ll help you plan your shipment.'}
-                </p>
-                <p className="mt-2 text-xs">
-                  {isRTL
-                    ? '💡 نصيحة: أكمل النموذج على اليسار للحصول على خطة شحن كاملة.'
-                    : '💡 Tip: Complete the form on the left to get a full shipping plan.'}
-                </p>
-              </CardContent>
-            </Card>
+          <div className="p-4 space-y-5">
+            {/* Welcome */}
+            <div className="text-center py-6">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-3">
+                <Sparkles className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="font-semibold text-lg">
+                {isRTL ? 'مرحباً! أنا LogiPro AI' : 'Hi! I\'m LogiPro AI'}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {isRTL 
+                  ? 'أستطيع تخطيط شحناتك وإنشاء المستندات تلقائياً'
+                  : 'I can plan shipments & generate documents for you'}
+              </p>
+            </div>
+
+            {/* Quick Start */}
+            <div>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                {isRTL ? 'ابدأ بسرعة' : 'Quick Start'}
+              </p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {QUICK_STARTS.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => sendMessage(item.prompt)}
+                    disabled={isLoading}
+                    className="flex items-center gap-2 p-2.5 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left text-xs disabled:opacity-50"
+                  >
+                    <item.icon className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+                    <span>{isRTL ? item.labelAr : item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Document Generation */}
+            <div>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                {isRTL ? 'إنشاء المستندات' : 'Generate Documents'}
+              </p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {QUICK_ACTIONS.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => sendMessage(item.prompt)}
+                    disabled={isLoading}
+                    className="flex items-center gap-2 p-2.5 rounded-lg border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 transition-colors text-left text-xs disabled:opacity-50"
+                  >
+                    <item.icon className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+                    <span>{isRTL ? item.labelAr : item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="py-2">
             {messages.map((msg, idx) => (
-              <ChatMessage key={idx} role={msg.role} content={msg.content} />
+              <ChatMessage key={idx} role={msg.role} content={msg.content} shipmentId={shipmentId} />
             ))}
             {isLoading && messages[messages.length - 1]?.role === 'user' && (
-              <div className="flex gap-3 p-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Loader2 className="h-4 w-4 text-primary animate-spin" />
+              <div className="flex gap-3 px-4 py-4">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <Loader2 className="h-4 w-4 text-white animate-spin" />
                 </div>
-                <div className="bg-muted rounded-2xl px-4 py-3">
-                  <span className="text-sm text-muted-foreground">
-                    {isRTL ? 'جاري التفكير...' : 'Thinking...'}
-                  </span>
+                <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse delay-150" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse delay-300" />
+                  </div>
                 </div>
               </div>
             )}
@@ -261,19 +288,23 @@ export function LogisticsChatPanel({
       </ScrollArea>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t bg-card">
-        <div className="flex gap-2">
+      <form onSubmit={handleSubmit} className="p-3 border-t bg-card/80 backdrop-blur-sm">
+        <div className="flex gap-2 items-end">
           <Textarea
-            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={isRTL ? 'اكتب رسالتك...' : 'Type your message...'}
-            className="min-h-[40px] max-h-24 resize-none text-sm"
+            placeholder={isRTL ? 'اكتب رسالتك أو اطلب مستند...' : 'Type a message or request a document...'}
+            className="min-h-[40px] max-h-24 resize-none text-sm rounded-xl border-muted-foreground/20 focus-visible:ring-blue-500/30"
             rows={1}
             disabled={isLoading}
           />
-          <Button type="submit" size="icon" disabled={!input.trim() || isLoading}>
+          <Button 
+            type="submit" 
+            size="icon" 
+            disabled={!input.trim() || isLoading}
+            className="rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 h-10 w-10 flex-shrink-0"
+          >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
