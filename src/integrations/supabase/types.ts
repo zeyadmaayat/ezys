@@ -1369,6 +1369,42 @@ export type Database = {
           },
         ]
       }
+      training_ratings: {
+        Row: {
+          completed_steps: number
+          created_at: string
+          feedback: string | null
+          id: string
+          plan_id: string
+          plan_title: string
+          rating: number
+          total_steps: number
+          user_id: string
+        }
+        Insert: {
+          completed_steps?: number
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          plan_id: string
+          plan_title: string
+          rating: number
+          total_steps?: number
+          user_id: string
+        }
+        Update: {
+          completed_steps?: number
+          created_at?: string
+          feedback?: string | null
+          id?: string
+          plan_id?: string
+          plan_title?: string
+          rating?: number
+          total_steps?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

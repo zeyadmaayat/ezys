@@ -18,6 +18,7 @@ import { SAMPLE_ACTION_PLANS } from '@/data/sample-action-plans';
 import { useActionPlans } from '@/hooks/useActionPlans';
 import SavedPlansList from './SavedPlansList';
 import SavePlanDialog from './SavePlanDialog';
+import TrainingRatingDialog from './TrainingRatingDialog';
 import {
   CheckCircle,
   XCircle,
@@ -191,6 +192,7 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   const [internalPlan, setInternalPlan] = useState<ActionPlan>(SAMPLE_ACTION_PLANS[0]);
   const [activeTab, setActiveTab] = useState<'samples' | 'saved'>('samples');
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [difficultyFilter, setDifficultyFilter] = useState<'all' | ActionPlan['difficulty']>('all');
   
   const { plans: savedPlans, loading: loadingPlans, savePlan, deletePlan } = useActionPlans();
@@ -265,6 +267,7 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   };
 
   const handleComplete = () => {
+    setRatingDialogOpen(true);
     if (externalOnComplete) {
       externalOnComplete();
     }
@@ -647,6 +650,16 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
         onOpenChange={setSaveDialogOpen}
         currentPlan={internalPlan}
         onSave={savePlan}
+      />
+
+      {/* Rating Dialog */}
+      <TrainingRatingDialog
+        open={ratingDialogOpen}
+        onOpenChange={setRatingDialogOpen}
+        planId={plan.id}
+        planTitle={language === 'ar' ? plan.title_ar : plan.title_en}
+        completedSteps={completedCount}
+        totalSteps={sortedActions.length}
       />
     </div>
   );
