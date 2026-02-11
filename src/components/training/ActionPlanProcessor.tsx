@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import jsPDF from 'jspdf';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -33,7 +34,8 @@ import {
   ClipboardCheck,
   RotateCcw,
   Save,
-  FolderOpen
+  FolderOpen,
+  Download
 } from 'lucide-react';
 
 interface ActionPlanProcessorProps {
@@ -278,6 +280,139 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
   };
 
   const allCompleted = sortedActions.every(a => a.status !== 'pending');
+  const hasAnyProgress = sortedActions.some(a => a.status !== 'pending');
+
+  const exportToPDF = useCallback(() => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 20;
+
+    const checkPage = (needed: number) => {
+      if (y + needed > doc.internal.pageSize.getHeight() - 20) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    // Title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    const titleText = language === 'ar' ? plan.title_ar : plan.title_en;
+    doc.text(titleText, margin, y);
+    y += 10;
+
+    // Description
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100);
+    const descText = language === 'ar' ? plan.description_ar : plan.description_en;
+    const descLines = doc.splitTextToSize(descText, maxWidth);
+    doc.text(descLines, margin, y);
+    y += descLines.length * 5 + 5;
+
+    // Meta info
+    doc.setFontSize(9);
+    const diffLabel = language === 'ar' ? 'الصعوبة' : 'Difficulty';
+    const timeLabel = language === 'ar' ? 'الوقت المقدر' : 'Est. Time';
+    const estTime = language === 'ar' ? plan.estimatedTime_ar : plan.estimatedTime_en;
+    doc.text(`${diffLabel}: ${plan.difficulty}  |  ${timeLabel}: ${estTime}`, margin, y);
+    y += 8;
+
+    // Progress summary
+    doc.setTextColor(0);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    const progressLabel = language === 'ar' ? 'ملخص التقدم' : 'Progress Summary';
+    doc.text(progressLabel, margin, y);
+    y += 7;
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const approved = sortedActions.filter(a => a.status === 'approved').length;
+    const rejected = sortedActions.filter(a => a.status === 'rejected').length;
+    const skipped = sortedActions.filter(a => a.status === 'skipped').length;
+    const pending = sortedActions.filter(a => a.status === 'pending').length;
+
+    const summaryText = language === 'ar'
+      ? `الإجمالي: ${sortedActions.length} | موافقة: ${approved} | مرفوضة: ${rejected} | تم تخطيها: ${skipped} | معلقة: ${pending}`
+      : `Total: ${sortedActions.length} | Approved: ${approved} | Rejected: ${rejected} | Skipped: ${skipped} | Pending: ${pending}`;
+    doc.text(summaryText, margin, y);
+    y += 10;
+
+    // Divider
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
+
+    // Steps
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0);
+    const stepsLabel = language === 'ar' ? 'تفاصيل الخطوات' : 'Step Details';
+    doc.text(stepsLabel, margin, y);
+    y += 8;
+
+    sortedActions.forEach((step, index) => {
+      checkPage(35);
+
+      const toolInfo = LOGISTICS_TOOLS[step.tool as LogisticsTool];
+      const toolName = language === 'ar' ? toolInfo?.name_ar : toolInfo?.name_en;
+      const stepDesc = language === 'ar' ? step.description_ar : step.description_en;
+
+      // Step header
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0);
+
+      const statusMap: Record<string, string> = {
+        pending: '⏳', approved: '✅', rejected: '❌', completed: '✔', skipped: '⏭'
+      };
+      const statusIcon = statusMap[step.status] || '';
+
+      doc.text(`${index + 1}. ${toolName} ${statusIcon} [${step.status.toUpperCase()}]`, margin, y);
+      y += 5;
+
+      // Step description
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(60);
+      const stepLines = doc.splitTextToSize(stepDesc, maxWidth - 5);
+      doc.text(stepLines, margin + 5, y);
+      y += stepLines.length * 4 + 3;
+
+      // Notes
+      if (step.notes && step.notes.trim()) {
+        checkPage(15);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(80);
+        const notesLabel = language === 'ar' ? 'ملاحظات:' : 'Notes:';
+        const notesLines = doc.splitTextToSize(`${notesLabel} ${step.notes}`, maxWidth - 10);
+        doc.text(notesLines, margin + 10, y);
+        y += notesLines.length * 4 + 3;
+      }
+
+      y += 4;
+    });
+
+    // Footer
+    checkPage(15);
+    doc.setDrawColor(200);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 6;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130);
+    const dateStr = new Date().toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US', {
+      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    const footerText = language === 'ar' ? `تم التصدير في: ${dateStr}` : `Exported on: ${dateStr}`;
+    doc.text(footerText, margin, y);
+
+    const fileName = `training-report-${plan.id}-${Date.now()}.pdf`;
+    doc.save(fileName);
+  }, [plan, sortedActions, language]);
 
   // Filter scenarios by difficulty
   const filteredScenarios = difficultyFilter === 'all' 
@@ -490,6 +625,12 @@ const ActionPlanProcessor = ({ plan: externalPlan, onActionUpdate: externalOnAct
           <Button onClick={() => setSaveDialogOpen(true)} variant="secondary" className="flex-1">
             <Save className="w-4 h-4 mr-2" />
             {language === 'ar' ? 'حفظ الخطة' : 'Save Plan'}
+          </Button>
+        )}
+        {hasAnyProgress && (
+          <Button onClick={exportToPDF} variant="outline" className="flex-1">
+            <Download className="w-4 h-4 mr-2" />
+            {language === 'ar' ? 'تصدير PDF' : 'Export PDF'}
           </Button>
         )}
         {allCompleted && (
