@@ -130,10 +130,15 @@ export function useOrders() {
     }
 
     try {
-      // Get order details
-      const order = orders.find(o => o.id === orderId);
-      if (!order) {
-        const msg = 'Order not found in local state';
+      // Fetch order directly from DB to avoid stale local state
+      const { data: orderData, error: orderFetchError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .maybeSingle();
+
+      if (orderFetchError || !orderData) {
+        const msg = 'Order not found';
         toast.error(msg);
         return { id: null, error: msg };
       }
@@ -144,7 +149,7 @@ export function useOrders() {
         .insert({
           user_id: user.id,
           order_id: orderId,
-          customer_id: order.customer_id,
+          customer_id: orderData.customer_id,
           status: 'Planned',
         })
         .select()
