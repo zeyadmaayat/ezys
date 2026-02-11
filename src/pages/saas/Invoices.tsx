@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import MainLayout from '@/components/MainLayout';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useInvoicesV2 } from '@/hooks/useInvoicesV2';
 import { usePayments } from '@/hooks/usePayments';
 import { useShipmentsV2 } from '@/hooks/useShipmentsV2';
+import { useCompany } from '@/hooks/useCompany';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 import { RequireRole, RoleBadge, PermissionButtonWrapper } from '@/components/auth/RequireRole';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,46 +13,55 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Loader2, ArrowLeft, DollarSign, Send, CheckCircle, Lock } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Plus, Loader2, DollarSign, Send, CheckCircle, Download, Search,
+  FileText, TrendingUp, Clock, AlertCircle, CreditCard, Receipt, ArrowUpRight
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { InvoiceStatusV2, PaymentMethod } from '@/types/saas-erp';
+import { downloadInvoicePDF } from '@/lib/invoice-pdf';
 
-const statusColors: Record<InvoiceStatusV2, string> = {
-  Draft: 'bg-gray-100 text-gray-800',
-  Sent: 'bg-blue-100 text-blue-800',
-  Paid: 'bg-green-100 text-green-800',
-  Overdue: 'bg-red-100 text-red-800',
-  Cancelled: 'bg-gray-100 text-gray-500',
+const statusConfig: Record<InvoiceStatusV2, { color: string; icon: typeof FileText }> = {
+  Draft: { color: 'bg-muted text-muted-foreground', icon: FileText },
+  Sent: { color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400', icon: Send },
+  Paid: { color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', icon: CheckCircle },
+  Overdue: { color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', icon: AlertCircle },
+  Cancelled: { color: 'bg-muted text-muted-foreground/60', icon: FileText },
+};
+
+const paymentMethodLabels: Record<PaymentMethod, string> = {
+  cash: 'Cash',
+  bank_transfer: 'Bank Transfer',
+  credit_card: 'Credit Card',
+  check: 'Check',
 };
 
 export default function InvoicesPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { language } = useLanguage();
+  const isRTL = language === 'ar';
   const { invoices, loading, createInvoice, updateInvoiceStatus } = useInvoicesV2();
-  const { createPayment } = usePayments();
-  const { shipments, getDeliveredShipments } = useShipmentsV2();
+  const { payments, createPayment, getTotalPayments } = usePayments();
+  const { getDeliveredShipments } = useShipmentsV2();
+  const { company } = useCompany();
   const { canManageInvoices, canRecordPayments } = useCurrentUserRoles();
-  
+
+  const [activeTab, setActiveTab] = useState('invoices');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [formData, setFormData] = useState({
-    shipment_id: '',
-    amount: '',
-    due_date: '',
-    notes: '',
-  });
-  const [paymentData, setPaymentData] = useState({
-    amount: '',
-    method: 'bank_transfer' as PaymentMethod,
-    reference: '',
-  });
+  const [formData, setFormData] = useState({ shipment_id: '', amount: '', due_date: '', notes: '' });
+  const [paymentData, setPaymentData] = useState({ amount: '', method: 'bank_transfer' as PaymentMethod, reference: '' });
 
-  // Auto-open create dialog if shipment param is present
   useEffect(() => {
     const shipmentId = searchParams.get('shipment');
     if (shipmentId) {
@@ -59,9 +70,33 @@ export default function InvoicesPage() {
     }
   }, [searchParams]);
 
+  // KPIs
+  const kpis = useMemo(() => {
+    const totalRevenue = invoices.reduce((s, i) => s + Number(i.amount), 0);
+    const paidAmount = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + Number(i.amount), 0);
+    const unpaid = invoices.filter(i => i.status !== 'Paid' && i.status !== 'Cancelled');
+    const unpaidAmount = unpaid.reduce((s, i) => s + Number(i.amount), 0);
+    const overdueCount = invoices.filter(i => i.status === 'Overdue').length;
+    return { totalRevenue, paidAmount, unpaidAmount, overdueCount, totalCount: invoices.length };
+  }, [invoices]);
+
+  // Filtered invoices
+  const filteredInvoices = useMemo(() => {
+    return invoices.filter(inv => {
+      if (statusFilter !== 'all' && inv.status !== statusFilter) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return inv.invoice_number.toLowerCase().includes(q) ||
+          inv.shipment?.tracking_number?.toLowerCase().includes(q) ||
+          inv.shipment?.origin?.toLowerCase().includes(q) ||
+          inv.shipment?.destination?.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [invoices, statusFilter, searchQuery]);
+
   const handleCreate = async () => {
     if (!formData.shipment_id || !formData.amount) return;
-    
     setIsCreating(true);
     const result = await createInvoice({
       shipment_id: formData.shipment_id,
@@ -70,7 +105,6 @@ export default function InvoicesPage() {
       notes: formData.notes || undefined,
     });
     setIsCreating(false);
-    
     if (result) {
       setIsCreateOpen(false);
       setFormData({ shipment_id: '', amount: '', due_date: '', notes: '' });
@@ -79,7 +113,6 @@ export default function InvoicesPage() {
 
   const handlePayment = async () => {
     if (!selectedInvoiceId || !paymentData.amount) return;
-    
     setIsCreating(true);
     const result = await createPayment({
       invoice_id: selectedInvoiceId,
@@ -88,7 +121,6 @@ export default function InvoicesPage() {
       reference: paymentData.reference || undefined,
     });
     setIsCreating(false);
-    
     if (result) {
       setIsPaymentOpen(false);
       setSelectedInvoiceId(null);
@@ -116,232 +148,387 @@ export default function InvoicesPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6 p-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/saas/dashboard')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold">Invoices</h1>
-            <p className="text-muted-foreground">Manage invoices and payments</p>
+      <div className="container mx-auto px-4 py-6 space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <Receipt className="h-6 w-6 text-primary" />
+              {isRTL ? 'المالية' : 'Finance'}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {isRTL ? 'إدارة الفواتير والمدفوعات والتقارير المالية' : 'Manage invoices, payments & financial reports'}
+            </p>
           </div>
-          {/* Only Admin/Finance can create invoices */}
-          <RequireRole 
-            roles={['admin', 'finance']} 
-            fallback={
-              <RoleBadge roles={['admin', 'finance']} className="ml-2" />
-            }
+          <RequireRole
+            roles={['admin', 'finance']}
+            fallback={<RoleBadge roles={['admin', 'finance']} />}
             hideWhenForbidden={false}
           >
-            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-              <DialogTrigger asChild>
-                <Button disabled={deliveredShipments.length === 0 || !canManageInvoices}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Invoice
-                </Button>
-              </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Invoice</DialogTitle>
-                <DialogDescription>
-                  Create an invoice for a delivered shipment.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <Label>Shipment *</Label>
-                  <Select 
-                    value={formData.shipment_id} 
-                    onValueChange={(v) => setFormData(prev => ({ ...prev, shipment_id: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select delivered shipment" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {deliveredShipments.map(s => (
-                        <SelectItem key={s.id} value={s.id}>
-                          {s.tracking_number} - {s.origin} → {s.destination}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="amount">Amount *</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={formData.amount}
-                    onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="due_date">Due Date</Label>
-                  <Input
-                    id="due_date"
-                    type="date"
-                    value={formData.due_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-                <Button onClick={handleCreate} disabled={isCreating || !formData.shipment_id || !formData.amount}>
-                  {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            <Button onClick={() => setIsCreateOpen(true)} disabled={deliveredShipments.length === 0 || !canManageInvoices}>
+              <Plus className="h-4 w-4 me-2" />
+              {isRTL ? 'فاتورة جديدة' : 'New Invoice'}
+            </Button>
           </RequireRole>
-
-          {/* Payment Dialog */}
-          <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Record Payment</DialogTitle>
-                <DialogDescription>
-                  Record a payment for this invoice.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="payAmount">Amount *</Label>
-                  <Input
-                    id="payAmount"
-                    type="number"
-                    step="0.01"
-                    value={paymentData.amount}
-                    onChange={(e) => setPaymentData(prev => ({ ...prev, amount: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Payment Method</Label>
-                  <Select 
-                    value={paymentData.method} 
-                    onValueChange={(v: PaymentMethod) => setPaymentData(prev => ({ ...prev, method: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                      <SelectItem value="credit_card">Credit Card</SelectItem>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="check">Check</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="reference">Reference</Label>
-                  <Input
-                    id="reference"
-                    placeholder="Transaction ID"
-                    value={paymentData.reference}
-                    onChange={(e) => setPaymentData(prev => ({ ...prev, reference: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsPaymentOpen(false)}>Cancel</Button>
-                <Button onClick={handlePayment} disabled={isCreating || !paymentData.amount}>
-                  {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Record Payment'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>All Invoices ({invoices.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {invoices.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No invoices yet. Create an invoice for a delivered shipment.
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="border-l-4 border-l-primary">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                    {isRTL ? 'إجمالي الإيرادات' : 'Total Revenue'}
+                  </p>
+                  <p className="text-2xl font-bold mt-1">
+                    {kpis.totalRevenue.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">SAR</span>
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
               </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Invoice #</TableHead>
-                    <TableHead>Shipment</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {invoices.map((invoice) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-mono">{invoice.invoice_number}</TableCell>
-                      <TableCell>
-                        {invoice.shipment?.tracking_number || '—'}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        ${Number(invoice.amount).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={statusColors[invoice.status]}>
-                          {invoice.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {invoice.due_date 
-                          ? format(new Date(invoice.due_date), 'MMM d, yyyy')
-                          : '—'}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {invoice.status === 'Draft' && (
-                            <PermissionButtonWrapper 
-                              roles={['admin', 'finance']}
-                              tooltip="Admin or Finance role required"
-                            >
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => canManageInvoices && updateInvoiceStatus(invoice.id, 'Sent')}
-                                disabled={!canManageInvoices}
-                              >
-                                <Send className="mr-1 h-3 w-3" />
-                                Send
-                              </Button>
-                            </PermissionButtonWrapper>
-                          )}
-                          {(invoice.status === 'Draft' || invoice.status === 'Sent') && (
-                            <PermissionButtonWrapper 
-                              roles={['admin', 'finance']}
-                              tooltip="Admin or Finance role required to record payments"
-                            >
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => canRecordPayments && openPaymentDialog(invoice.id, invoice.amount)}
-                                disabled={!canRecordPayments}
-                              >
-                                <DollarSign className="mr-1 h-3 w-3" />
-                                Pay
-                              </Button>
-                            </PermissionButtonWrapper>
-                          )}
-                          {invoice.status === 'Paid' && (
-                            <CheckCircle className="h-4 w-4 text-primary" />
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+              <p className="text-xs text-muted-foreground mt-2">
+                {kpis.totalCount} {isRTL ? 'فاتورة' : 'invoices'}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-green-500">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                    {isRTL ? 'المحصّل' : 'Collected'}
+                  </p>
+                  <p className="text-2xl font-bold mt-1 text-green-600">
+                    {kpis.paidAmount.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">SAR</span>
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-orange-500">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                    {isRTL ? 'غير محصّل' : 'Outstanding'}
+                  </p>
+                  <p className="text-2xl font-bold mt-1 text-orange-600">
+                    {kpis.unpaidAmount.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">SAR</span>
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-orange-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-red-500">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                    {isRTL ? 'متأخرة' : 'Overdue'}
+                  </p>
+                  <p className="text-2xl font-bold mt-1 text-red-600">{kpis.overdueCount}</p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                  <AlertCircle className="h-5 w-5 text-red-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs: Invoices & Payments */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="h-11 p-1">
+            <TabsTrigger value="invoices" className="gap-2 text-sm">
+              <FileText className="h-4 w-4" />
+              {isRTL ? 'الفواتير' : 'Invoices'}
+              <Badge variant="secondary" className="ms-1">{invoices.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="gap-2 text-sm">
+              <CreditCard className="h-4 w-4" />
+              {isRTL ? 'المدفوعات' : 'Payments'}
+              <Badge variant="secondary" className="ms-1">{payments.length}</Badge>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Invoices Tab */}
+          <TabsContent value="invoices" className="mt-4 space-y-4">
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={isRTL ? 'بحث برقم الفاتورة أو الشحنة...' : 'Search by invoice # or shipment...'}
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="ps-9"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder={isRTL ? 'الحالة' : 'Status'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{isRTL ? 'الكل' : 'All'}</SelectItem>
+                  <SelectItem value="Draft">{isRTL ? 'مسودة' : 'Draft'}</SelectItem>
+                  <SelectItem value="Sent">{isRTL ? 'مرسلة' : 'Sent'}</SelectItem>
+                  <SelectItem value="Paid">{isRTL ? 'مدفوعة' : 'Paid'}</SelectItem>
+                  <SelectItem value="Overdue">{isRTL ? 'متأخرة' : 'Overdue'}</SelectItem>
+                  <SelectItem value="Cancelled">{isRTL ? 'ملغية' : 'Cancelled'}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Invoices Table */}
+            <Card>
+              <CardContent className="p-0">
+                {filteredInvoices.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <FileText className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                    <p className="font-medium">{isRTL ? 'لا يوجد فواتير' : 'No invoices found'}</p>
+                    <p className="text-sm mt-1">
+                      {searchQuery || statusFilter !== 'all'
+                        ? (isRTL ? 'جرّب تغيير الفلتر' : 'Try adjusting your filters')
+                        : (isRTL ? 'أنشئ فاتورة لشحنة مكتملة' : 'Create an invoice for a delivered shipment')}
+                    </p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{isRTL ? 'رقم الفاتورة' : 'Invoice #'}</TableHead>
+                        <TableHead>{isRTL ? 'الشحنة' : 'Shipment'}</TableHead>
+                        <TableHead>{isRTL ? 'المسار' : 'Route'}</TableHead>
+                        <TableHead className="text-end">{isRTL ? 'المبلغ' : 'Amount'}</TableHead>
+                        <TableHead>{isRTL ? 'الحالة' : 'Status'}</TableHead>
+                        <TableHead>{isRTL ? 'تاريخ الاستحقاق' : 'Due Date'}</TableHead>
+                        <TableHead className="text-end">{isRTL ? 'إجراءات' : 'Actions'}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredInvoices.map(invoice => {
+                        const cfg = statusConfig[invoice.status];
+                        return (
+                          <TableRow key={invoice.id} className="group">
+                            <TableCell className="font-mono font-medium">{invoice.invoice_number}</TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {invoice.shipment?.tracking_number || '—'}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {invoice.shipment
+                                ? `${invoice.shipment.origin} → ${invoice.shipment.destination}`
+                                : '—'}
+                            </TableCell>
+                            <TableCell className="text-end font-semibold">
+                              {Number(invoice.amount).toLocaleString()} SAR
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={cfg.color}>{invoice.status}</Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {invoice.due_date ? format(new Date(invoice.due_date), 'MMM d, yyyy') : '—'}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8"
+                                  onClick={() => downloadInvoicePDF(invoice, company?.name)}
+                                  title={isRTL ? 'تحميل PDF' : 'Download PDF'}
+                                >
+                                  <Download className="h-3.5 w-3.5" />
+                                </Button>
+                                {invoice.status === 'Draft' && (
+                                  <PermissionButtonWrapper roles={['admin', 'finance']} tooltip="Admin or Finance role required">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 text-xs"
+                                      onClick={() => canManageInvoices && updateInvoiceStatus(invoice.id, 'Sent')}
+                                      disabled={!canManageInvoices}
+                                    >
+                                      <Send className="h-3 w-3 me-1" />
+                                      {isRTL ? 'إرسال' : 'Send'}
+                                    </Button>
+                                  </PermissionButtonWrapper>
+                                )}
+                                {(invoice.status === 'Draft' || invoice.status === 'Sent') && (
+                                  <PermissionButtonWrapper roles={['admin', 'finance']} tooltip="Admin or Finance role required">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 text-xs"
+                                      onClick={() => canRecordPayments && openPaymentDialog(invoice.id, invoice.amount)}
+                                      disabled={!canRecordPayments}
+                                    >
+                                      <DollarSign className="h-3 w-3 me-1" />
+                                      {isRTL ? 'دفع' : 'Pay'}
+                                    </Button>
+                                  </PermissionButtonWrapper>
+                                )}
+                                {invoice.status === 'Paid' && (
+                                  <CheckCircle className="h-4 w-4 text-green-500" />
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Payments Tab */}
+          <TabsContent value="payments" className="mt-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-primary" />
+                  {isRTL ? 'سجل المدفوعات' : 'Payment History'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {payments.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <CreditCard className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                    <p className="font-medium">{isRTL ? 'لا يوجد مدفوعات' : 'No payments recorded'}</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{isRTL ? 'الفاتورة' : 'Invoice'}</TableHead>
+                        <TableHead className="text-end">{isRTL ? 'المبلغ' : 'Amount'}</TableHead>
+                        <TableHead>{isRTL ? 'طريقة الدفع' : 'Method'}</TableHead>
+                        <TableHead>{isRTL ? 'المرجع' : 'Reference'}</TableHead>
+                        <TableHead>{isRTL ? 'التاريخ' : 'Date'}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {payments.map(payment => (
+                        <TableRow key={payment.id}>
+                          <TableCell className="font-mono">
+                            {payment.invoice?.invoice_number || '—'}
+                          </TableCell>
+                          <TableCell className="text-end font-semibold text-green-600">
+                            +{Number(payment.amount).toLocaleString()} SAR
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{paymentMethodLabels[payment.method]}</Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {payment.reference || '—'}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {format(new Date(payment.paid_at), 'MMM d, yyyy')}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
+
+      {/* Create Invoice Dialog */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isRTL ? 'إنشاء فاتورة' : 'Create Invoice'}</DialogTitle>
+            <DialogDescription>
+              {isRTL ? 'أنشئ فاتورة لشحنة مكتملة' : 'Create an invoice for a delivered shipment.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>{isRTL ? 'الشحنة' : 'Shipment'} *</Label>
+              <Select value={formData.shipment_id} onValueChange={v => setFormData(prev => ({ ...prev, shipment_id: v }))}>
+                <SelectTrigger><SelectValue placeholder={isRTL ? 'اختر شحنة مكتملة' : 'Select delivered shipment'} /></SelectTrigger>
+                <SelectContent>
+                  {deliveredShipments.map(s => (
+                    <SelectItem key={s.id} value={s.id}>{s.tracking_number} — {s.origin} → {s.destination}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'المبلغ' : 'Amount'} (SAR) *</Label>
+              <Input type="number" step="0.01" placeholder="0.00" value={formData.amount} onChange={e => setFormData(prev => ({ ...prev, amount: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'تاريخ الاستحقاق' : 'Due Date'}</Label>
+              <Input type="date" value={formData.due_date} onChange={e => setFormData(prev => ({ ...prev, due_date: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'ملاحظات' : 'Notes'}</Label>
+              <Textarea placeholder={isRTL ? 'ملاحظات إضافية...' : 'Additional notes...'} value={formData.notes} onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))} rows={2} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>{isRTL ? 'إلغاء' : 'Cancel'}</Button>
+            <Button onClick={handleCreate} disabled={isCreating || !formData.shipment_id || !formData.amount}>
+              {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : (isRTL ? 'إنشاء' : 'Create')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Dialog */}
+      <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isRTL ? 'تسجيل دفعة' : 'Record Payment'}</DialogTitle>
+            <DialogDescription>{isRTL ? 'سجّل دفعة لهذه الفاتورة' : 'Record a payment for this invoice.'}</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>{isRTL ? 'المبلغ' : 'Amount'} (SAR) *</Label>
+              <Input type="number" step="0.01" value={paymentData.amount} onChange={e => setPaymentData(prev => ({ ...prev, amount: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'طريقة الدفع' : 'Payment Method'}</Label>
+              <Select value={paymentData.method} onValueChange={(v: PaymentMethod) => setPaymentData(prev => ({ ...prev, method: v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bank_transfer">{isRTL ? 'تحويل بنكي' : 'Bank Transfer'}</SelectItem>
+                  <SelectItem value="credit_card">{isRTL ? 'بطاقة ائتمان' : 'Credit Card'}</SelectItem>
+                  <SelectItem value="cash">{isRTL ? 'نقدي' : 'Cash'}</SelectItem>
+                  <SelectItem value="check">{isRTL ? 'شيك' : 'Check'}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{isRTL ? 'رقم المرجع' : 'Reference #'}</Label>
+              <Input placeholder={isRTL ? 'رقم التحويل أو المعاملة' : 'Transaction ID'} value={paymentData.reference} onChange={e => setPaymentData(prev => ({ ...prev, reference: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsPaymentOpen(false)}>{isRTL ? 'إلغاء' : 'Cancel'}</Button>
+            <Button onClick={handlePayment} disabled={isCreating || !paymentData.amount}>
+              {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : (isRTL ? 'تسجيل الدفعة' : 'Record Payment')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
