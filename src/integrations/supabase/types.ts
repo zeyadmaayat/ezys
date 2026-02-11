@@ -604,6 +604,7 @@ export type Database = {
           company_id: string
           created_at: string
           created_by: string | null
+          currency: string
           due_date: string | null
           id: string
           invoice_number: string
@@ -619,6 +620,7 @@ export type Database = {
           company_id: string
           created_at?: string
           created_by?: string | null
+          currency?: string
           due_date?: string | null
           id?: string
           invoice_number: string
@@ -634,6 +636,7 @@ export type Database = {
           company_id?: string
           created_at?: string
           created_by?: string | null
+          currency?: string
           due_date?: string | null
           id?: string
           invoice_number?: string

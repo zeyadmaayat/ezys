@@ -69,6 +69,7 @@ export function useInvoicesV2() {
           company_id: company.id,
           shipment_id: input.shipment_id,
           amount: input.amount,
+          currency: input.currency || 'SAR',
           due_date: input.due_date || null,
           notes: input.notes || null,
           created_by: user.id,

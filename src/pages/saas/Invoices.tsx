@@ -23,7 +23,7 @@ import {
   FileText, TrendingUp, Clock, AlertCircle, CreditCard, Receipt, ArrowUpRight
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { InvoiceStatusV2, PaymentMethod } from '@/types/saas-erp';
+import { InvoiceStatusV2, PaymentMethod, SUPPORTED_CURRENCIES } from '@/types/saas-erp';
 import { downloadInvoicePDF } from '@/lib/invoice-pdf';
 
 const statusConfig: Record<InvoiceStatusV2, { color: string; icon: typeof FileText }> = {
@@ -59,7 +59,7 @@ export default function InvoicesPage() {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [formData, setFormData] = useState({ shipment_id: '', amount: '', due_date: '', notes: '' });
+  const [formData, setFormData] = useState({ shipment_id: '', amount: '', currency: 'SAR', due_date: '', notes: '' });
   const [paymentData, setPaymentData] = useState({ amount: '', method: 'bank_transfer' as PaymentMethod, reference: '' });
 
   useEffect(() => {
@@ -72,12 +72,17 @@ export default function InvoicesPage() {
 
   // KPIs
   const kpis = useMemo(() => {
-    const totalRevenue = invoices.reduce((s, i) => s + Number(i.amount), 0);
-    const paidAmount = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + Number(i.amount), 0);
-    const unpaid = invoices.filter(i => i.status !== 'Paid' && i.status !== 'Cancelled');
-    const unpaidAmount = unpaid.reduce((s, i) => s + Number(i.amount), 0);
+    // Group by currency for display
+    const byCurrency: Record<string, { total: number; paid: number; unpaid: number }> = {};
+    invoices.forEach(i => {
+      const c = i.currency || 'SAR';
+      if (!byCurrency[c]) byCurrency[c] = { total: 0, paid: 0, unpaid: 0 };
+      byCurrency[c].total += Number(i.amount);
+      if (i.status === 'Paid') byCurrency[c].paid += Number(i.amount);
+      if (i.status !== 'Paid' && i.status !== 'Cancelled') byCurrency[c].unpaid += Number(i.amount);
+    });
     const overdueCount = invoices.filter(i => i.status === 'Overdue').length;
-    return { totalRevenue, paidAmount, unpaidAmount, overdueCount, totalCount: invoices.length };
+    return { byCurrency, overdueCount, totalCount: invoices.length };
   }, [invoices]);
 
   // Filtered invoices
@@ -101,13 +106,14 @@ export default function InvoicesPage() {
     const result = await createInvoice({
       shipment_id: formData.shipment_id,
       amount: parseFloat(formData.amount),
+      currency: formData.currency,
       due_date: formData.due_date || undefined,
       notes: formData.notes || undefined,
     });
     setIsCreating(false);
     if (result) {
       setIsCreateOpen(false);
-      setFormData({ shipment_id: '', amount: '', due_date: '', notes: '' });
+      setFormData({ shipment_id: '', amount: '', currency: 'SAR', due_date: '', notes: '' });
     }
   };
 
@@ -181,9 +187,14 @@ export default function InvoicesPage() {
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                     {isRTL ? 'إجمالي الإيرادات' : 'Total Revenue'}
                   </p>
-                  <p className="text-2xl font-bold mt-1">
-                    {kpis.totalRevenue.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">SAR</span>
-                  </p>
+                  <div className="mt-1 space-y-0.5">
+                    {Object.entries(kpis.byCurrency).map(([cur, v]) => (
+                      <p key={cur} className="text-lg font-bold">
+                        {v.total.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">{cur}</span>
+                      </p>
+                    ))}
+                    {Object.keys(kpis.byCurrency).length === 0 && <p className="text-2xl font-bold">0</p>}
+                  </div>
                 </div>
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   <TrendingUp className="h-5 w-5 text-primary" />
@@ -202,9 +213,14 @@ export default function InvoicesPage() {
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                     {isRTL ? 'المحصّل' : 'Collected'}
                   </p>
-                  <p className="text-2xl font-bold mt-1 text-green-600">
-                    {kpis.paidAmount.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">SAR</span>
-                  </p>
+                  <div className="mt-1 space-y-0.5">
+                    {Object.entries(kpis.byCurrency).filter(([, v]) => v.paid > 0).map(([cur, v]) => (
+                      <p key={cur} className="text-lg font-bold text-green-600">
+                        {v.paid.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">{cur}</span>
+                      </p>
+                    ))}
+                    {Object.values(kpis.byCurrency).every(v => v.paid === 0) && <p className="text-2xl font-bold text-green-600">0</p>}
+                  </div>
                 </div>
                 <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
                   <CheckCircle className="h-5 w-5 text-green-500" />
@@ -220,9 +236,14 @@ export default function InvoicesPage() {
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                     {isRTL ? 'غير محصّل' : 'Outstanding'}
                   </p>
-                  <p className="text-2xl font-bold mt-1 text-orange-600">
-                    {kpis.unpaidAmount.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">SAR</span>
-                  </p>
+                  <div className="mt-1 space-y-0.5">
+                    {Object.entries(kpis.byCurrency).filter(([, v]) => v.unpaid > 0).map(([cur, v]) => (
+                      <p key={cur} className="text-lg font-bold text-orange-600">
+                        {v.unpaid.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">{cur}</span>
+                      </p>
+                    ))}
+                    {Object.values(kpis.byCurrency).every(v => v.unpaid === 0) && <p className="text-2xl font-bold text-orange-600">0</p>}
+                  </div>
                 </div>
                 <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
                   <Clock className="h-5 w-5 text-orange-500" />
@@ -332,7 +353,7 @@ export default function InvoicesPage() {
                                 : '—'}
                             </TableCell>
                             <TableCell className="text-end font-semibold">
-                              {Number(invoice.amount).toLocaleString()} SAR
+                              {Number(invoice.amount).toLocaleString()} <span className="text-xs text-muted-foreground">{invoice.currency || 'SAR'}</span>
                             </TableCell>
                             <TableCell>
                               <Badge className={cfg.color}>{invoice.status}</Badge>
@@ -427,7 +448,7 @@ export default function InvoicesPage() {
                             {payment.invoice?.invoice_number || '—'}
                           </TableCell>
                           <TableCell className="text-end font-semibold text-green-600">
-                            +{Number(payment.amount).toLocaleString()} SAR
+                            +{Number(payment.amount).toLocaleString()} {payment.invoice?.currency || 'SAR'}
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline">{paymentMethodLabels[payment.method]}</Badge>
@@ -470,9 +491,22 @@ export default function InvoicesPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>{isRTL ? 'المبلغ' : 'Amount'} (SAR) *</Label>
-              <Input type="number" step="0.01" placeholder="0.00" value={formData.amount} onChange={e => setFormData(prev => ({ ...prev, amount: e.target.value }))} />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>{isRTL ? 'المبلغ' : 'Amount'} *</Label>
+                <Input type="number" step="0.01" placeholder="0.00" value={formData.amount} onChange={e => setFormData(prev => ({ ...prev, amount: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>{isRTL ? 'العملة' : 'Currency'}</Label>
+                <Select value={formData.currency} onValueChange={v => setFormData(prev => ({ ...prev, currency: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {SUPPORTED_CURRENCIES.map(c => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>{isRTL ? 'تاريخ الاستحقاق' : 'Due Date'}</Label>
