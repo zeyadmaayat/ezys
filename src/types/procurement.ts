@@ -75,6 +75,8 @@ export interface ReturnOrder {
   po_id: string;
   po_line_id: string | null;
   vendor_id: string | null;
+  grn_id: string | null;
+  grn_line_id: string | null;
   status: RTVStatus;
   return_reason: ReturnReason;
   quantity: number;
@@ -89,6 +91,8 @@ export interface ReturnOrder {
   purchase_order?: PurchaseOrder;
   vendor?: { id: string; name: string };
   po_line?: POLine;
+  goods_receipt?: { id: string; grn_number: string };
+  grn_line?: { id: string; item_name: string; quantity_accepted: number; quantity_rejected: number };
 }
 
 export interface BlanketOrder {

@@ -32,6 +32,9 @@ import RequisitionsPage from "./pages/erp/Requisitions";
 import PurchaseOrdersPage from "./pages/erp/PurchaseOrders";
 import ReturnOrdersPage from "./pages/erp/ReturnOrders";
 import BlanketOrdersPage from "./pages/erp/BlanketOrders";
+import GoodsReceiptsPage from "./pages/erp/GoodsReceipts";
+import GoodsReceiptNewPage from "./pages/erp/GoodsReceiptNew";
+import GoodsReceiptDetailPage from "./pages/erp/GoodsReceiptDetail";
 // SaaS ERP Pages
 import CompanySetup from "./pages/saas/CompanySetup";
 import SaaSDashboard from "./pages/saas/Dashboard";
@@ -82,6 +85,9 @@ const App = () => (
               <Route path="/erp/purchase-orders" element={<ProtectedRoute><PurchaseOrdersPage /></ProtectedRoute>} />
               <Route path="/erp/return-orders" element={<ProtectedRoute><ReturnOrdersPage /></ProtectedRoute>} />
               <Route path="/erp/blanket-orders" element={<ProtectedRoute><BlanketOrdersPage /></ProtectedRoute>} />
+              <Route path="/erp/receipts" element={<ProtectedRoute><GoodsReceiptsPage /></ProtectedRoute>} />
+              <Route path="/erp/receipts/new" element={<ProtectedRoute><GoodsReceiptNewPage /></ProtectedRoute>} />
+              <Route path="/erp/receipts/:id" element={<ProtectedRoute><GoodsReceiptDetailPage /></ProtectedRoute>} />
               
               {/* SaaS ERP Routes */}
               <Route path="/saas/setup" element={<ProtectedRoute><CompanySetup /></ProtectedRoute>} />

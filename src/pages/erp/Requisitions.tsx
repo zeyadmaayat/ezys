@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRequisitions } from '@/hooks/useRequisitions';
+import { usePurchaseOrders } from '@/hooks/usePurchaseOrders';
 import { useItems } from '@/hooks/useItems';
+import { useClients } from '@/hooks/useClients';
 import MainLayout from '@/components/MainLayout';
 import InternalMessagesPanel from '@/components/procurement/InternalMessagesPanel';
 import { Button } from '@/components/ui/button';
@@ -34,9 +36,16 @@ const priorityColors: Record<string, string> = {
 const RequisitionsPage = () => {
   const { language } = useLanguage();
   const { requisitions, loading, createRequisition, updateStatus } = useRequisitions();
+  const { createPO } = usePurchaseOrders();
   const { items } = useItems();
+  const { clients } = useClients();
+  const vendors = clients.filter(c => c.type === 'VENDOR');
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isConvertOpen, setIsConvertOpen] = useState(false);
+  const [convertReqId, setConvertReqId] = useState<string | null>(null);
+  const [convertVendorId, setConvertVendorId] = useState('');
+  const [converting, setConverting] = useState(false);
   const [formData, setFormData] = useState({ priority: 'Normal', required_date: '', notes: '' });
   const [lines, setLines] = useState<{ item_id: string; item_name: string; quantity: number; unit: string; estimated_unit_price: number; notes: null }[]>([]);
   const [newLine, setNewLine] = useState({ item_id: '', item_name: '', quantity: 1, unit: 'pcs', estimated_unit_price: 0 });
@@ -191,7 +200,7 @@ const RequisitionsPage = () => {
                         </>
                       )}
                       {req.status === 'Approved' && (
-                        <Button variant="default" size="sm" onClick={() => updateStatus(req.id, 'Converted')}>
+                        <Button variant="default" size="sm" onClick={() => { setConvertReqId(req.id); setConvertVendorId(''); setIsConvertOpen(true); }}>
                           <ArrowRight className="w-4 h-4 mr-1" />{language === 'ar' ? 'تحويل لـ PO' : 'Convert to PO'}
                         </Button>
                       )}
@@ -203,6 +212,62 @@ const RequisitionsPage = () => {
             </TableBody>
           </Table>
         </Card>
+
+        {/* Convert to PO Dialog */}
+        <Dialog open={isConvertOpen} onOpenChange={setIsConvertOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{language === 'ar' ? 'تحويل طلب الشراء إلى PO' : 'Convert Requisition to PO'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div>
+                <Label>{language === 'ar' ? 'المورد (اختياري)' : 'Vendor (optional)'}</Label>
+                <Select value={convertVendorId} onValueChange={setConvertVendorId}>
+                  <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر مورد' : 'Select vendor'} /></SelectTrigger>
+                  <SelectContent>
+                    {vendors.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {language === 'ar' ? 'سيتم نقل جميع بنود طلب الشراء إلى أمر شراء جديد.' : 'All requisition lines will be transferred to a new PO.'}
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsConvertOpen(false)}>{language === 'ar' ? 'إلغاء' : 'Cancel'}</Button>
+                <Button
+                  disabled={converting}
+                  onClick={async () => {
+                    if (!convertReqId) return;
+                    setConverting(true);
+                    const req = requisitions.find(r => r.id === convertReqId);
+                    if (!req) { setConverting(false); return; }
+                    const poLines = (req.lines || []).map((l, idx) => ({
+                      line_number: idx + 1,
+                      item_id: l.item_id,
+                      item_name: l.item_name,
+                      quantity: l.quantity,
+                      received_quantity: 0,
+                      unit: l.unit,
+                      unit_price: l.estimated_unit_price || 0,
+                      notes: l.notes,
+                    }));
+                    const result = await createPO(
+                      { vendor_id: convertVendorId || undefined, requisition_id: convertReqId },
+                      poLines
+                    );
+                    if (result) {
+                      await updateStatus(convertReqId, 'Converted');
+                    }
+                    setConverting(false);
+                    setIsConvertOpen(false);
+                  }}
+                >
+                  {converting ? (language === 'ar' ? 'جاري التحويل...' : 'Converting...') : (language === 'ar' ? 'تحويل' : 'Convert')}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </MainLayout>
   );

@@ -19,7 +19,7 @@ import {
   Ship, ChevronDown, Boxes, PlayCircle, Users, Warehouse, 
   Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
   ClipboardList, BookOpen, Bot, History, CreditCard, 
-  Building2, Layers, GraduationCap, RotateCcw, RefreshCw
+  Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -157,7 +157,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {/* Procurement Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
-                  isActivePath('/erp/requisitions') || isActivePath('/erp/purchase-orders') || isActivePath('/erp/return-orders') || isActivePath('/erp/blanket-orders')
+                  isActivePath('/erp/requisitions') || isActivePath('/erp/purchase-orders') || isActivePath('/erp/return-orders') || isActivePath('/erp/blanket-orders') || isActivePath('/erp/receipts')
                     ? 'bg-card text-violet-600 shadow-sm ring-1 ring-violet-200/60' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
@@ -192,6 +192,18 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                       <div>
                         <div className="font-semibold text-sm">{language === 'ar' ? 'أوامر الشراء (PO)' : 'Purchase Orders (PO)'}</div>
                         <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'أوامر الشراء للموردين' : 'Vendor purchase orders'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/erp/receipts')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/receipts') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                        <PackageCheck className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'استلام البضائع (GRN)' : 'Receiving (GRN)'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'استلام وفحص البضائع' : 'Receive & inspect goods'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -616,6 +628,31 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 <Link to="/erp/inventory" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                   <Package className="w-4 h-4" />
                   {language === 'ar' ? 'المخزون' : 'Inventory'}
+                </Link>
+
+                {/* Procurement Section */}
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
+                  {language === 'ar' ? 'المشتريات' : 'Procurement'}
+                </div>
+                <Link to="/erp/requisitions" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <FileText className="w-4 h-4" />
+                  {language === 'ar' ? 'طلبات الشراء' : 'Requisitions'}
+                </Link>
+                <Link to="/erp/purchase-orders" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <ShoppingCart className="w-4 h-4" />
+                  {language === 'ar' ? 'أوامر الشراء' : 'Purchase Orders'}
+                </Link>
+                <Link to="/erp/receipts" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <PackageCheck className="w-4 h-4" />
+                  {language === 'ar' ? 'استلام البضائع' : 'Receiving (GRN)'}
+                </Link>
+                <Link to="/erp/return-orders" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <RotateCcw className="w-4 h-4" />
+                  {language === 'ar' ? 'إرجاع للمورد' : 'Return to Vendor'}
+                </Link>
+                <Link to="/erp/blanket-orders" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <RefreshCw className="w-4 h-4" />
+                  {language === 'ar' ? 'عقود التوريد' : 'Blanket Orders'}
                 </Link>
 
                 {/* Finance Section */}

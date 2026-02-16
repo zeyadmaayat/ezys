@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useReturnOrders } from '@/hooks/useReturnOrders';
 import { usePurchaseOrders } from '@/hooks/usePurchaseOrders';
+import { useGoodsReceipts } from '@/hooks/useGoodsReceipts';
 import MainLayout from '@/components/MainLayout';
 import InternalMessagesPanel from '@/components/procurement/InternalMessagesPanel';
 import { Button } from '@/components/ui/button';
@@ -33,14 +34,27 @@ const ReturnOrdersPage = () => {
   const { language } = useLanguage();
   const { returnOrders, loading, createRTV, updateStatus } = useReturnOrders();
   const { purchaseOrders } = usePurchaseOrders();
-  const receivedPOs = purchaseOrders.filter(po => ['Received', 'Partially_Received', 'Closed'].includes(po.status));
+  const { receipts } = useGoodsReceipts();
+  const postedGRNs = receipts.filter(g => g.status === 'Posted');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [sourceType, setSourceType] = useState<'grn' | 'po'>('grn');
+  const [selectedGRN, setSelectedGRN] = useState('');
   const [selectedPO, setSelectedPO] = useState('');
-  const [formData, setFormData] = useState({ po_line_id: '', return_reason: 'Defective' as ReturnReason, quantity: 1, unit: 'pcs', resolution: '' as string, notes: '' });
+  const [formData, setFormData] = useState({
+    po_line_id: '',
+    grn_line_id: '',
+    return_reason: 'Defective' as ReturnReason,
+    quantity: 1,
+    unit: 'pcs',
+    resolution: '' as string,
+    notes: '',
+  });
 
+  const selectedGRNData = receipts.find(g => g.id === selectedGRN);
   const selectedPOData = purchaseOrders.find(po => po.id === selectedPO);
+  const receivedPOs = purchaseOrders.filter(po => ['Received', 'Partially_Received', 'Closed'].includes(po.status));
 
   const filtered = returnOrders.filter(rtv =>
     rtv.rtv_number.toLowerCase().includes(searchQuery.toLowerCase())
@@ -52,12 +66,24 @@ const ReturnOrdersPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedPO) return;
-    const po = purchaseOrders.find(p => p.id === selectedPO);
+    let poId = selectedPO;
+    let vendorId: string | undefined;
+
+    if (sourceType === 'grn' && selectedGRNData) {
+      poId = selectedGRNData.po_id;
+      vendorId = selectedGRNData.purchase_order?.vendor_id || undefined;
+    } else if (sourceType === 'po' && selectedPOData) {
+      vendorId = selectedPOData.vendor_id || undefined;
+    }
+
+    if (!poId) return;
+
     await createRTV({
-      po_id: selectedPO,
+      po_id: poId,
       po_line_id: formData.po_line_id || undefined,
-      vendor_id: po?.vendor_id || undefined,
+      vendor_id: vendorId,
+      grn_id: sourceType === 'grn' ? selectedGRN || undefined : undefined,
+      grn_line_id: sourceType === 'grn' ? formData.grn_line_id || undefined : undefined,
       return_reason: formData.return_reason,
       quantity: formData.quantity,
       unit: formData.unit,
@@ -65,8 +91,9 @@ const ReturnOrdersPage = () => {
       notes: formData.notes || undefined,
     });
     setIsDialogOpen(false);
+    setSelectedGRN('');
     setSelectedPO('');
-    setFormData({ po_line_id: '', return_reason: 'Defective', quantity: 1, unit: 'pcs', resolution: '', notes: '' });
+    setFormData({ po_line_id: '', grn_line_id: '', return_reason: 'Defective', quantity: 1, unit: 'pcs', resolution: '', notes: '' });
   };
 
   if (loading) {
@@ -95,26 +122,75 @@ const ReturnOrdersPage = () => {
                 <DialogTitle>{language === 'ar' ? 'إرجاع للمورد' : 'Return to Vendor'}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
+                {/* Source type toggle */}
                 <div>
-                  <Label>{language === 'ar' ? 'أمر الشراء' : 'Purchase Order'}</Label>
-                  <Select value={selectedPO} onValueChange={setSelectedPO}>
-                    <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر PO' : 'Select PO'} /></SelectTrigger>
-                    <SelectContent>
-                      {receivedPOs.map(po => <SelectItem key={po.id} value={po.id}>{po.po_number} — {po.vendor?.name || 'N/A'}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {selectedPOData?.po_lines && selectedPOData.po_lines.length > 0 && (
-                  <div>
-                    <Label>{language === 'ar' ? 'بند الـ PO' : 'PO Line'}</Label>
-                    <Select value={formData.po_line_id} onValueChange={(v) => setFormData({ ...formData, po_line_id: v })}>
-                      <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر البند' : 'Select line'} /></SelectTrigger>
-                      <SelectContent>
-                        {selectedPOData.po_lines.map(l => <SelectItem key={l.id} value={l.id}>#{l.line_number} - {l.item_name} ({l.quantity} {l.unit})</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                  <Label>{language === 'ar' ? 'المصدر' : 'Source'}</Label>
+                  <div className="flex gap-2 mt-1">
+                    <Button variant={sourceType === 'grn' ? 'default' : 'outline'} size="sm" onClick={() => { setSourceType('grn'); setSelectedPO(''); }}>
+                      {language === 'ar' ? 'من GRN' : 'From GRN'}
+                    </Button>
+                    <Button variant={sourceType === 'po' ? 'default' : 'outline'} size="sm" onClick={() => { setSourceType('po'); setSelectedGRN(''); }}>
+                      {language === 'ar' ? 'من PO' : 'From PO'}
+                    </Button>
                   </div>
+                </div>
+
+                {sourceType === 'grn' ? (
+                  <>
+                    <div>
+                      <Label>{language === 'ar' ? 'إيصال الاستلام' : 'Goods Receipt'}</Label>
+                      <Select value={selectedGRN} onValueChange={setSelectedGRN}>
+                        <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر GRN' : 'Select GRN'} /></SelectTrigger>
+                        <SelectContent>
+                          {postedGRNs.map(g => (
+                            <SelectItem key={g.id} value={g.id}>
+                              {g.grn_number} — {g.purchase_order?.vendor?.name || 'N/A'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {selectedGRNData?.goods_receipt_lines && selectedGRNData.goods_receipt_lines.length > 0 && (
+                      <div>
+                        <Label>{language === 'ar' ? 'بند GRN' : 'GRN Line'}</Label>
+                        <Select value={formData.grn_line_id} onValueChange={(v) => setFormData({ ...formData, grn_line_id: v })}>
+                          <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر البند' : 'Select line'} /></SelectTrigger>
+                          <SelectContent>
+                            {selectedGRNData.goods_receipt_lines.map(l => (
+                              <SelectItem key={l.id} value={l.id}>
+                                {l.item_name} (accepted: {l.quantity_accepted}, rejected: {l.quantity_rejected})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <Label>{language === 'ar' ? 'أمر الشراء' : 'Purchase Order'}</Label>
+                      <Select value={selectedPO} onValueChange={setSelectedPO}>
+                        <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر PO' : 'Select PO'} /></SelectTrigger>
+                        <SelectContent>
+                          {receivedPOs.map(po => <SelectItem key={po.id} value={po.id}>{po.po_number} — {po.vendor?.name || 'N/A'}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {selectedPOData?.po_lines && selectedPOData.po_lines.length > 0 && (
+                      <div>
+                        <Label>{language === 'ar' ? 'بند الـ PO' : 'PO Line'}</Label>
+                        <Select value={formData.po_line_id} onValueChange={(v) => setFormData({ ...formData, po_line_id: v })}>
+                          <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر البند' : 'Select line'} /></SelectTrigger>
+                          <SelectContent>
+                            {selectedPOData.po_lines.map(l => <SelectItem key={l.id} value={l.id}>#{l.line_number} - {l.item_name} ({l.quantity} {l.unit})</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </>
                 )}
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>{language === 'ar' ? 'سبب الإرجاع' : 'Reason'}</Label>
@@ -141,7 +217,9 @@ const ReturnOrdersPage = () => {
                 </div>
                 <div className="flex justify-end gap-2 pt-4">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{language === 'ar' ? 'إلغاء' : 'Cancel'}</Button>
-                  <Button onClick={handleSubmit} disabled={!selectedPO}>{language === 'ar' ? 'إنشاء RTV' : 'Create RTV'}</Button>
+                  <Button onClick={handleSubmit} disabled={sourceType === 'grn' ? !selectedGRN : !selectedPO}>
+                    {language === 'ar' ? 'إنشاء RTV' : 'Create RTV'}
+                  </Button>
                 </div>
               </div>
             </DialogContent>
@@ -168,6 +246,7 @@ const ReturnOrdersPage = () => {
               <TableRow>
                 <TableHead>{language === 'ar' ? 'رقم RTV' : 'RTV #'}</TableHead>
                 <TableHead>{language === 'ar' ? 'رقم PO' : 'PO #'}</TableHead>
+                <TableHead>{language === 'ar' ? 'GRN' : 'GRN'}</TableHead>
                 <TableHead>{language === 'ar' ? 'المورد' : 'Vendor'}</TableHead>
                 <TableHead>{language === 'ar' ? 'السبب' : 'Reason'}</TableHead>
                 <TableHead>{language === 'ar' ? 'الكمية' : 'Qty'}</TableHead>
@@ -177,13 +256,14 @@ const ReturnOrdersPage = () => {
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">{language === 'ar' ? 'لا توجد إرجاعات' : 'No return orders'}</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{language === 'ar' ? 'لا توجد إرجاعات' : 'No return orders'}</TableCell></TableRow>
               ) : filtered.map(rtv => {
                 const nextStatus = getNextStatus(rtv.status);
                 return (
                   <TableRow key={rtv.id}>
                     <TableCell className="font-mono font-medium">{rtv.rtv_number}</TableCell>
                     <TableCell className="font-mono">{rtv.purchase_order?.po_number || '—'}</TableCell>
+                    <TableCell className="font-mono">{rtv.goods_receipt?.grn_number || '—'}</TableCell>
                     <TableCell>{rtv.vendor?.name || '—'}</TableCell>
                     <TableCell>{rtv.return_reason.replace('_', ' ')}</TableCell>
                     <TableCell>{rtv.quantity} {rtv.unit}</TableCell>

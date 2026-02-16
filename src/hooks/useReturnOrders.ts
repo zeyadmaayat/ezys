@@ -16,7 +16,7 @@ export function useReturnOrders() {
     try {
       const { data, error } = await supabase
         .from('return_orders')
-        .select('*, purchase_order:purchase_orders(id, po_number, vendor_id), vendor:clients!return_orders_vendor_id_fkey(id, name), po_line:po_lines(id, line_number, item_name, quantity)')
+        .select('*, purchase_order:purchase_orders(id, po_number, vendor_id), vendor:clients!return_orders_vendor_id_fkey(id, name), po_line:po_lines(id, line_number, item_name, quantity), goods_receipt:goods_receipts(id, grn_number), grn_line:goods_receipt_lines(id, item_name, quantity_accepted, quantity_rejected)')
         .order('created_at', { ascending: false });
       if (error) throw error;
       setReturnOrders((data || []) as unknown as ReturnOrder[]);
@@ -30,6 +30,8 @@ export function useReturnOrders() {
     po_id: string;
     po_line_id?: string;
     vendor_id?: string;
+    grn_id?: string;
+    grn_line_id?: string;
     return_reason: string;
     quantity: number;
     unit?: string;
@@ -46,6 +48,8 @@ export function useReturnOrders() {
           po_id: data.po_id,
           po_line_id: data.po_line_id || null,
           vendor_id: data.vendor_id || null,
+          grn_id: data.grn_id || null,
+          grn_line_id: data.grn_line_id || null,
           return_reason: data.return_reason as any,
           quantity: data.quantity,
           unit: data.unit || 'pcs',
