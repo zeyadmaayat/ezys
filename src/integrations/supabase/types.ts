@@ -540,6 +540,134 @@ export type Database = {
           },
         ]
       }
+      goods_receipt_lines: {
+        Row: {
+          created_at: string
+          grn_id: string
+          id: string
+          item_id: string | null
+          item_name: string
+          po_line_id: string
+          quantity_accepted: number
+          quantity_received: number
+          quantity_rejected: number
+          rejection_reason: string | null
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          grn_id: string
+          id?: string
+          item_id?: string | null
+          item_name: string
+          po_line_id: string
+          quantity_accepted?: number
+          quantity_received?: number
+          quantity_rejected?: number
+          rejection_reason?: string | null
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          grn_id?: string
+          id?: string
+          item_id?: string | null
+          item_name?: string
+          po_line_id?: string
+          quantity_accepted?: number
+          quantity_received?: number
+          quantity_rejected?: number
+          rejection_reason?: string | null
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goods_receipt_lines_grn_id_fkey"
+            columns: ["grn_id"]
+            isOneToOne: false
+            referencedRelation: "goods_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goods_receipt_lines_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goods_receipt_lines_po_line_id_fkey"
+            columns: ["po_line_id"]
+            isOneToOne: false
+            referencedRelation: "po_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goods_receipts: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          grn_number: string
+          id: string
+          notes: string | null
+          po_id: string
+          received_date: string
+          status: Database["public"]["Enums"]["grn_status"]
+          updated_at: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          grn_number?: string
+          id?: string
+          notes?: string | null
+          po_id: string
+          received_date?: string
+          status?: Database["public"]["Enums"]["grn_status"]
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          grn_number?: string
+          id?: string
+          notes?: string | null
+          po_id?: string
+          received_date?: string
+          status?: Database["public"]["Enums"]["grn_status"]
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goods_receipts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goods_receipts_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goods_receipts_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       internal_messages: {
         Row: {
           company_id: string
@@ -1436,6 +1564,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           credit_amount: number | null
+          grn_id: string | null
+          grn_line_id: string | null
           id: string
           notes: string | null
           po_id: string
@@ -1455,6 +1585,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           credit_amount?: number | null
+          grn_id?: string | null
+          grn_line_id?: string | null
           id?: string
           notes?: string | null
           po_id: string
@@ -1474,6 +1606,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           credit_amount?: number | null
+          grn_id?: string | null
+          grn_line_id?: string | null
           id?: string
           notes?: string | null
           po_id?: string
@@ -1494,6 +1628,20 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_orders_grn_id_fkey"
+            columns: ["grn_id"]
+            isOneToOne: false
+            referencedRelation: "goods_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_orders_grn_line_id_fkey"
+            columns: ["grn_line_id"]
+            isOneToOne: false
+            referencedRelation: "goods_receipt_lines"
             referencedColumns: ["id"]
           },
           {
@@ -2068,6 +2216,7 @@ export type Database = {
         | "Bill_of_Lading"
         | "AWB"
         | "Other"
+      grn_status: "Draft" | "Posted"
       inventory_movement_type:
         | "Inbound"
         | "Outbound"
@@ -2275,6 +2424,7 @@ export const Constants = {
         "AWB",
         "Other",
       ],
+      grn_status: ["Draft", "Posted"],
       inventory_movement_type: [
         "Inbound",
         "Outbound",
