@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, PackageCheck, CheckCircle } from 'lucide-react';
+import { ArrowLeft, PackageCheck, CheckCircle, Printer } from 'lucide-react';
 import type { GoodsReceipt, GRNStatus } from '@/types/grn';
+
 
 const statusColors: Record<GRNStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
@@ -61,6 +62,9 @@ const GoodsReceiptDetailPage = () => {
     if (success) await fetchGRN();
   };
 
+  const handlePrint = () => window.print();
+
+
   if (loading) {
     return <MainLayout><div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></MainLayout>;
   }
@@ -92,6 +96,9 @@ const GoodsReceiptDetailPage = () => {
           </div>
           <div className="flex items-center gap-2">
             <Badge className={statusColors[grn.status]}>{grn.status}</Badge>
+            <Button variant="outline" onClick={handlePrint}>
+              <Printer className="w-4 h-4 mr-2" />{language === 'ar' ? 'طباعة' : 'Print'}
+            </Button>
             {grn.status === 'Draft' && (
               <Button onClick={handlePost} disabled={posting}>
                 <CheckCircle className="w-4 h-4 mr-2" />
