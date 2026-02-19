@@ -15,7 +15,7 @@ import type { GoodsReceipt, GRNStatus } from '@/types/grn';
 
 const statusColors: Record<GRNStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
-  Posted: 'bg-green-100 text-green-700',
+  Posted: 'bg-primary/15 text-primary',
 };
 
 const GoodsReceiptDetailPage = () => {
@@ -120,7 +120,7 @@ const GoodsReceiptDetailPage = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{language === 'ar' ? 'مقبول' : 'Accepted'}</CardTitle></CardHeader>
-            <CardContent><p className="text-2xl font-bold text-green-600">{totalAccepted}</p></CardContent>
+            <CardContent><p className="text-2xl font-bold text-primary">{totalAccepted}</p></CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{language === 'ar' ? 'مرفوض' : 'Rejected'}</CardTitle></CardHeader>
@@ -153,7 +153,7 @@ const GoodsReceiptDetailPage = () => {
                   <TableRow key={line.id}>
                     <TableCell className="font-medium">{line.item_name}</TableCell>
                     <TableCell className="text-center">{line.quantity_received} {line.unit}</TableCell>
-                    <TableCell className="text-center text-green-600 font-semibold">{line.quantity_accepted}</TableCell>
+                    <TableCell className="text-center text-primary font-semibold">{line.quantity_accepted}</TableCell>
                     <TableCell className="text-center text-destructive font-semibold">{line.quantity_rejected}</TableCell>
                     <TableCell className="text-muted-foreground">{line.rejection_reason || '—'}</TableCell>
                   </TableRow>

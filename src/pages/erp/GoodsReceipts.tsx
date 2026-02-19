@@ -14,7 +14,7 @@ import type { GRNStatus, GoodsReceipt } from '@/types/grn';
 
 const statusColors: Record<GRNStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
-  Posted: 'bg-green-100 text-green-800',
+  Posted: 'bg-primary/15 text-primary',
 };
 
 const GoodsReceiptsPage = () => {
