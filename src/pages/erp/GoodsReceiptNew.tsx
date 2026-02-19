@@ -38,7 +38,7 @@ const GoodsReceiptNewPage = () => {
   const { createGRN } = useGoodsReceipts();
   const { warehouses } = useWarehouses();
 
-  const receivablePOs = purchaseOrders.filter(po => ['Sent', 'Acknowledged', 'Partially_Received'].includes(po.status));
+  const receivablePOs = purchaseOrders.filter(po => ['Draft', 'Sent', 'Acknowledged', 'Partially_Received'].includes(po.status));
 
   const [selectedPO, setSelectedPO] = useState(initialPoId);
   const [warehouseId, setWarehouseId] = useState('');
