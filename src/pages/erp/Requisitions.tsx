@@ -21,17 +21,17 @@ import type { RequisitionStatus } from '@/types/procurement';
 
 const statusColors: Record<RequisitionStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
-  Submitted: 'bg-blue-100 text-blue-700',
-  Approved: 'bg-green-100 text-green-800',
+  Submitted: 'bg-secondary/20 text-secondary-foreground',
+  Approved: 'bg-primary/15 text-primary',
   Rejected: 'bg-destructive/10 text-destructive',
-  Converted: 'bg-purple-100 text-purple-800',
+  Converted: 'bg-accent text-accent-foreground border border-primary/30',
 };
 
 const priorityColors: Record<string, string> = {
   Low: 'bg-muted text-muted-foreground',
-  Normal: 'bg-blue-100 text-blue-700',
-  High: 'bg-orange-100 text-orange-700',
-  Urgent: 'bg-red-100 text-red-700',
+  Normal: 'bg-secondary/20 text-secondary-foreground',
+  High: 'bg-destructive/10 text-destructive',
+  Urgent: 'bg-destructive/20 text-destructive font-semibold',
 };
 
 const RequisitionsPage = () => {
@@ -56,8 +56,11 @@ const RequisitionsPage = () => {
   const [newLine, setNewLine] = useState({ item_id: '', item_name: '', quantity: 1, unit: 'pcs', estimated_unit_price: 0 });
 
   const filtered = requisitions.filter(r => {
+    const q = searchQuery.toLowerCase();
     const matchesSearch =
-      r.requisition_number.toLowerCase().includes(searchQuery.toLowerCase());
+      r.requisition_number.toLowerCase().includes(q) ||
+      r.priority.toLowerCase().includes(q) ||
+      (r.notes || '').toLowerCase().includes(q);
     const matchesStatus = statusFilter === 'All' || r.status === statusFilter;
     return matchesSearch && matchesStatus;
   });

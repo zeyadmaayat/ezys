@@ -20,10 +20,10 @@ import type { RTVStatus, ReturnReason, RTVResolution } from '@/types/procurement
 
 const statusColors: Record<RTVStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
-  Approved: 'bg-blue-100 text-blue-700',
-  Shipped: 'bg-orange-100 text-orange-700',
-  Received_by_Vendor: 'bg-cyan-100 text-cyan-700',
-  Credited: 'bg-green-100 text-green-800',
+  Approved: 'bg-primary/15 text-primary',
+  Shipped: 'bg-secondary/20 text-secondary-foreground',
+  Received_by_Vendor: 'bg-primary/10 text-primary',
+  Credited: 'bg-primary/20 text-primary font-semibold',
   Closed: 'bg-muted text-muted-foreground',
 };
 
@@ -39,6 +39,7 @@ const ReturnOrdersPage = () => {
   const postedGRNs = receipts.filter(g => g.status === 'Posted');
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<RTVStatus | 'All'>('All');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sourceType, setSourceType] = useState<'grn' | 'po'>('grn');
   const [selectedGRN, setSelectedGRN] = useState('');
@@ -57,9 +58,16 @@ const ReturnOrdersPage = () => {
   const selectedPOData = purchaseOrders.find(po => po.id === selectedPO);
   const receivedPOs = purchaseOrders.filter(po => ['Received', 'Partially_Received', 'Closed'].includes(po.status));
 
-  const filtered = returnOrders.filter(rtv =>
-    rtv.rtv_number.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = returnOrders.filter(rtv => {
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      rtv.rtv_number.toLowerCase().includes(q) ||
+      (rtv.purchase_order?.po_number || '').toLowerCase().includes(q) ||
+      (rtv.vendor?.name || '').toLowerCase().includes(q) ||
+      (rtv.goods_receipt?.grn_number || '').toLowerCase().includes(q);
+    const matchesStatus = statusFilter === 'All' || rtv.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const getNextStatus = (current: RTVStatus): RTVStatus | null => {
     const idx = statusFlow.indexOf(current);
@@ -247,15 +255,23 @@ const ReturnOrdersPage = () => {
           </div>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {(['Draft', 'Shipped', 'Credited'] as RTVStatus[]).map(s => (
-            <Card key={s}>
+        {/* KPI Cards — clickable filters */}
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          {(['All', 'Draft', 'Shipped', 'Credited'] as const).map(s => (
+            <Card
+              key={s}
+              className={`cursor-pointer transition-all border-2 ${statusFilter === s ? 'border-primary' : 'border-transparent hover:border-primary/40'}`}
+              onClick={() => setStatusFilter(s as RTVStatus | 'All')}
+            >
               <CardHeader className="pb-1 pt-4 px-4">
-                <CardTitle className="text-xs text-muted-foreground uppercase tracking-wide">{s.replace('_', ' ')}</CardTitle>
+                <CardTitle className="text-xs text-muted-foreground uppercase tracking-wide">
+                  {s === 'All' ? (language === 'ar' ? 'الكل' : 'All') : s.replace('_', ' ')}
+                </CardTitle>
               </CardHeader>
               <CardContent className="pb-4 px-4">
-                <p className="text-2xl font-bold text-foreground">{returnOrders.filter(r => r.status === s).length}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {s === 'All' ? returnOrders.length : returnOrders.filter(r => r.status === s).length}
+                </p>
               </CardContent>
             </Card>
           ))}
@@ -263,7 +279,7 @@ const ReturnOrdersPage = () => {
 
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder={language === 'ar' ? 'بحث...' : 'Search RTVs...'} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
+          <Input placeholder={language === 'ar' ? 'بحث بـ RTV أو PO أو المورد أو GRN...' : 'Search by RTV, PO, vendor, or GRN...'} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
         </div>
 
         <Card>

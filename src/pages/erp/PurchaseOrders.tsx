@@ -20,10 +20,10 @@ import type { POStatus, POLine } from '@/types/procurement';
 
 const statusColors: Record<POStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
-  Sent: 'bg-blue-100 text-blue-700',
-  Acknowledged: 'bg-cyan-100 text-cyan-700',
-  Partially_Received: 'bg-orange-100 text-orange-700',
-  Received: 'bg-green-100 text-green-800',
+  Sent: 'bg-secondary/20 text-secondary-foreground',
+  Acknowledged: 'bg-primary/10 text-primary',
+  Partially_Received: 'bg-accent text-accent-foreground border border-border',
+  Received: 'bg-primary/15 text-primary',
   Closed: 'bg-muted text-muted-foreground',
   Cancelled: 'bg-destructive/10 text-destructive',
 };
