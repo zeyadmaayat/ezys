@@ -36,7 +36,7 @@ const ReturnOrdersPage = () => {
   const { returnOrders, loading, createRTV, updateStatus } = useReturnOrders();
   const { purchaseOrders } = usePurchaseOrders();
   const { receipts } = useGoodsReceipts();
-  const postedGRNs = receipts.filter(g => g.status === 'Posted');
+  const availableGRNs = receipts;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<RTVStatus | 'All'>('All');
@@ -56,7 +56,7 @@ const ReturnOrdersPage = () => {
 
   const selectedGRNData = receipts.find(g => g.id === selectedGRN);
   const selectedPOData = purchaseOrders.find(po => po.id === selectedPO);
-  const receivedPOs = purchaseOrders.filter(po => ['Received', 'Partially_Received', 'Closed'].includes(po.status));
+  const availablePOs = purchaseOrders;
 
   const filtered = returnOrders.filter(rtv => {
     const q = searchQuery.toLowerCase();
@@ -170,7 +170,7 @@ const ReturnOrdersPage = () => {
                         <Select value={selectedGRN} onValueChange={setSelectedGRN}>
                           <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر GRN' : 'Select GRN'} /></SelectTrigger>
                           <SelectContent>
-                            {postedGRNs.map(g => (
+                            {availableGRNs.map(g => (
                               <SelectItem key={g.id} value={g.id}>
                                 {g.grn_number} — {g.purchase_order?.vendor?.name || 'N/A'}
                               </SelectItem>
@@ -201,7 +201,7 @@ const ReturnOrdersPage = () => {
                         <Select value={selectedPO} onValueChange={setSelectedPO}>
                           <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر PO' : 'Select PO'} /></SelectTrigger>
                           <SelectContent>
-                            {receivedPOs.map(po => <SelectItem key={po.id} value={po.id}>{po.po_number} — {po.vendor?.name || 'N/A'}</SelectItem>)}
+                            {availablePOs.map(po => <SelectItem key={po.id} value={po.id}>{po.po_number} — {po.vendor?.name || 'N/A'}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       </div>
