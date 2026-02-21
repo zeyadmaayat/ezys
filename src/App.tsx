@@ -44,6 +44,11 @@ import SaaSWarehouses from "./pages/saas/Warehouses";
 import SaaSInvoices from "./pages/saas/Invoices";
 import RoleManagement from "./pages/saas/RoleManagement";
 import AuditLog from "./pages/saas/AuditLog";
+// Finance Pages
+import ExpensesPage from "./pages/finance/Expenses";
+import ReportsPage from "./pages/finance/Reports";
+import ThreeWayMatchPage from "./pages/finance/ThreeWayMatch";
+import StatementsPage from "./pages/finance/Statements";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +101,10 @@ const App = () => (
               <Route path="/saas/clients" element={<ProtectedRoute><SaaSClients /></ProtectedRoute>} />
               <Route path="/saas/warehouses" element={<ProtectedRoute><SaaSWarehouses /></ProtectedRoute>} />
               <Route path="/saas/invoices" element={<ProtectedRoute><SaaSInvoices /></ProtectedRoute>} />
+              <Route path="/finance/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
+              <Route path="/finance/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+              <Route path="/finance/three-way-match" element={<ProtectedRoute><ThreeWayMatchPage /></ProtectedRoute>} />
+              <Route path="/finance/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
               <Route path="/saas/roles" element={<AdminRoute><RoleManagement /></AdminRoute>} />
               <Route path="/saas/audit-log" element={<AdminRoute><AuditLog /></AdminRoute>} />
               

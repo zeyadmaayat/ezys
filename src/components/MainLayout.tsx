@@ -329,7 +329,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {/* Finance Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
-                  isActivePath('/saas/invoices')
+                  isActivePath('/saas/invoices') || isActivePath('/finance/')
                     ? 'bg-card text-emerald-600 shadow-sm ring-1 ring-emerald-200/60' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
@@ -338,18 +338,77 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
-                  <DropdownMenuItem 
-                    onClick={() => navigate('/saas/invoices')}
-                    className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/invoices') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
-                      <FileText className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm">{language === 'ar' ? 'الفواتير' : 'Invoices'}</div>
-                      <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إنشاء وإدارة الفواتير' : 'Create & manage invoices'}</div>
-                    </div>
-                  </DropdownMenuItem>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'الفواتير والمدفوعات' : 'Invoices & Payments'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/saas/invoices')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/saas/invoices') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                        <FileText className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'الفواتير' : 'Invoices'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إنشاء وإدارة الفواتير' : 'Create & manage invoices'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/finance/expenses')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/finance/expenses') ? 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center mr-3 shadow-sm">
+                        <CreditCard className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المصاريف' : 'Expenses'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تتبع مصاريف الشركة' : 'Track company expenses'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'التقارير والتحليلات' : 'Reports & Analysis'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/finance/reports')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/finance/reports') ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mr-3 shadow-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'التقارير المالية' : 'Financial Reports'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إيرادات ومصاريف وأرباح' : 'Revenue, expenses & profit'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/finance/statements')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/finance/statements') ? 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Users className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'كشف الحساب' : 'Statements'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'كشف حساب العملاء والموردين' : 'Customer & vendor SOA'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/finance/three-way-match')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/finance/three-way-match') ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Layers className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المطابقة الثلاثية' : 'Three-Way Match'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'PO ↔ GRN ↔ فاتورة' : 'PO ↔ GRN ↔ Invoice'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
 
