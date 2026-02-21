@@ -166,3 +166,44 @@ export interface CreatePaymentInput {
   method: PaymentMethod;
   reference?: string;
 }
+
+// Expense types
+export type ExpenseCategory = 'Freight' | 'Customs' | 'Insurance' | 'Warehouse' | 'Fuel' | 'Maintenance' | 'Salaries' | 'Utilities' | 'Office' | 'Marketing' | 'Other';
+
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
+  'Freight', 'Customs', 'Insurance', 'Warehouse', 'Fuel',
+  'Maintenance', 'Salaries', 'Utilities', 'Office', 'Marketing', 'Other'
+];
+
+export interface Expense {
+  id: string;
+  company_id: string;
+  expense_number: string;
+  category: ExpenseCategory;
+  amount: number;
+  currency: string;
+  expense_date: string;
+  vendor_name: string | null;
+  description: string | null;
+  reference: string | null;
+  po_id: string | null;
+  shipment_id: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  purchase_order?: { id: string; po_number: string };
+  shipment?: { id: string; tracking_number: string | null };
+}
+
+export interface CreateExpenseInput {
+  category: ExpenseCategory;
+  amount: number;
+  currency?: string;
+  expense_date?: string;
+  vendor_name?: string;
+  description?: string;
+  reference?: string;
+  po_id?: string;
+  shipment_id?: string;
+}

@@ -540,6 +540,82 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          category: Database["public"]["Enums"]["expense_category"]
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          description: string | null
+          expense_date: string
+          expense_number: string
+          id: string
+          po_id: string | null
+          reference: string | null
+          shipment_id: string | null
+          updated_at: string
+          vendor_name: string | null
+        }
+        Insert: {
+          amount?: number
+          category?: Database["public"]["Enums"]["expense_category"]
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          expense_date?: string
+          expense_number?: string
+          id?: string
+          po_id?: string | null
+          reference?: string | null
+          shipment_id?: string | null
+          updated_at?: string
+          vendor_name?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: Database["public"]["Enums"]["expense_category"]
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          expense_date?: string
+          expense_number?: string
+          id?: string
+          po_id?: string | null
+          reference?: string | null
+          shipment_id?: string | null
+          updated_at?: string
+          vendor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goods_receipt_lines: {
         Row: {
           created_at: string
@@ -941,58 +1017,88 @@ export type Database = {
       invoices_v2: {
         Row: {
           amount: number
+          client_id: string | null
           company_id: string
           created_at: string
           created_by: string | null
           currency: string
           due_date: string | null
+          grn_id: string | null
           id: string
           invoice_number: string
           issued_at: string | null
           notes: string | null
           paid_at: string | null
+          po_id: string | null
           shipment_id: string | null
           status: Database["public"]["Enums"]["invoice_status"]
           updated_at: string
         }
         Insert: {
           amount?: number
+          client_id?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
           currency?: string
           due_date?: string | null
+          grn_id?: string | null
           id?: string
           invoice_number: string
           issued_at?: string | null
           notes?: string | null
           paid_at?: string | null
+          po_id?: string | null
           shipment_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           updated_at?: string
         }
         Update: {
           amount?: number
+          client_id?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
           currency?: string
           due_date?: string | null
+          grn_id?: string | null
           id?: string
           invoice_number?: string
           issued_at?: string | null
           notes?: string | null
           paid_at?: string | null
+          po_id?: string | null
           shipment_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           updated_at?: string
         }
         Relationships: [
           {
+            foreignKeyName: "invoices_v2_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "invoices_v2_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_v2_grn_id_fkey"
+            columns: ["grn_id"]
+            isOneToOne: false
+            referencedRelation: "goods_receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_v2_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
             referencedColumns: ["id"]
           },
           {
@@ -2216,6 +2322,18 @@ export type Database = {
         | "Bill_of_Lading"
         | "AWB"
         | "Other"
+      expense_category:
+        | "Freight"
+        | "Customs"
+        | "Insurance"
+        | "Warehouse"
+        | "Fuel"
+        | "Maintenance"
+        | "Salaries"
+        | "Utilities"
+        | "Office"
+        | "Marketing"
+        | "Other"
       grn_status: "Draft" | "Posted"
       inventory_movement_type:
         | "Inbound"
@@ -2422,6 +2540,19 @@ export const Constants = {
         "Packing_List",
         "Bill_of_Lading",
         "AWB",
+        "Other",
+      ],
+      expense_category: [
+        "Freight",
+        "Customs",
+        "Insurance",
+        "Warehouse",
+        "Fuel",
+        "Maintenance",
+        "Salaries",
+        "Utilities",
+        "Office",
+        "Marketing",
         "Other",
       ],
       grn_status: ["Draft", "Posted"],
