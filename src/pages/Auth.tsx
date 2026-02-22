@@ -30,7 +30,7 @@ const Auth = () => {
 
   // Redirect if already logged in
   if (user) {
-    navigate('/');
+    navigate('/saas/dashboard');
     return null;
   }
 
@@ -71,7 +71,7 @@ const Auth = () => {
         if (result.error) {
           setGeneralError(result.error);
         } else {
-          navigate('/');
+          navigate('/saas/dashboard');
         }
       } else {
         const result = await signUp(email, password, displayName);
@@ -86,7 +86,7 @@ const Auth = () => {
           } catch (e) {
             console.error('Failed to send signup notification:', e);
           }
-          navigate('/');
+          navigate('/saas/dashboard');
         }
       }
     } finally {

@@ -9,10 +9,12 @@ interface AuthContextType {
   session: Session | null;
   isAdmin: boolean;
   isApproved: boolean;
+  hasCompany: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  refreshAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -45,21 +48,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const checkApproval = async (userId: string) => {
+  const checkApprovalAndCompany = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_approved')
+        .select('is_approved, company_id')
         .eq('id', userId)
         .maybeSingle();
 
       if (error) {
         console.error('Error checking approval:', error);
-        return false;
+        return { approved: false, hasCompany: false };
       }
-      return data?.is_approved ?? false;
+      return { 
+        approved: data?.is_approved ?? false, 
+        hasCompany: !!data?.company_id 
+      };
     } catch {
-      return false;
+      return { approved: false, hasCompany: false };
     }
   };
 
@@ -74,11 +80,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (session?.user) {
           setTimeout(() => {
             checkAdminRole(session.user.id).then(setIsAdmin);
-            checkApproval(session.user.id).then(setIsApproved);
+            checkApprovalAndCompany(session.user.id).then(r => {
+              setIsApproved(r.approved);
+              setHasCompany(r.hasCompany);
+            });
           }, 0);
         } else {
           setIsAdmin(false);
           setIsApproved(false);
+          setHasCompany(false);
         }
         
         setLoading(false);
@@ -92,7 +102,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (session?.user) {
         checkAdminRole(session.user.id).then(setIsAdmin);
-        checkApproval(session.user.id).then(setIsApproved);
+        checkApprovalAndCompany(session.user.id).then(r => {
+          setIsApproved(r.approved);
+          setHasCompany(r.hasCompany);
+        });
       }
       
       setLoading(false);
@@ -153,8 +166,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast({ title: t('signOutSuccess') });
   };
 
+  const refreshAuth = async () => {
+    if (user) {
+      const [admin, approvalResult] = await Promise.all([
+        checkAdminRole(user.id),
+        checkApprovalAndCompany(user.id),
+      ]);
+      setIsAdmin(admin);
+      setIsApproved(approvalResult.approved);
+      setHasCompany(approvalResult.hasCompany);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, isApproved, hasCompany, loading, signIn, signUp, signOut, refreshAuth }}>
       {children}
     </AuthContext.Provider>
   );
