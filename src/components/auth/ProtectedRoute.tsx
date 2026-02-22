@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, isApproved, isAdmin, loading, signOut } = useAuth();
+  const { user, isApproved, isAdmin, hasCompany, loading, signOut } = useAuth();
   const location = useLocation();
   const { t } = useLanguage();
 
@@ -24,6 +24,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Always allow access to company setup page for authenticated users
+  if (location.pathname === '/saas/setup') {
+    return <>{children}</>;
+  }
+
+  // If user has no company, redirect to setup
+  if (!hasCompany && !isAdmin) {
+    return <Navigate to="/saas/setup" replace />;
   }
 
   // Admins always have access, non-approved users see pending screen

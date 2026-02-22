@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '@/hooks/useCompany';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +10,17 @@ import { Building2, Loader2 } from 'lucide-react';
 
 export default function CompanySetup() {
   const navigate = useNavigate();
-  const { createCompany, loading: companyLoading } = useCompany();
+  const { createCompany, loading: companyLoading, hasCompany } = useCompany();
+  const { refreshAuth } = useAuth();
   const [companyName, setCompanyName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+
+  // If user already has a company, redirect to dashboard
+  useEffect(() => {
+    if (!companyLoading && hasCompany) {
+      navigate('/saas/dashboard', { replace: true });
+    }
+  }, [companyLoading, hasCompany, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +31,8 @@ export default function CompanySetup() {
     setIsCreating(false);
 
     if (company) {
+      // Refresh auth state so isAdmin updates
+      await refreshAuth();
       navigate('/saas/dashboard');
     }
   };
