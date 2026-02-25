@@ -540,6 +540,347 @@ export type Database = {
           },
         ]
       }
+      dp_drivers: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          updated_at: string
+          vehicle_plate: string | null
+          vehicle_type: Database["public"]["Enums"]["dp_vehicle_type"]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          updated_at?: string
+          vehicle_plate?: string | null
+          vehicle_type?: Database["public"]["Enums"]["dp_vehicle_type"]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          updated_at?: string
+          vehicle_plate?: string | null
+          vehicle_type?: Database["public"]["Enums"]["dp_vehicle_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_drivers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_shelves: {
+        Row: {
+          capacity: number | null
+          code: string
+          company_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          zone_id: string
+        }
+        Insert: {
+          capacity?: number | null
+          code: string
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          zone_id: string
+        }
+        Update: {
+          capacity?: number | null
+          code?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_shelves_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shelves_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "dp_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_shipment_status_log: {
+        Row: {
+          changed_by: string | null
+          company_id: string
+          created_at: string
+          id: string
+          new_status: Database["public"]["Enums"]["dp_shipment_status"]
+          notes: string | null
+          old_status: Database["public"]["Enums"]["dp_shipment_status"] | null
+          shipment_id: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          new_status: Database["public"]["Enums"]["dp_shipment_status"]
+          notes?: string | null
+          old_status?: Database["public"]["Enums"]["dp_shipment_status"] | null
+          shipment_id: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          new_status?: Database["public"]["Enums"]["dp_shipment_status"]
+          notes?: string | null
+          old_status?: Database["public"]["Enums"]["dp_shipment_status"] | null
+          shipment_id?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_shipment_status_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipment_status_log_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "dp_shipments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipment_status_log_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_shipments: {
+        Row: {
+          barcode: string
+          cod_amount: number
+          company_id: string
+          created_at: string
+          created_by: string | null
+          current_warehouse_id: string | null
+          destination_warehouse_id: string | null
+          driver_id: string | null
+          id: string
+          is_cod: boolean
+          notes: string | null
+          origin_warehouse_id: string | null
+          pieces_count: number
+          receiver_address: string | null
+          receiver_city: string | null
+          receiver_name: string
+          receiver_phone: string | null
+          sender_address: string | null
+          sender_city: string | null
+          sender_name: string
+          sender_phone: string | null
+          shelf_id: string | null
+          status: Database["public"]["Enums"]["dp_shipment_status"]
+          updated_at: string
+          weight_kg: number | null
+          zone_id: string | null
+        }
+        Insert: {
+          barcode: string
+          cod_amount?: number
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          current_warehouse_id?: string | null
+          destination_warehouse_id?: string | null
+          driver_id?: string | null
+          id?: string
+          is_cod?: boolean
+          notes?: string | null
+          origin_warehouse_id?: string | null
+          pieces_count?: number
+          receiver_address?: string | null
+          receiver_city?: string | null
+          receiver_name: string
+          receiver_phone?: string | null
+          sender_address?: string | null
+          sender_city?: string | null
+          sender_name: string
+          sender_phone?: string | null
+          shelf_id?: string | null
+          status?: Database["public"]["Enums"]["dp_shipment_status"]
+          updated_at?: string
+          weight_kg?: number | null
+          zone_id?: string | null
+        }
+        Update: {
+          barcode?: string
+          cod_amount?: number
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_warehouse_id?: string | null
+          destination_warehouse_id?: string | null
+          driver_id?: string | null
+          id?: string
+          is_cod?: boolean
+          notes?: string | null
+          origin_warehouse_id?: string | null
+          pieces_count?: number
+          receiver_address?: string | null
+          receiver_city?: string | null
+          receiver_name?: string
+          receiver_phone?: string | null
+          sender_address?: string | null
+          sender_city?: string | null
+          sender_name?: string
+          sender_phone?: string | null
+          shelf_id?: string | null
+          status?: Database["public"]["Enums"]["dp_shipment_status"]
+          updated_at?: string
+          weight_kg?: number | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_shipments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_current_warehouse_id_fkey"
+            columns: ["current_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_destination_warehouse_id_fkey"
+            columns: ["destination_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "dp_drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_origin_warehouse_id_fkey"
+            columns: ["origin_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_shelf_id_fkey"
+            columns: ["shelf_id"]
+            isOneToOne: false
+            referencedRelation: "dp_shelves"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "dp_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_zones: {
+        Row: {
+          code: string
+          company_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          warehouse_id: string
+        }
+        Insert: {
+          code: string
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          warehouse_id: string
+        }
+        Update: {
+          code?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_zones_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_zones_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount: number
@@ -2322,6 +2663,17 @@ export type Database = {
         | "Bill_of_Lading"
         | "AWB"
         | "Other"
+      dp_shipment_status:
+        | "CREATED"
+        | "PICKED_UP"
+        | "RECEIVED_AT_ORIGIN"
+        | "IN_TRANSIT"
+        | "RECEIVED_AT_DESTINATION"
+        | "OUT_FOR_DELIVERY"
+        | "DELIVERED"
+        | "RETURNED"
+        | "CANCELLED"
+      dp_vehicle_type: "motorcycle" | "sedan" | "van" | "pickup" | "truck"
       expense_category:
         | "Freight"
         | "Customs"
@@ -2542,6 +2894,18 @@ export const Constants = {
         "AWB",
         "Other",
       ],
+      dp_shipment_status: [
+        "CREATED",
+        "PICKED_UP",
+        "RECEIVED_AT_ORIGIN",
+        "IN_TRANSIT",
+        "RECEIVED_AT_DESTINATION",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
+        "RETURNED",
+        "CANCELLED",
+      ],
+      dp_vehicle_type: ["motorcycle", "sedan", "van", "pickup", "truck"],
       expense_category: [
         "Freight",
         "Customs",
