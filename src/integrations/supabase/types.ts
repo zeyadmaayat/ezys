@@ -540,6 +540,84 @@ export type Database = {
           },
         ]
       }
+      dp_cod_settlement_lines: {
+        Row: {
+          cod_amount: number
+          collected: boolean | null
+          id: string
+          settlement_id: string
+          shipment_id: string
+        }
+        Insert: {
+          cod_amount: number
+          collected?: boolean | null
+          id?: string
+          settlement_id: string
+          shipment_id: string
+        }
+        Update: {
+          cod_amount?: number
+          collected?: boolean | null
+          id?: string
+          settlement_id?: string
+          shipment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_settlement"
+            columns: ["settlement_id"]
+            isOneToOne: false
+            referencedRelation: "dp_cod_settlements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_shipment"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "dp_shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_cod_settlements: {
+        Row: {
+          closed_at: string | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          driver_id: string
+          id: string
+          status: string | null
+          total_assigned: number | null
+          total_collected: number | null
+          variance: number | null
+        }
+        Insert: {
+          closed_at?: string | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          driver_id: string
+          id?: string
+          status?: string | null
+          total_assigned?: number | null
+          total_collected?: number | null
+          variance?: number | null
+        }
+        Update: {
+          closed_at?: string | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          driver_id?: string
+          id?: string
+          status?: string | null
+          total_assigned?: number | null
+          total_collected?: number | null
+          variance?: number | null
+        }
+        Relationships: []
+      }
       dp_drivers: {
         Row: {
           company_id: string
@@ -586,6 +664,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dp_inventory_scans: {
+        Row: {
+          company_id: string
+          id: string
+          scanned_at: string | null
+          scanned_by: string | null
+          session_id: string
+          shipment_id: string
+        }
+        Insert: {
+          company_id: string
+          id?: string
+          scanned_at?: string | null
+          scanned_by?: string | null
+          session_id: string
+          shipment_id: string
+        }
+        Update: {
+          company_id?: string
+          id?: string
+          scanned_at?: string | null
+          scanned_by?: string | null
+          session_id?: string
+          shipment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_session"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "dp_inventory_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_shipment"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "dp_shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_inventory_sessions: {
+        Row: {
+          closed_at: string | null
+          company_id: string
+          created_at: string | null
+          id: string
+          started_by: string | null
+          status: string | null
+          warehouse_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          company_id: string
+          created_at?: string | null
+          id?: string
+          started_by?: string | null
+          status?: string | null
+          warehouse_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          started_by?: string | null
+          status?: string | null
+          warehouse_id?: string
+        }
+        Relationships: []
       }
       dp_shelves: {
         Row: {
@@ -2616,6 +2766,22 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      dp_create_cod_settlement: {
+        Args: { _driver_id: string }
+        Returns: string
+      }
+      dp_inventory_summary: {
+        Args: { _session_id: string }
+        Returns: {
+          expected_count: number
+          missing_count: number
+          scanned_count: number
+        }[]
+      }
+      dp_scan_inventory: {
+        Args: { _barcode: string; _session_id: string }
+        Returns: string
       }
       get_user_company_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
