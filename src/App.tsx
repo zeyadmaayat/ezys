@@ -49,6 +49,13 @@ import ExpensesPage from "./pages/finance/Expenses";
 import ReportsPage from "./pages/finance/Reports";
 import ThreeWayMatchPage from "./pages/finance/ThreeWayMatch";
 import StatementsPage from "./pages/finance/Statements";
+// Domestic Pro Pages
+import DpDashboard from "./pages/dp/Dashboard";
+import DpShipments from "./pages/dp/Shipments";
+import DpDrivers from "./pages/dp/Drivers";
+import DpWarehouse from "./pages/dp/Warehouse";
+import DpInventoryPage from "./pages/dp/Inventory";
+import DpCodSettlements from "./pages/dp/CodSettlements";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +114,14 @@ const App = () => (
               <Route path="/finance/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
               <Route path="/saas/roles" element={<AdminRoute><RoleManagement /></AdminRoute>} />
               <Route path="/saas/audit-log" element={<AdminRoute><AuditLog /></AdminRoute>} />
+              
+              {/* Domestic Pro Routes */}
+              <Route path="/dp" element={<ProtectedRoute><DpDashboard /></ProtectedRoute>} />
+              <Route path="/dp/shipments" element={<ProtectedRoute><DpShipments /></ProtectedRoute>} />
+              <Route path="/dp/drivers" element={<ProtectedRoute><DpDrivers /></ProtectedRoute>} />
+              <Route path="/dp/warehouse" element={<ProtectedRoute><DpWarehouse /></ProtectedRoute>} />
+              <Route path="/dp/inventory" element={<ProtectedRoute><DpInventoryPage /></ProtectedRoute>} />
+              <Route path="/dp/cod" element={<ProtectedRoute><DpCodSettlements /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

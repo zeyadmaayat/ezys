@@ -19,7 +19,8 @@ import {
   Ship, ChevronDown, Boxes, PlayCircle, Users, Warehouse, 
   Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
   ClipboardList, BookOpen, Bot, History, CreditCard, 
-  Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck
+  Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
+  ScanBarcode, DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -148,6 +149,104 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                       <div>
                         <div className="font-semibold text-sm">{language === 'ar' ? 'مركز العمليات' : 'Ops Center'}</div>
                         <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة المهام والتنبيهات' : 'Tasks & alerts'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Domestic Pro Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
+                  isActivePath('/dp')
+                    ? 'bg-card text-teal-600 shadow-sm ring-1 ring-teal-200/60' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                }`}>
+                  <Package className="w-3.5 h-3.5" />
+                  {language === 'ar' ? 'التوصيل المحلي' : 'Domestic Pro'}
+                  <ChevronDown className="w-3 h-3 opacity-50" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'الشحنات المحلية' : 'Domestic Shipments'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp') && !isActivePath('/dp/') ? 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mr-3 shadow-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'لوحة القيادة' : 'Dashboard'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'نظرة عامة على التوصيل' : 'Domestic overview'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp/shipments')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp/shipments') ? 'bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Truck className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'الشحنات' : 'Shipments'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة الشحنات المحلية' : 'Manage domestic shipments'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp/drivers')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp/drivers') ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Users className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'السائقين' : 'Drivers'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة أسطول السائقين' : 'Manage driver fleet'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'المستودع والمالية' : 'Warehouse & Finance'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp/warehouse')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp/warehouse') ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Warehouse className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المستودع' : 'Warehouse'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'المناطق والأرفف' : 'Zones & shelves'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp/inventory')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp/inventory') ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center mr-3 shadow-sm">
+                        <ScanBarcode className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'الجرد' : 'Inventory Audit'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'جلسات المسح والجرد' : 'Scan-based audit sessions'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp/cod')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp/cod') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                        <DollarSign className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'تسويات الدفع عند الاستلام' : 'COD Settlements'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تسوية المبالغ النقدية' : 'Cash reconciliation'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
