@@ -56,6 +56,7 @@ import DpDrivers from "./pages/dp/Drivers";
 import DpWarehouse from "./pages/dp/Warehouse";
 import DpInventoryPage from "./pages/dp/Inventory";
 import DpCodSettlements from "./pages/dp/CodSettlements";
+import DpRiskDashboard from "./pages/dp/RiskDashboard";
 
 const queryClient = new QueryClient();
 
@@ -122,6 +123,7 @@ const App = () => (
               <Route path="/dp/warehouse" element={<ProtectedRoute><DpWarehouse /></ProtectedRoute>} />
               <Route path="/dp/inventory" element={<ProtectedRoute><DpInventoryPage /></ProtectedRoute>} />
               <Route path="/dp/cod" element={<ProtectedRoute><DpCodSettlements /></ProtectedRoute>} />
+              <Route path="/dp/risk" element={<ProtectedRoute><DpRiskDashboard /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

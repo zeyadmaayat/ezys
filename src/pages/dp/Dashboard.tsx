@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Package, Truck, CheckCircle, ArrowRight, Loader2,
-  Users, Warehouse, ScanBarcode, DollarSign, XCircle, RotateCcw
+  Users, Warehouse, ScanBarcode, DollarSign, XCircle, RotateCcw,
+  Shield, AlertTriangle, Clock, Ban
 } from 'lucide-react';
 
 export default function DpDashboard() {
@@ -42,12 +43,21 @@ export default function DpDashboard() {
     { title: 'COD Pending', value: `${stats.totalCodPending.toLocaleString()} SAR`, icon: DollarSign, gradient: 'from-yellow-400 to-yellow-600' },
   ];
 
+  const governanceCards = [
+    { title: 'Suspended Drivers', value: stats.suspendedDrivers, icon: Ban, gradient: 'from-red-500 to-red-700', color: 'text-red-600' },
+    { title: 'Open Risk Alerts', value: stats.openRiskAlerts, icon: AlertTriangle, gradient: 'from-amber-500 to-amber-700', color: 'text-amber-600' },
+    { title: 'Late Deliveries', value: stats.lateDeliveries, icon: Clock, gradient: 'from-orange-400 to-orange-600', color: '' },
+    { title: 'High Risk Drivers', value: stats.highRiskDrivers, icon: Shield, gradient: 'from-rose-400 to-rose-600', color: 'text-rose-600' },
+    { title: 'COD Variance', value: `${stats.totalCodVariance.toLocaleString()} SAR`, icon: DollarSign, gradient: 'from-purple-400 to-purple-600', color: stats.totalCodVariance < 0 ? 'text-red-600' : stats.totalCodVariance > 0 ? 'text-amber-600' : 'text-emerald-600' },
+  ];
+
   const quickLinks = [
     { label: 'Shipments', icon: Package, path: '/dp/shipments' },
     { label: 'Drivers', icon: Users, path: '/dp/drivers' },
     { label: 'Warehouse', icon: Warehouse, path: '/dp/warehouse' },
     { label: 'Inventory', icon: ScanBarcode, path: '/dp/inventory' },
     { label: 'COD Settlements', icon: DollarSign, path: '/dp/cod' },
+    { label: 'Risk & Governance', icon: Shield, path: '/dp/risk' },
   ];
 
   return (
@@ -83,6 +93,28 @@ export default function DpDashboard() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Governance KPIs */}
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <Shield className="h-5 w-5 text-red-500" /> Risk & Governance
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {governanceCards.map((card) => (
+              <Card key={card.title} className="border-border/60 cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate('/dp/risk')}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{card.title}</CardTitle>
+                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center shadow-sm`}>
+                    <card.icon className="h-4 w-4 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-2xl font-bold ${card.color || 'text-foreground'}`}>{card.value}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* Driver Stats */}

@@ -10,12 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Loader2, Truck, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Loader2, Truck, Pencil, Trash2, AlertTriangle, Ban } from 'lucide-react';
 import { toast } from 'sonner';
 import { DP_VEHICLE_LABELS, type DpVehicleType, type CreateDpDriverInput } from '@/types/domestic-pro';
+import { useDpDriverRiskScores } from '@/hooks/useDpDriverRiskScores';
 
 export default function DpDrivers() {
   const { drivers, loading, createDriver, updateDriver, deleteDriver } = useDpDrivers();
+  const { getScore } = useDpDriverRiskScores();
   const [createOpen, setCreateOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<CreateDpDriverInput>({ name: '', vehicle_type: 'van' });
@@ -111,13 +113,14 @@ export default function DpDrivers() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Vehicle</TableHead>
                 <TableHead>Plate</TableHead>
+                <TableHead>Risk</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {drivers.length === 0 ? (
-                <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No drivers yet</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">No drivers yet</TableCell></TableRow>
               ) : drivers.map(d => (
                 <TableRow key={d.id}>
                   <TableCell className="font-medium">{d.name}</TableCell>
@@ -126,6 +129,15 @@ export default function DpDrivers() {
                     <Badge variant="outline" className="text-xs">{DP_VEHICLE_LABELS[d.vehicle_type]}</Badge>
                   </TableCell>
                   <TableCell className="font-mono text-sm">{d.vehicle_plate || '—'}</TableCell>
+                  <TableCell>
+                    {(() => {
+                      const score = getScore(d.id);
+                      if (score >= 100) return <Badge variant="destructive" className="gap-1"><Ban className="h-3 w-3" />{score}</Badge>;
+                      if (score >= 80) return <Badge className="bg-amber-100 text-amber-700 border border-amber-300 gap-1"><AlertTriangle className="h-3 w-3" />{score}</Badge>;
+                      if (score > 0) return <Badge variant="outline">{score}</Badge>;
+                      return <span className="text-muted-foreground text-xs">—</span>;
+                    })()}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Switch checked={d.is_active} onCheckedChange={() => handleToggleActive(d.id, d.is_active)} />

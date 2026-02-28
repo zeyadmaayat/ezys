@@ -14,13 +14,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
-import { 
+import {
   Package, Search, Globe, Menu, X, User, LogOut, Settings, 
   Ship, ChevronDown, Boxes, PlayCircle, Users, Warehouse, 
   Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
   ClipboardList, BookOpen, Bot, History, CreditCard, 
   Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
-  ScanBarcode, DollarSign
+  ScanBarcode, DollarSign, AlertTriangle
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -247,6 +247,24 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                       <div>
                         <div className="font-semibold text-sm">{language === 'ar' ? 'تسويات الدفع عند الاستلام' : 'COD Settlements'}</div>
                         <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تسوية المبالغ النقدية' : 'Cash reconciliation'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'الحوكمة' : 'Governance'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/dp/risk')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/dp/risk') ? 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Shield className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المخاطر والحوكمة' : 'Risk & Governance'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'التنبيهات والمخاطر' : 'Alerts & risk scoring'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
