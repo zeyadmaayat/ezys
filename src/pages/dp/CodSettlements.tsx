@@ -136,9 +136,15 @@ export default function DpCodSettlements() {
                     <TableCell className="font-semibold">{(s.total_assigned || 0).toLocaleString()} SAR</TableCell>
                     <TableCell className="font-semibold text-emerald-600">{(s.total_collected || 0).toLocaleString()} SAR</TableCell>
                     <TableCell>
-                      <span className={`font-semibold ${(s.variance || 0) < 0 ? 'text-red-600' : (s.variance || 0) > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                        {(s.variance || 0).toLocaleString()} SAR
-                      </span>
+                      {(() => {
+                        const v = s.variance || 0;
+                        const colorClass = v < 0 ? 'text-red-600 bg-red-50 dark:bg-red-950/20' : v > 0 ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/20' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20';
+                        return (
+                          <span className={`font-semibold px-2 py-0.5 rounded ${colorClass}`}>
+                            {v.toLocaleString()} SAR
+                          </span>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="text-sm">{s.created_at ? format(new Date(s.created_at), 'MMM d, HH:mm') : '—'}</TableCell>
                     <TableCell>
