@@ -618,6 +618,27 @@ export type Database = {
         }
         Relationships: []
       }
+      dp_driver_risk_score: {
+        Row: {
+          company_id: string
+          driver_id: string
+          risk_points: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          driver_id: string
+          risk_points?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          driver_id?: string
+          risk_points?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       dp_drivers: {
         Row: {
           company_id: string
@@ -737,6 +758,36 @@ export type Database = {
         }
         Relationships: []
       }
+      dp_risk_alerts: {
+        Row: {
+          alert_type: string
+          company_id: string
+          created_at: string | null
+          driver_id: string | null
+          id: string
+          message: string | null
+          shipment_id: string | null
+        }
+        Insert: {
+          alert_type: string
+          company_id: string
+          created_at?: string | null
+          driver_id?: string | null
+          id?: string
+          message?: string | null
+          shipment_id?: string | null
+        }
+        Update: {
+          alert_type?: string
+          company_id?: string
+          created_at?: string | null
+          driver_id?: string | null
+          id?: string
+          message?: string | null
+          shipment_id?: string | null
+        }
+        Relationships: []
+      }
       dp_shelves: {
         Row: {
           capacity: number | null
@@ -787,6 +838,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dp_shipment_logs: {
+        Row: {
+          changed_at: string | null
+          company_id: string
+          id: string
+          new_status: string | null
+          old_status: string | null
+          shipment_id: string
+        }
+        Insert: {
+          changed_at?: string | null
+          company_id: string
+          id?: string
+          new_status?: string | null
+          old_status?: string | null
+          shipment_id: string
+        }
+        Update: {
+          changed_at?: string | null
+          company_id?: string
+          id?: string
+          new_status?: string | null
+          old_status?: string | null
+          shipment_id?: string
+        }
+        Relationships: []
       }
       dp_shipment_status_log: {
         Row: {
@@ -961,6 +1039,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "dp_shipments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "dp_weekly_risk_report"
+            referencedColumns: ["driver_id"]
+          },
+          {
             foreignKeyName: "dp_shipments_origin_warehouse_id_fkey"
             columns: ["origin_warehouse_id"]
             isOneToOne: false
@@ -982,6 +1067,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dp_status_transitions: {
+        Row: {
+          from_status: string
+          to_status: string
+        }
+        Insert: {
+          from_status: string
+          to_status: string
+        }
+        Update: {
+          from_status?: string
+          to_status?: string
+        }
+        Relationships: []
       }
       dp_zones: {
         Row: {
@@ -2746,7 +2846,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      dp_weekly_risk_report: {
+        Row: {
+          alerts_last_7_days: number | null
+          company_id: string | null
+          driver_id: string | null
+          driver_name: string | null
+          risk_points: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_drivers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_company_and_assign_admin: {
