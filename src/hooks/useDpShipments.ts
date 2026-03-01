@@ -39,7 +39,7 @@ export function useDpShipments(statusFilter?: DpShipmentStatus) {
 
       const { data, error } = await query;
       if (error) throw error;
-      setShipments((data || []) as DpShipment[]);
+      setShipments((data || []) as unknown as DpShipment[]);
     } catch (error) {
       console.error('Error fetching dp shipments:', error);
       toast.error('Failed to load shipments');

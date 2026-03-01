@@ -686,6 +686,51 @@ export type Database = {
           },
         ]
       }
+      dp_governance_events: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          driver_id: string | null
+          event_type: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          reference_id: string | null
+          severity: string
+          severity_points: number | null
+          shipment_id: string | null
+          version: number | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          driver_id?: string | null
+          event_type: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          reference_id?: string | null
+          severity?: string
+          severity_points?: number | null
+          shipment_id?: string | null
+          version?: number | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          driver_id?: string | null
+          event_type?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          reference_id?: string | null
+          severity?: string
+          severity_points?: number | null
+          shipment_id?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
       dp_inventory_scans: {
         Row: {
           company_id: string
@@ -932,8 +977,10 @@ export type Database = {
           created_at: string
           created_by: string | null
           current_warehouse_id: string | null
+          delivered_at: string | null
           destination_warehouse_id: string | null
           driver_id: string | null
+          expected_delivery_at: string | null
           id: string
           is_cod: boolean
           notes: string | null
@@ -943,6 +990,7 @@ export type Database = {
           receiver_city: string | null
           receiver_name: string
           receiver_phone: string | null
+          returned_at: string | null
           sender_address: string | null
           sender_city: string | null
           sender_name: string
@@ -960,8 +1008,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           current_warehouse_id?: string | null
+          delivered_at?: string | null
           destination_warehouse_id?: string | null
           driver_id?: string | null
+          expected_delivery_at?: string | null
           id?: string
           is_cod?: boolean
           notes?: string | null
@@ -971,6 +1021,7 @@ export type Database = {
           receiver_city?: string | null
           receiver_name: string
           receiver_phone?: string | null
+          returned_at?: string | null
           sender_address?: string | null
           sender_city?: string | null
           sender_name: string
@@ -988,8 +1039,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           current_warehouse_id?: string | null
+          delivered_at?: string | null
           destination_warehouse_id?: string | null
           driver_id?: string | null
+          expected_delivery_at?: string | null
           id?: string
           is_cod?: boolean
           notes?: string | null
@@ -999,6 +1052,7 @@ export type Database = {
           receiver_city?: string | null
           receiver_name?: string
           receiver_phone?: string | null
+          returned_at?: string | null
           sender_address?: string | null
           sender_city?: string | null
           sender_name?: string
@@ -1030,6 +1084,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "warehouses"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dp_shipments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "dp_driver_performance"
+            referencedColumns: ["driver_id"]
           },
           {
             foreignKeyName: "dp_shipments_driver_id_fkey"
@@ -2846,6 +2907,73 @@ export type Database = {
       }
     }
     Views: {
+      dp_company_risk_index: {
+        Row: {
+          company_id: string | null
+          critical_count: number | null
+          high_count: number | null
+          medium_count: number | null
+          total_risk_points: number | null
+        }
+        Relationships: []
+      }
+      dp_driver_performance: {
+        Row: {
+          cod_delivered: number | null
+          cod_shipments: number | null
+          company_id: string | null
+          delivered_count: number | null
+          driver_id: string | null
+          on_time_count: number | null
+          return_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dp_drivers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dp_governance_kpis: {
+        Row: {
+          company_id: string | null
+          critical_events: number | null
+          high_events: number | null
+          medium_events: number | null
+          total_events: number | null
+        }
+        Relationships: []
+      }
+      dp_governance_live_feed: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          driver_id: string | null
+          driver_name: string | null
+          event_type: string | null
+          id: string | null
+          message: string | null
+          metadata: Json | null
+          reference_id: string | null
+          severity: string | null
+          shipment_id: string | null
+        }
+        Relationships: []
+      }
+      dp_live_control_feed: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          id: string | null
+          message: string | null
+          severity: string | null
+          source: string | null
+        }
+        Relationships: []
+      }
       dp_weekly_risk_report: {
         Row: {
           alerts_last_7_days: number | null
@@ -2884,6 +3012,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      dp_cleanup_old_governance_events: { Args: never; Returns: undefined }
       dp_create_cod_settlement: {
         Args: { _driver_id: string }
         Returns: string
