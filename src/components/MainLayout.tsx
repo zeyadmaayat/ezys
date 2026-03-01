@@ -166,7 +166,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   {language === 'ar' ? 'التوصيل المحلي' : 'Domestic Pro'}
                   <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card max-h-[75vh] overflow-y-auto">
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'الشحنات المحلية' : 'Domestic Shipments'}

@@ -3,15 +3,17 @@ import MainLayout from '@/components/MainLayout';
 import { useDpDrivers } from '@/hooks/useDpDrivers';
 import { useDpDriverRiskScores } from '@/hooks/useDpDriverRiskScores';
 import { useDpRiskAlerts } from '@/hooks/useDpRiskAlerts';
+import { useDpGovernanceEvents } from '@/hooks/useDpGovernanceEvents';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Loader2, Shield, AlertTriangle, Users, Clock, DollarSign,
-  RotateCcw, ArrowUpDown, Ban
+  RotateCcw, ArrowUpDown, Ban, FileWarning, Activity
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -21,17 +23,29 @@ const ALERT_TYPE_CONFIG: Record<string, { label: string; color: string; icon: ty
   EXCESSIVE_RETURNS: { label: 'Excessive Returns', color: 'bg-orange-100 text-orange-700 border-orange-300', icon: RotateCcw },
   FINANCIAL_ESCALATION: { label: 'Financial Escalation', color: 'bg-rose-100 text-rose-800 border-rose-400', icon: AlertTriangle },
   AUTO_SUSPENDED: { label: 'Auto Suspended', color: 'bg-red-200 text-red-900 border-red-500', icon: Ban },
+  SLA_BREACH: { label: 'SLA Breach', color: 'bg-purple-100 text-purple-700 border-purple-300', icon: Clock },
+  AUTO_ESCALATED: { label: 'Auto Escalated', color: 'bg-rose-200 text-rose-900 border-rose-500', icon: AlertTriangle },
+};
+
+const SEVERITY_BADGE: Record<string, string> = {
+  CRITICAL: 'bg-red-600 text-white',
+  HIGH: 'bg-orange-500 text-white',
+  MEDIUM: 'bg-amber-400 text-amber-900',
+  LOW: 'bg-slate-200 text-slate-700',
+  INFO: 'bg-blue-100 text-blue-700',
 };
 
 export default function DpRiskDashboard() {
   const { drivers, loading: driversLoading } = useDpDrivers();
   const { scores, loading: scoresLoading, getScore } = useDpDriverRiskScores();
   const { alerts, loading: alertsLoading } = useDpRiskAlerts();
+  const { events, loading: eventsLoading } = useDpGovernanceEvents();
   const [sortBy, setSortBy] = useState<'risk' | 'name'>('risk');
   const [filterSuspended, setFilterSuspended] = useState<string>('ALL');
   const [alertFilter, setAlertFilter] = useState<string>('ALL');
+  const [eventSeverityFilter, setEventSeverityFilter] = useState<string>('ALL');
 
-  const loading = driversLoading || scoresLoading || alertsLoading;
+  const loading = driversLoading || scoresLoading || alertsLoading || eventsLoading;
 
   const driversWithRisk = useMemo(() => {
     const mapped = drivers.map(d => ({
@@ -54,11 +68,16 @@ export default function DpRiskDashboard() {
     return alerts.filter(a => a.alert_type === alertFilter);
   }, [alerts, alertFilter]);
 
-  // Summary stats
+  const filteredEvents = useMemo(() => {
+    if (eventSeverityFilter === 'ALL') return events;
+    return events.filter(e => e.severity === eventSeverityFilter);
+  }, [events, eventSeverityFilter]);
+
   const suspendedCount = drivers.filter(d => !d.is_active).length;
   const highRiskCount = drivers.filter(d => getScore(d.id) >= 80).length;
   const lateAlerts = alerts.filter(a => a.alert_type === 'LATE_DELIVERY').length;
   const cashAlerts = alerts.filter(a => a.alert_type === 'CASH_MISMATCH').length;
+  const criticalEvents = events.filter(e => e.severity === 'CRITICAL').length;
 
   if (loading) {
     return (
@@ -82,28 +101,24 @@ export default function DpRiskDashboard() {
         </div>
 
         {/* Summary KPIs */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-5">
           <Card className="border-border/60">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Suspended Drivers</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Suspended</CardTitle>
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-sm">
                 <Ban className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">{suspendedCount}</div>
-            </CardContent>
+            <CardContent><div className="text-2xl font-bold text-red-600">{suspendedCount}</div></CardContent>
           </Card>
           <Card className="border-border/60">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">High Risk Drivers</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">High Risk</CardTitle>
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-sm">
                 <AlertTriangle className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-amber-600">{highRiskCount}</div>
-            </CardContent>
+            <CardContent><div className="text-2xl font-bold text-amber-600">{highRiskCount}</div></CardContent>
           </Card>
           <Card className="border-border/60">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -112,9 +127,7 @@ export default function DpRiskDashboard() {
                 <Clock className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{lateAlerts}</div>
-            </CardContent>
+            <CardContent><div className="text-2xl font-bold text-foreground">{lateAlerts}</div></CardContent>
           </Card>
           <Card className="border-border/60">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -123,9 +136,16 @@ export default function DpRiskDashboard() {
                 <DollarSign className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{cashAlerts}</div>
-            </CardContent>
+            <CardContent><div className="text-2xl font-bold text-foreground">{cashAlerts}</div></CardContent>
+          </Card>
+          <Card className="border-border/60">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Critical Events</CardTitle>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-sm">
+                <Activity className="h-4 w-4 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent><div className="text-2xl font-bold text-purple-600">{criticalEvents}</div></CardContent>
           </Card>
         </div>
 
@@ -136,6 +156,12 @@ export default function DpRiskDashboard() {
               <AlertTriangle className="h-3.5 w-3.5" /> Alerts
               {alerts.length > 0 && (
                 <Badge variant="destructive" className="ml-1 text-[10px] px-1.5 py-0">{alerts.length}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="governance" className="gap-1.5">
+              <Activity className="h-3.5 w-3.5" /> Governance Log
+              {criticalEvents > 0 && (
+                <Badge variant="destructive" className="ml-1 text-[10px] px-1.5 py-0">{criticalEvents}</Badge>
               )}
             </TabsTrigger>
           </TabsList>
@@ -254,6 +280,72 @@ export default function DpRiskDashboard() {
                         <TableCell className="font-mono text-xs">{a.shipment_id?.slice(0, 8) || '—'}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {a.created_at ? format(new Date(a.created_at), 'MMM d, HH:mm') : '—'}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabsContent>
+
+          {/* Governance Events Tab */}
+          <TabsContent value="governance" className="space-y-4">
+            <div className="flex gap-3">
+              <Select value={eventSeverityFilter} onValueChange={setEventSeverityFilter}>
+                <SelectTrigger className="w-52"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Severities</SelectItem>
+                  <SelectItem value="CRITICAL">Critical</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
+                  <SelectItem value="MEDIUM">Medium</SelectItem>
+                  <SelectItem value="LOW">Low</SelectItem>
+                  <SelectItem value="INFO">Info</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground self-center">{filteredEvents.length} events</span>
+            </div>
+
+            <Card className="border-border/60">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Severity</TableHead>
+                    <TableHead>Event Type</TableHead>
+                    <TableHead>Message</TableHead>
+                    <TableHead>Driver</TableHead>
+                    <TableHead>Points</TableHead>
+                    <TableHead>Created</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredEvents.length === 0 ? (
+                    <TableRow><TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No governance events</TableCell></TableRow>
+                  ) : filteredEvents.map(e => {
+                    const driver = drivers.find(d => d.id === e.driver_id);
+                    const typeConfig = ALERT_TYPE_CONFIG[e.event_type];
+                    return (
+                      <TableRow key={e.id} className={e.severity === 'CRITICAL' ? 'bg-red-50/40 dark:bg-red-950/10' : ''}>
+                        <TableCell>
+                          <Badge className={`${SEVERITY_BADGE[e.severity] || SEVERITY_BADGE.INFO} text-[10px] px-2`}>
+                            {e.severity}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {typeConfig ? (
+                            <Badge variant="outline" className={`${typeConfig.color} border gap-1 text-xs`}>
+                              <typeConfig.icon className="h-3 w-3" />
+                              {typeConfig.label}
+                            </Badge>
+                          ) : (
+                            <span className="text-sm font-medium">{e.event_type}</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm max-w-xs truncate">{e.message || '—'}</TableCell>
+                        <TableCell className="font-medium text-sm">{driver?.name || '—'}</TableCell>
+                        <TableCell className="text-center font-mono text-sm">{e.severity_points || '—'}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {e.created_at ? format(new Date(e.created_at), 'MMM d, HH:mm') : '—'}
                         </TableCell>
                       </TableRow>
                     );
