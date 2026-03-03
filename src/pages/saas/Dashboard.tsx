@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '@/hooks/useCompany';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
@@ -13,9 +13,12 @@ import {
   DollarSign,
   Plus,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  Database
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function SaaSDashboard() {
   const navigate = useNavigate();
