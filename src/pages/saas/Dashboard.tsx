@@ -120,12 +120,18 @@ export default function SaaSDashboard() {
               Plan: <span className="capitalize">{company.plan}</span>
             </p>
           </div>
-          <Button asChild>
-            <Link to="/saas/shipments/new">
-              <Plus className="mr-2 h-4 w-4" />
-              New Shipment
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleSeedData} disabled={seeding}>
+              {seeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+              {seeding ? 'جاري الإضافة...' : 'إضافة بيانات تجريبية'}
+            </Button>
+            <Button asChild>
+              <Link to="/saas/shipments/new">
+                <Plus className="mr-2 h-4 w-4" />
+                New Shipment
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
