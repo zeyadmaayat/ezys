@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
       { name: "مؤسسة الجودة للمستلزمات", type: "VENDOR", email: "quality@supplies.sa", phone: "+966502001010" },
     ];
 
-    const { data: clients } = await db.from("clients").insert(
+    const { data: clients, error: clientsErr } = await db.from("clients").insert(
       clientNames.map(c => ({
         company_id: companyId,
         name: c.name,
@@ -70,10 +70,11 @@ Deno.serve(async (req) => {
         created_by: user.id,
       }))
     ).select("id, type");
+    if (clientsErr) throw new Error(`clients: ${clientsErr.message}`);
     results.clients = clients?.length ?? 0;
 
-    const clientIds = clients?.filter(c => c.type === "CLIENT").map(c => c.id) ?? [];
-    const vendorIds = clients?.filter(c => c.type === "VENDOR").map(c => c.id) ?? [];
+    const clientIds = clients?.filter((c: any) => c.type === "CLIENT").map((c: any) => c.id) ?? [];
+    const vendorIds = clients?.filter((c: any) => c.type === "VENDOR").map((c: any) => c.id) ?? [];
 
     // ══════════════ 2. WAREHOUSES (20) ══════════════
     const whNames = [
