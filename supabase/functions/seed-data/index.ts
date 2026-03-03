@@ -414,40 +414,30 @@ Deno.serve(async (req) => {
     const shelfIds = shelves?.map(s => s.id) ?? [];
 
     // ══════════════ 16. DP SHIPMENTS (20) ══════════════
-    const dpStatuses = ["CREATED", "PICKED_UP", "RECEIVED_AT_ORIGIN", "IN_TRANSIT", "RECEIVED_AT_DESTINATION", "OUT_FOR_DELIVERY", "DELIVERED", "RETURNED"];
+    // Insert all as CREATED (status enforcement trigger prevents direct non-CREATED inserts)
     const { data: dpShipments } = await db.from("dp_shipments").insert(
-      Array.from({ length: 20 }, (_, i) => {
-        const status = dpStatuses[i % dpStatuses.length];
-        return {
-          company_id: companyId,
-          sender_name: custNames[i % custNames.length],
-          sender_phone: `+9665060${String(i + 1).padStart(5, "0")}`,
-          sender_city: cities[i % cities.length],
-          sender_address: `حي النهضة، شارع ${i + 1}`,
-          receiver_name: custNames[(i + 10) % custNames.length],
-          receiver_phone: `+9665070${String(i + 1).padStart(5, "0")}`,
-          receiver_city: cities[(i + 5) % cities.length],
-          receiver_address: `حي الملقا، شارع ${i + 20}`,
-          origin_warehouse_id: warehouseIds[i % warehouseIds.length],
-          destination_warehouse_id: warehouseIds[(i + 3) % warehouseIds.length],
-          current_warehouse_id: ["RECEIVED_AT_ORIGIN", "IN_TRANSIT", "RECEIVED_AT_DESTINATION"].includes(status)
-            ? warehouseIds[i % warehouseIds.length] : null,
-          driver_id: driverIds[i % driverIds.length],
-          zone_id: zoneIds.length > 0 ? zoneIds[i % zoneIds.length] : null,
-          shelf_id: shelfIds.length > 0 ? shelfIds[i % shelfIds.length] : null,
-          status,
-          is_cod: i % 3 === 0,
-          cod_amount: i % 3 === 0 ? 150 + i * 50 : 0,
-          weight_kg: 2 + i * 0.5,
-          pieces_count: 1 + (i % 4),
-          notes: `شحنة محلية ${i + 1}`,
-          expected_delivery_at: new Date(2026, 2, 3 + i).toISOString(),
-          delivered_at: status === "DELIVERED" ? new Date(2026, 2, 3 + i + 1).toISOString() : null,
-          returned_at: status === "RETURNED" ? new Date(2026, 2, 3 + i + 1).toISOString() : null,
-          created_by: user.id,
-          barcode: "",
-        };
-      })
+      Array.from({ length: 20 }, (_, i) => ({
+        company_id: companyId,
+        sender_name: custNames[i % custNames.length],
+        sender_phone: `+9665060${String(i + 1).padStart(5, "0")}`,
+        sender_city: cities[i % cities.length],
+        sender_address: `حي النهضة، شارع ${i + 1}`,
+        receiver_name: custNames[(i + 10) % custNames.length],
+        receiver_phone: `+9665070${String(i + 1).padStart(5, "0")}`,
+        receiver_city: cities[(i + 5) % cities.length],
+        receiver_address: `حي الملقا، شارع ${i + 20}`,
+        origin_warehouse_id: warehouseIds[i % warehouseIds.length],
+        destination_warehouse_id: warehouseIds[(i + 3) % warehouseIds.length],
+        driver_id: driverIds[i % driverIds.length],
+        is_cod: i % 3 === 0,
+        cod_amount: i % 3 === 0 ? 150 + i * 50 : 0,
+        weight_kg: 2 + i * 0.5,
+        pieces_count: 1 + (i % 4),
+        notes: `شحنة محلية ${i + 1}`,
+        expected_delivery_at: new Date(2026, 2, 3 + i).toISOString(),
+        created_by: user.id,
+        barcode: "",
+      }))
     ).select("id");
     results.dp_shipments = dpShipments?.length ?? 0;
 
