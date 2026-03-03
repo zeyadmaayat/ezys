@@ -24,6 +24,24 @@ export default function SaaSDashboard() {
   const navigate = useNavigate();
   const { company, loading: companyLoading, hasCompany } = useCompany();
   const { stats, loading: statsLoading } = useDashboardStats();
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeedData = async () => {
+    setSeeding(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('seed-data');
+      if (error) throw error;
+      toast.success('تم إضافة البيانات التجريبية بنجاح!', {
+        description: `تم إنشاء: ${Object.entries(data.results || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}`,
+      });
+      // Refresh page to show new data
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (err: any) {
+      toast.error('فشل في إضافة البيانات', { description: err.message });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   // Redirect to setup if no company
   useEffect(() => {
