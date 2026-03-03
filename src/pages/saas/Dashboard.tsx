@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '@/hooks/useCompany';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
@@ -13,14 +13,35 @@ import {
   DollarSign,
   Plus,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  Database
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function SaaSDashboard() {
   const navigate = useNavigate();
   const { company, loading: companyLoading, hasCompany } = useCompany();
   const { stats, loading: statsLoading } = useDashboardStats();
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeedData = async () => {
+    setSeeding(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('seed-data');
+      if (error) throw error;
+      toast.success('تم إضافة البيانات التجريبية بنجاح!', {
+        description: `تم إنشاء: ${Object.entries(data.results || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}`,
+      });
+      // Refresh page to show new data
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (err: any) {
+      toast.error('فشل في إضافة البيانات', { description: err.message });
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   // Redirect to setup if no company
   useEffect(() => {
@@ -99,12 +120,18 @@ export default function SaaSDashboard() {
               Plan: <span className="capitalize">{company.plan}</span>
             </p>
           </div>
-          <Button asChild>
-            <Link to="/saas/shipments/new">
-              <Plus className="mr-2 h-4 w-4" />
-              New Shipment
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleSeedData} disabled={seeding}>
+              {seeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+              {seeding ? 'جاري الإضافة...' : 'إضافة بيانات تجريبية'}
+            </Button>
+            <Button asChild>
+              <Link to="/saas/shipments/new">
+                <Plus className="mr-2 h-4 w-4" />
+                New Shipment
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}
