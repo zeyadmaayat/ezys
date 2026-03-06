@@ -30,6 +30,7 @@ import InvoicesPage from "./pages/erp/Invoices";
 import WorkflowCheckPage from "./pages/erp/WorkflowCheck";
 import RequisitionsPage from "./pages/erp/Requisitions";
 import PurchaseOrdersPage from "./pages/erp/PurchaseOrders";
+import ProcurementDashboard from "./pages/erp/ProcurementDashboard";
 import ReturnOrdersPage from "./pages/erp/ReturnOrders";
 import BlanketOrdersPage from "./pages/erp/BlanketOrders";
 import GoodsReceiptsPage from "./pages/erp/GoodsReceipts";
