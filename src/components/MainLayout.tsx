@@ -274,7 +274,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {/* Procurement Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
-                  isActivePath('/erp/requisitions') || isActivePath('/erp/purchase-orders') || isActivePath('/erp/return-orders') || isActivePath('/erp/blanket-orders') || isActivePath('/erp/receipts')
+                  isActivePath('/erp/procurement') || isActivePath('/erp/requisitions') || isActivePath('/erp/purchase-orders') || isActivePath('/erp/return-orders') || isActivePath('/erp/blanket-orders') || isActivePath('/erp/receipts')
                     ? 'bg-card text-violet-600 shadow-sm ring-1 ring-violet-200/60' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
