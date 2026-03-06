@@ -274,7 +274,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               {/* Procurement Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
-                  isActivePath('/erp/requisitions') || isActivePath('/erp/purchase-orders') || isActivePath('/erp/return-orders') || isActivePath('/erp/blanket-orders') || isActivePath('/erp/receipts')
+                  isActivePath('/erp/procurement') || isActivePath('/erp/requisitions') || isActivePath('/erp/purchase-orders') || isActivePath('/erp/return-orders') || isActivePath('/erp/blanket-orders') || isActivePath('/erp/receipts')
                     ? 'bg-card text-violet-600 shadow-sm ring-1 ring-violet-200/60' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
                 }`}>
@@ -282,7 +282,22 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   {language === 'ar' ? 'المشتريات' : 'Procurement'}
                   <ChevronDown className="w-3 h-3 opacity-50" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card max-h-[75vh] overflow-y-auto">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/erp/procurement')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/erp/procurement') ? 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center mr-3 shadow-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'لوحة المشتريات' : 'Dashboard'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'نظرة شاملة على المشتريات' : 'Full procurement overview'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'دورة الشراء' : 'Purchase Cycle'}

@@ -30,6 +30,7 @@ import InvoicesPage from "./pages/erp/Invoices";
 import WorkflowCheckPage from "./pages/erp/WorkflowCheck";
 import RequisitionsPage from "./pages/erp/Requisitions";
 import PurchaseOrdersPage from "./pages/erp/PurchaseOrders";
+import ProcurementDashboard from "./pages/erp/ProcurementDashboard";
 import ReturnOrdersPage from "./pages/erp/ReturnOrders";
 import BlanketOrdersPage from "./pages/erp/BlanketOrders";
 import GoodsReceiptsPage from "./pages/erp/GoodsReceipts";
@@ -94,6 +95,7 @@ const App = () => (
               <Route path="/erp/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
               <Route path="/erp/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
               <Route path="/erp/workflow-check" element={<ProtectedRoute><WorkflowCheckPage /></ProtectedRoute>} />
+              <Route path="/erp/procurement" element={<ProtectedRoute><ProcurementDashboard /></ProtectedRoute>} />
               <Route path="/erp/requisitions" element={<ProtectedRoute><RequisitionsPage /></ProtectedRoute>} />
               <Route path="/erp/purchase-orders" element={<ProtectedRoute><PurchaseOrdersPage /></ProtectedRoute>} />
               <Route path="/erp/return-orders" element={<ProtectedRoute><ReturnOrdersPage /></ProtectedRoute>} />
