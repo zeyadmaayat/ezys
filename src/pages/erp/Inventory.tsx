@@ -4,44 +4,39 @@ import { useInventory, useInventoryLedger } from '@/hooks/useInventory';
 import { useItems } from '@/hooks/useItems';
 import { useLocations } from '@/hooks/useLocations';
 import { exportToCSV } from '@/lib/csv-export';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
+import { ViewSwitcher, type ViewMode } from '@/components/erp/ViewSwitcher';
+import { InventoryKanban } from '@/components/erp/inventory/InventoryKanban';
+import { InventoryFormView } from '@/components/erp/inventory/InventoryFormView';
+import { InventoryCalendar } from '@/components/erp/inventory/InventoryCalendar';
+import { InventoryPivot } from '@/components/erp/inventory/InventoryPivot';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Download, BoxesIcon, ArrowDownToLine, ArrowUpFromLine, History, Plus, Minus } from 'lucide-react';
+import {
+  Search, Download, BoxesIcon, ArrowDownToLine, ArrowUpFromLine,
+  History, Plus, Minus, Boxes, Package, AlertTriangle, CheckCircle2,
+} from 'lucide-react';
 import type { InventoryMovementType } from '@/types/erp';
 
-const movementTypes: { value: InventoryMovementType; labelEn: string; labelAr: string; icon: typeof Plus }[] = [
-  { value: 'Inbound', labelEn: 'Inbound', labelAr: 'وارد', icon: ArrowDownToLine },
-  { value: 'Outbound', labelEn: 'Outbound', labelAr: 'صادر', icon: ArrowUpFromLine },
-  { value: 'Adjustment', labelEn: 'Adjustment', labelAr: 'تعديل', icon: Plus },
-  { value: 'Return', labelEn: 'Return', labelAr: 'مرتجع', icon: Minus },
+const movementTypes: { value: InventoryMovementType; labelEn: string; labelAr: string }[] = [
+  { value: 'Inbound', labelEn: 'Inbound', labelAr: 'وارد' },
+  { value: 'Outbound', labelEn: 'Outbound', labelAr: 'صادر' },
+  { value: 'Adjustment', labelEn: 'Adjustment', labelAr: 'تعديل' },
+  { value: 'Return', labelEn: 'Return', labelAr: 'مرتجع' },
 ];
 
 const InventoryPage = () => {
@@ -50,11 +45,14 @@ const InventoryPage = () => {
   const { entries: ledgerEntries, loading: ledgerLoading } = useInventoryLedger();
   const { items } = useItems();
   const { locations } = useLocations();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('stock');
-  
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [formIndex, setFormIndex] = useState(0);
+  const [calendarMonth, setCalendarMonth] = useState(new Date());
+
   const [formData, setFormData] = useState({
     item_id: '',
     location_id: '',
@@ -72,6 +70,7 @@ const InventoryPage = () => {
   const totalStock = inventory.reduce((sum, inv) => sum + inv.quantity, 0);
   const totalReserved = inventory.reduce((sum, inv) => sum + inv.reserved_quantity, 0);
   const lowStockItems = inventory.filter(inv => inv.quantity > 0 && inv.quantity < 10).length;
+  const uniqueLocations = new Set(inventory.map(inv => inv.location_id)).size;
 
   const handleSubmit = async () => {
     const success = await adjustInventory(
@@ -81,7 +80,6 @@ const InventoryPage = () => {
       formData.movement_type,
       formData.notes || undefined
     );
-
     if (success) {
       setIsDialogOpen(false);
       resetForm();
@@ -112,37 +110,42 @@ const InventoryPage = () => {
 
   if (loading) {
     return (
-      <MainLayout>
+      <ErpLayout>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
-      </MainLayout>
+      </ErpLayout>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-              <BoxesIcon className="w-8 h-8 text-primary" />
+    <ErpLayout>
+      <div className="p-6">
+        {/* Breadcrumb + Actions bar (Odoo style) */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-foreground">
               {language === 'ar' ? 'المخزون' : 'Inventory'}
             </h1>
-            <p className="text-muted-foreground mt-1">
-              {language === 'ar' ? 'إدارة المخزون وحركة البضائع' : 'Manage stock and movements'}
-            </p>
+            <Badge variant="secondary" className="tabular-nums">{filteredInventory.length}</Badge>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="w-4 h-4 mr-2" />
+          <div className="flex items-center gap-2">
+            <ViewSwitcher
+              current={viewMode}
+              onChange={(m) => {
+                setViewMode(m);
+                if (m === 'form' && filteredInventory.length > 0) setFormIndex(0);
+              }}
+              available={activeTab === 'stock' ? ['list', 'kanban', 'form', 'pivot'] : ['list', 'calendar']}
+            />
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="w-4 h-4 mr-1.5" />
               {language === 'ar' ? 'تصدير' : 'Export'}
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
               <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-1.5" />
                   {language === 'ar' ? 'حركة جديدة' : 'New Movement'}
                 </Button>
               </DialogTrigger>
@@ -154,9 +157,7 @@ const InventoryPage = () => {
                   <div>
                     <Label>{language === 'ar' ? 'نوع الحركة' : 'Movement Type'}</Label>
                     <Select value={formData.movement_type} onValueChange={(v) => setFormData({ ...formData, movement_type: v as InventoryMovementType })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {movementTypes.map((type) => (
                           <SelectItem key={type.value} value={type.value}>
@@ -169,9 +170,7 @@ const InventoryPage = () => {
                   <div>
                     <Label>{language === 'ar' ? 'المنتج' : 'Item'} *</Label>
                     <Select value={formData.item_id} onValueChange={(v) => setFormData({ ...formData, item_id: v })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={language === 'ar' ? 'اختر المنتج' : 'Select item'} />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر المنتج' : 'Select item'} /></SelectTrigger>
                       <SelectContent>
                         {items.map((item) => (
                           <SelectItem key={item.id} value={item.id}>{item.sku} - {item.name}</SelectItem>
@@ -182,9 +181,7 @@ const InventoryPage = () => {
                   <div>
                     <Label>{language === 'ar' ? 'الموقع' : 'Location'} *</Label>
                     <Select value={formData.location_id} onValueChange={(v) => setFormData({ ...formData, location_id: v })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={language === 'ar' ? 'اختر الموقع' : 'Select location'} />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={language === 'ar' ? 'اختر الموقع' : 'Select location'} /></SelectTrigger>
                       <SelectContent>
                         {locations.filter(l => l.location_type === 'warehouse').map((loc) => (
                           <SelectItem key={loc.id} value={loc.id}>{loc.name}</SelectItem>
@@ -224,173 +221,226 @@ const InventoryPage = () => {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">
-                {language === 'ar' ? 'إجمالي المخزون' : 'Total Stock'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{totalStock.toLocaleString()}</p>
+        {/* KPI Cards Row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <Card className="border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Boxes className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold tabular-nums">{totalStock.toLocaleString()}</p>
+                <p className="text-[11px] text-muted-foreground">{language === 'ar' ? 'إجمالي المخزون' : 'Total Stock'}</p>
+              </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">
-                {language === 'ar' ? 'المحجوز' : 'Reserved'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{totalReserved.toLocaleString()}</p>
+          <Card className="border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                <Package className="w-5 h-5 text-secondary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold tabular-nums">{totalReserved.toLocaleString()}</p>
+                <p className="text-[11px] text-muted-foreground">{language === 'ar' ? 'المحجوز' : 'Reserved'}</p>
+              </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">
-                {language === 'ar' ? 'المتاح' : 'Available'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{(totalStock - totalReserved).toLocaleString()}</p>
+          <Card className="border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold tabular-nums">{uniqueLocations}</p>
+                <p className="text-[11px] text-muted-foreground">{language === 'ar' ? 'المواقع' : 'Locations'}</p>
+              </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">
-                {language === 'ar' ? 'مخزون منخفض' : 'Low Stock'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-orange">{lowStockItems}</p>
+          <Card className="border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-destructive" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold tabular-nums">{lowStockItems}</p>
+                <p className="text-[11px] text-muted-foreground">{language === 'ar' ? 'مخزون منخفض' : 'Low Stock'}</p>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="stock" className="gap-2">
-              <BoxesIcon className="w-4 h-4" />
-              {language === 'ar' ? 'المخزون الحالي' : 'Current Stock'}
+        {/* Tabs: Stock vs Ledger */}
+        <Tabs value={activeTab} onValueChange={(t) => { setActiveTab(t); setViewMode(t === 'stock' ? 'list' : 'list'); }}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="stock" className="gap-1.5">
+              <BoxesIcon className="w-3.5 h-3.5" />
+              {language === 'ar' ? 'المخزون' : 'Stock'}
             </TabsTrigger>
-            <TabsTrigger value="ledger" className="gap-2">
-              <History className="w-4 h-4" />
-              {language === 'ar' ? 'سجل الحركات' : 'Movement Ledger'}
+            <TabsTrigger value="ledger" className="gap-1.5">
+              <History className="w-3.5 h-3.5" />
+              {language === 'ar' ? 'السجل' : 'Ledger'}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="stock">
             {/* Search */}
-            <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder={language === 'ar' ? 'بحث...' : 'Search inventory...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            {viewMode !== 'form' && (
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder={language === 'ar' ? 'بحث بالاسم أو SKU أو الموقع...' : 'Search by name, SKU, or location...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-9"
+                />
+              </div>
+            )}
 
-            <Card>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>{language === 'ar' ? 'المنتج' : 'Item'}</TableHead>
-                    <TableHead>{language === 'ar' ? 'الموقع' : 'Location'}</TableHead>
-                    <TableHead className="text-right">{language === 'ar' ? 'الكمية' : 'Qty'}</TableHead>
-                    <TableHead className="text-right">{language === 'ar' ? 'محجوز' : 'Reserved'}</TableHead>
-                    <TableHead className="text-right">{language === 'ar' ? 'متاح' : 'Available'}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredInventory.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                        {language === 'ar' ? 'لا يوجد مخزون' : 'No inventory found'}
-                      </TableCell>
+            {/* List View */}
+            {viewMode === 'list' && (
+              <Card className="border shadow-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/20">
+                      <TableHead className="font-semibold">SKU</TableHead>
+                      <TableHead className="font-semibold">{language === 'ar' ? 'المنتج' : 'Item'}</TableHead>
+                      <TableHead className="font-semibold">{language === 'ar' ? 'الموقع' : 'Location'}</TableHead>
+                      <TableHead className="text-right font-semibold">{language === 'ar' ? 'الكمية' : 'On Hand'}</TableHead>
+                      <TableHead className="text-right font-semibold">{language === 'ar' ? 'محجوز' : 'Reserved'}</TableHead>
+                      <TableHead className="text-right font-semibold">{language === 'ar' ? 'متاح' : 'Available'}</TableHead>
                     </TableRow>
-                  ) : (
-                    filteredInventory.map((inv) => {
-                      const available = inv.quantity - inv.reserved_quantity;
-                      return (
-                        <TableRow key={inv.id}>
-                          <TableCell>
-                            <Badge variant="secondary" className="font-mono">{inv.item?.sku}</Badge>
-                          </TableCell>
-                          <TableCell className="font-medium">{inv.item?.name}</TableCell>
-                          <TableCell>{inv.location?.name}</TableCell>
-                          <TableCell className="text-right font-mono">{inv.quantity}</TableCell>
-                          <TableCell className="text-right font-mono text-muted-foreground">{inv.reserved_quantity}</TableCell>
-                          <TableCell className="text-right">
-                            <Badge variant={available < 10 ? 'destructive' : 'default'} className="font-mono">
-                              {available}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredInventory.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                          <Package className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                          {language === 'ar' ? 'لا يوجد مخزون' : 'No inventory records'}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredInventory.map((inv, idx) => {
+                        const available = inv.quantity - inv.reserved_quantity;
+                        return (
+                          <TableRow
+                            key={inv.id}
+                            className="cursor-pointer hover:bg-primary/5 transition-colors"
+                            onClick={() => { setFormIndex(idx); setViewMode('form'); }}
+                          >
+                            <TableCell>
+                              <Badge variant="secondary" className="font-mono text-xs">{inv.item?.sku}</Badge>
+                            </TableCell>
+                            <TableCell className="font-medium">{inv.item?.name}</TableCell>
+                            <TableCell className="text-muted-foreground">{inv.location?.name}</TableCell>
+                            <TableCell className="text-right tabular-nums font-semibold">{inv.quantity}</TableCell>
+                            <TableCell className="text-right tabular-nums text-muted-foreground">{inv.reserved_quantity}</TableCell>
+                            <TableCell className="text-right">
+                              <Badge
+                                variant={available < 10 ? 'destructive' : 'default'}
+                                className="font-mono tabular-nums"
+                              >
+                                {available}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
+
+            {/* Kanban View */}
+            {viewMode === 'kanban' && (
+              <InventoryKanban
+                inventory={filteredInventory}
+                onSelect={(inv) => {
+                  const idx = filteredInventory.findIndex(i => i.id === inv.id);
+                  setFormIndex(idx);
+                  setViewMode('form');
+                }}
+              />
+            )}
+
+            {/* Form View */}
+            {viewMode === 'form' && (
+              <InventoryFormView
+                inventory={filteredInventory}
+                currentIndex={formIndex}
+                onNavigate={setFormIndex}
+                onClose={() => setViewMode('list')}
+              />
+            )}
+
+            {/* Pivot View */}
+            {viewMode === 'pivot' && <InventoryPivot inventory={filteredInventory} />}
           </TabsContent>
 
           <TabsContent value="ledger">
-            <Card>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{language === 'ar' ? 'التاريخ' : 'Date'}</TableHead>
-                    <TableHead>{language === 'ar' ? 'النوع' : 'Type'}</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>{language === 'ar' ? 'الموقع' : 'Location'}</TableHead>
-                    <TableHead className="text-right">{language === 'ar' ? 'الكمية' : 'Qty'}</TableHead>
-                    <TableHead>{language === 'ar' ? 'ملاحظات' : 'Notes'}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ledgerLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
-                      </TableCell>
+            {viewMode === 'calendar' ? (
+              <InventoryCalendar
+                entries={ledgerEntries}
+                currentMonth={calendarMonth}
+                onMonthChange={setCalendarMonth}
+              />
+            ) : (
+              <Card className="border shadow-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/20">
+                      <TableHead className="font-semibold">{language === 'ar' ? 'التاريخ' : 'Date'}</TableHead>
+                      <TableHead className="font-semibold">{language === 'ar' ? 'النوع' : 'Type'}</TableHead>
+                      <TableHead className="font-semibold">SKU</TableHead>
+                      <TableHead className="font-semibold">{language === 'ar' ? 'الموقع' : 'Location'}</TableHead>
+                      <TableHead className="text-right font-semibold">{language === 'ar' ? 'الكمية' : 'Qty'}</TableHead>
+                      <TableHead className="font-semibold">{language === 'ar' ? 'ملاحظات' : 'Notes'}</TableHead>
                     </TableRow>
-                  ) : ledgerEntries.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                        {language === 'ar' ? 'لا توجد حركات' : 'No movements found'}
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    ledgerEntries.map((entry) => {
-                      const typeInfo = movementTypes.find(t => t.value === entry.movement_type);
-                      return (
-                        <TableRow key={entry.id}>
-                          <TableCell>{new Date(entry.created_at).toLocaleString()}</TableCell>
-                          <TableCell>
-                            <Badge variant={entry.quantity >= 0 ? 'default' : 'destructive'}>
-                              {language === 'ar' ? typeInfo?.labelAr : typeInfo?.labelEn}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="font-mono">{entry.item?.sku}</TableCell>
-                          <TableCell>{entry.location?.name}</TableCell>
-                          <TableCell className="text-right font-mono">
-                            {entry.quantity > 0 ? '+' : ''}{entry.quantity}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground text-sm">{entry.notes || '—'}</TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {ledgerLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-12">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ) : ledgerEntries.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                          {language === 'ar' ? 'لا توجد حركات' : 'No movements found'}
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      ledgerEntries.map((entry) => {
+                        const typeInfo = movementTypes.find(t => t.value === entry.movement_type);
+                        return (
+                          <TableRow key={entry.id}>
+                            <TableCell className="text-sm">{new Date(entry.created_at).toLocaleString()}</TableCell>
+                            <TableCell>
+                              <Badge variant={entry.quantity >= 0 ? 'default' : 'destructive'} className="text-xs">
+                                {language === 'ar' ? typeInfo?.labelAr : typeInfo?.labelEn}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs">{entry.item?.sku}</TableCell>
+                            <TableCell>{entry.location?.name}</TableCell>
+                            <TableCell className="text-right tabular-nums font-medium">
+                              <span className={entry.quantity > 0 ? 'text-emerald-600' : 'text-destructive'}>
+                                {entry.quantity > 0 ? '+' : ''}{entry.quantity}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground text-sm max-w-[200px] truncate">{entry.notes || '—'}</TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 
