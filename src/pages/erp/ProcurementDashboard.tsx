@@ -5,7 +5,7 @@ import { useGoodsReceipts } from '@/hooks/useGoodsReceipts';
 import { useReturnOrders } from '@/hooks/useReturnOrders';
 import { useBlanketOrders } from '@/hooks/useBlanketOrders';
 import { useNavigate } from 'react-router-dom';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -63,11 +63,11 @@ const ProcurementDashboard = () => {
 
   if (loading) {
     return (
-      <MainLayout>
+      <ErpLayout>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
-      </MainLayout>
+      </ErpLayout>
     );
   }
 
@@ -133,7 +133,7 @@ const ProcurementDashboard = () => {
   ];
 
   return (
-    <MainLayout>
+    <ErpLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -357,7 +357,7 @@ const ProcurementDashboard = () => {
           </Card>
         )}
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 

@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useInvoices } from '@/hooks/useInvoices';
 import { useCustomers } from '@/hooks/useCustomers';
 import { exportToCSV } from '@/lib/csv-export';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -132,16 +132,16 @@ const InvoicesPage = () => {
 
   if (loading) {
     return (
-      <MainLayout>
+      <ErpLayout>
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
-      </MainLayout>
+      </ErpLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <ErpLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -424,7 +424,7 @@ const InvoicesPage = () => {
           </Table>
         </Card>
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 

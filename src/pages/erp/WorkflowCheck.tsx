@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -484,7 +484,7 @@ const WorkflowCheck = () => {
   ];
 
   return (
-    <MainLayout>
+    <ErpLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">ERP Workflow Check</h1>
@@ -559,7 +559,7 @@ const WorkflowCheck = () => {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 

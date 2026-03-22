@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePurchaseOrders } from '@/hooks/usePurchaseOrders';
 import { useGoodsReceipts } from '@/hooks/useGoodsReceipts';
 import { useWarehouses } from '@/hooks/useWarehouses';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -111,7 +111,7 @@ const GoodsReceiptNewPage = () => {
   const selectedPOData = purchaseOrders.find(p => p.id === selectedPO);
 
   return (
-    <MainLayout>
+    <ErpLayout>
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <Button variant="ghost" onClick={() => navigate('/erp/receipts')} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />{language === 'ar' ? 'رجوع' : 'Back'}
@@ -239,7 +239,7 @@ const GoodsReceiptNewPage = () => {
           </div>
         </div>
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 
