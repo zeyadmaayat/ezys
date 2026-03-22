@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import MainLayout from '@/components/MainLayout';
+import { DpLayout } from '@/components/dp/DpLayout';
 import { useDpZones } from '@/hooks/useDpZones';
 import { useDpShelves } from '@/hooks/useDpShelves';
 import { useWarehouses } from '@/hooks/useWarehouses';
@@ -40,16 +40,16 @@ export default function DpWarehouse() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <DpLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </DpLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <DpLayout>
       <div className="space-y-6 p-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Warehouse Layout</h1>
@@ -200,6 +200,6 @@ export default function DpWarehouse() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </DpLayout>
   );
 }

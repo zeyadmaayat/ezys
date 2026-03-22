@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainLayout from '@/components/MainLayout';
+import { SaasLayout } from '@/components/saas/SaasLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -61,23 +61,23 @@ export default function RoleManagement() {
 
   if (!isAdmin) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <Shield className="h-12 w-12 text-muted-foreground mb-4" />
           <h2 className="text-xl font-semibold">Access Denied</h2>
           <p className="text-muted-foreground">You need admin privileges to access this page.</p>
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
   if (loading) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
@@ -85,7 +85,7 @@ export default function RoleManagement() {
   const approvedUsers = users.filter(u => u.is_approved);
 
   return (
-    <MainLayout>
+    <SaasLayout>
       <div className="space-y-6 p-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/saas/dashboard')}>
@@ -275,6 +275,6 @@ export default function RoleManagement() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </SaasLayout>
   );
 }

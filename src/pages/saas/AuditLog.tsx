@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainLayout from '@/components/MainLayout';
+import { SaasLayout } from '@/components/saas/SaasLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,18 +91,18 @@ export default function AuditLogViewer() {
 
   if (!isAdmin) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <Shield className="h-12 w-12 text-muted-foreground mb-4" />
           <h2 className="text-xl font-semibold">Access Denied</h2>
           <p className="text-muted-foreground">You need admin privileges to view audit logs.</p>
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <SaasLayout>
       <div className="space-y-6 p-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/saas/dashboard')}>
@@ -210,6 +210,6 @@ export default function AuditLogViewer() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </SaasLayout>
   );
 }

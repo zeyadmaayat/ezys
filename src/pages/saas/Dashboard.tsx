@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '@/hooks/useCompany';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import MainLayout from '@/components/MainLayout';
+import { SaasLayout } from '@/components/saas/SaasLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -52,11 +52,11 @@ export default function SaaSDashboard() {
 
   if (companyLoading || statsLoading) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
@@ -110,7 +110,7 @@ export default function SaaSDashboard() {
   ];
 
   return (
-    <MainLayout>
+    <SaasLayout>
       <div className="space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -200,6 +200,6 @@ export default function SaaSDashboard() {
           </Card>
         </div>
       </div>
-    </MainLayout>
+    </SaasLayout>
   );
 }

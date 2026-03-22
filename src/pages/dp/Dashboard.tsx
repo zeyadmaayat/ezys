@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompany } from '@/hooks/useCompany';
 import { useDpDashboardStats } from '@/hooks/useDpDashboardStats';
-import MainLayout from '@/components/MainLayout';
+import { DpLayout } from '@/components/dp/DpLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,11 +22,11 @@ export default function DpDashboard() {
 
   if (companyLoading || statsLoading) {
     return (
-      <MainLayout>
+      <DpLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </DpLayout>
     );
   }
 
@@ -61,7 +61,7 @@ export default function DpDashboard() {
   ];
 
   return (
-    <MainLayout>
+    <DpLayout>
       <div className="space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -157,6 +157,6 @@ export default function DpDashboard() {
           </Card>
         </div>
       </div>
-    </MainLayout>
+    </DpLayout>
   );
 }

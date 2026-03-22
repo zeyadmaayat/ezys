@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import MainLayout from '@/components/MainLayout';
+import { FinanceLayout } from '@/components/finance/FinanceLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useClients } from '@/hooks/useClients';
 import { useInvoicesV2 } from '@/hooks/useInvoicesV2';
@@ -108,11 +108,11 @@ export default function StatementsPage() {
   };
 
   if (loading) {
-    return <MainLayout><div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></MainLayout>;
+    return <FinanceLayout><div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></FinanceLayout>;
   }
 
   return (
-    <MainLayout>
+    <FinanceLayout>
       <div className="container mx-auto px-4 py-6 space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
@@ -219,6 +219,6 @@ export default function StatementsPage() {
           </Card>
         )}
       </div>
-    </MainLayout>
+    </FinanceLayout>
   );
 }
