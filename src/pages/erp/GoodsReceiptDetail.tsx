@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useGoodsReceipts } from '@/hooks/useGoodsReceipts';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
 import InternalMessagesPanel from '@/components/procurement/InternalMessagesPanel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -66,11 +66,11 @@ const GoodsReceiptDetailPage = () => {
 
 
   if (loading) {
-    return <MainLayout><div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></MainLayout>;
+    return <ErpLayout><div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></ErpLayout>;
   }
 
   if (!grn) {
-    return <MainLayout><div className="container mx-auto px-4 py-8"><p className="text-muted-foreground">GRN not found</p></div></MainLayout>;
+    return <ErpLayout><div className="container mx-auto px-4 py-8"><p className="text-muted-foreground">GRN not found</p></div></ErpLayout>;
   }
 
   const lines = grn.goods_receipt_lines || [];
@@ -78,7 +78,7 @@ const GoodsReceiptDetailPage = () => {
   const totalRejected = lines.reduce((s, l) => s + l.quantity_rejected, 0);
 
   return (
-    <MainLayout>
+    <ErpLayout>
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <Button variant="ghost" onClick={() => navigate('/erp/receipts')} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-2" />{language === 'ar' ? 'رجوع' : 'Back'}
@@ -163,7 +163,7 @@ const GoodsReceiptDetailPage = () => {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 

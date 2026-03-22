@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useReturnOrders } from '@/hooks/useReturnOrders';
 import { usePurchaseOrders } from '@/hooks/usePurchaseOrders';
 import { useGoodsReceipts } from '@/hooks/useGoodsReceipts';
-import MainLayout from '@/components/MainLayout';
+import { ErpLayout } from '@/components/erp/ErpLayout';
 import InternalMessagesPanel from '@/components/procurement/InternalMessagesPanel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,11 +120,11 @@ const ReturnOrdersPage = () => {
   };
 
   if (loading) {
-    return <MainLayout><div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></MainLayout>;
+    return <ErpLayout><div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div></ErpLayout>;
   }
 
   return (
-    <MainLayout>
+    <ErpLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -332,7 +332,7 @@ const ReturnOrdersPage = () => {
           </Table>
         </Card>
       </div>
-    </MainLayout>
+    </ErpLayout>
   );
 };
 
