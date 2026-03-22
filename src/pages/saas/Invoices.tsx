@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import MainLayout from '@/components/MainLayout';
+import { SaasLayout } from '@/components/saas/SaasLayout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useInvoicesV2 } from '@/hooks/useInvoicesV2';
 import { usePayments } from '@/hooks/usePayments';
@@ -144,16 +144,16 @@ export default function InvoicesPage() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <SaasLayout>
       <div className="container mx-auto px-4 py-6 space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -563,6 +563,6 @@ export default function InvoicesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </MainLayout>
+    </SaasLayout>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import MainLayout from '@/components/MainLayout';
+import { DpLayout } from '@/components/dp/DpLayout';
 import { useDpInventory, type DpInventorySummary, type DpInventoryScan } from '@/hooks/useDpInventory';
 import { useWarehouses } from '@/hooks/useWarehouses';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -72,16 +72,16 @@ export default function DpInventoryPage() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <DpLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </DpLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <DpLayout>
       <div className="space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>
@@ -233,6 +233,6 @@ export default function DpInventoryPage() {
           </Table>
         </Card>
       </div>
-    </MainLayout>
+    </DpLayout>
   );
 }

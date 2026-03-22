@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import MainLayout from '@/components/MainLayout';
+import { DpLayout } from '@/components/dp/DpLayout';
 import { useDpDrivers } from '@/hooks/useDpDrivers';
 import { useDpDriverRiskScores } from '@/hooks/useDpDriverRiskScores';
 import { useDpRiskAlerts } from '@/hooks/useDpRiskAlerts';
@@ -81,16 +81,16 @@ export default function DpRiskDashboard() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <DpLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </DpLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <DpLayout>
       <div className="space-y-6 p-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
@@ -356,6 +356,6 @@ export default function DpRiskDashboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </DpLayout>
   );
 }

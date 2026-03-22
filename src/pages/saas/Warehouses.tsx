@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainLayout from '@/components/MainLayout';
+import { SaasLayout } from '@/components/saas/SaasLayout';
 import { useWarehouses } from '@/hooks/useWarehouses';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 import { RequireRole, RoleBadge } from '@/components/auth/RequireRole';
@@ -50,16 +50,16 @@ export default function WarehousesPage() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <SaasLayout>
       <div className="space-y-6 p-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/saas/dashboard')}>
@@ -221,6 +221,6 @@ export default function WarehousesPage() {
           </CardContent>
         </Card>
       </div>
-    </MainLayout>
+    </SaasLayout>
   );
 }

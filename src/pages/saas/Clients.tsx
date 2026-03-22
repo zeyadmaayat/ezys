@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MainLayout from '@/components/MainLayout';
+import { SaasLayout } from '@/components/saas/SaasLayout';
 import { useClients } from '@/hooks/useClients';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 import { RequireRole, RoleBadge, PermissionButtonWrapper } from '@/components/auth/RequireRole';
@@ -55,11 +55,11 @@ export default function ClientsPage() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <SaasLayout>
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </MainLayout>
+      </SaasLayout>
     );
   }
 
@@ -124,7 +124,7 @@ export default function ClientsPage() {
   );
 
   return (
-    <MainLayout>
+    <SaasLayout>
       <div className="space-y-6 p-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/saas/dashboard')}>
@@ -241,6 +241,6 @@ export default function ClientsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </SaasLayout>
   );
 }
