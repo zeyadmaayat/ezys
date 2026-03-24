@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Categories from "./pages/Categories";
 import CategoryDetail from "./pages/CategoryDetail";
 import TopicDetail from "./pages/TopicDetail";

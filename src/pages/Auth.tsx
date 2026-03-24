@@ -281,6 +281,29 @@ const Auth = () => {
               </Button>
               
               {isLogin && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!email) {
+                      setErrors({ email: t('invalidEmail') });
+                      return;
+                    }
+                    try { emailSchema.parse(email); } catch { setErrors({ email: t('invalidEmail') }); return; }
+                    setLoading(true);
+                    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                      redirectTo: `${window.location.origin}/reset-password`,
+                    });
+                    setLoading(false);
+                    if (error) { setGeneralError(error.message); }
+                    else { toast({ title: t('resetLinkSent') }); }
+                  }}
+                  className="w-full text-sm text-primary hover:underline"
+                >
+                  {t('forgotPassword')}
+                </button>
+              )}
+              
+              {isLogin && (
                 <>
                   <div className="relative my-2">
                     <div className="absolute inset-0 flex items-center">
