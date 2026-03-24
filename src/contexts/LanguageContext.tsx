@@ -45,6 +45,14 @@ const translations: Translations = {
   pendingApproval: { en: 'Account Pending Approval', ar: 'الحساب بانتظار الموافقة' },
   pendingApprovalMessage: { en: 'Your account has been created successfully. An administrator will review and approve your account shortly.', ar: 'تم إنشاء حسابك بنجاح. سيقوم المسؤول بمراجعة حسابك والموافقة عليه قريباً.' },
   signOut: { en: 'Sign Out', ar: 'تسجيل الخروج' },
+  forgotPassword: { en: 'Forgot Password?', ar: 'نسيت كلمة المرور؟' },
+  resetPassword: { en: 'Reset Password', ar: 'إعادة تعيين كلمة المرور' },
+  newPassword: { en: 'New Password', ar: 'كلمة المرور الجديدة' },
+  confirmNewPassword: { en: 'Confirm New Password', ar: 'تأكيد كلمة المرور الجديدة' },
+  resetLinkSent: { en: 'Password reset link sent to your email', ar: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني' },
+  passwordResetSuccess: { en: 'Password updated successfully', ar: 'تم تحديث كلمة المرور بنجاح' },
+  sendResetLink: { en: 'Send Reset Link', ar: 'إرسال رابط إعادة التعيين' },
+  backToLogin: { en: 'Back to Login', ar: 'العودة لتسجيل الدخول' },
 
   // Home
   heroTitle: { en: 'Your Professional Logistics Hub', ar: 'مركزك المهني للخدمات اللوجستية' },
