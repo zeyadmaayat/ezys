@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Eye, EyeOff } from 'lucide-react';
+import { Package, Eye, EyeOff, Mail } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
 const emailSchema = z.string().email();
@@ -27,6 +28,9 @@ const Auth = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [magicLinkLoading, setMagicLinkLoading] = useState(false);
+  const { toast } = useToast();
 
   // Redirect if already logged in
   if (user) {
@@ -91,6 +95,43 @@ const Auth = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleMagicLink = async () => {
+    if (!email) {
+      setErrors({ email: t('invalidEmail') });
+      return;
+    }
+    try {
+      emailSchema.parse(email);
+    } catch {
+      setErrors({ email: t('invalidEmail') });
+      return;
+    }
+    
+    setMagicLinkLoading(true);
+    setGeneralError(null);
+    
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/saas/dashboard`,
+        },
+      });
+      
+      if (error) {
+        setGeneralError(error.message);
+      } else {
+        setMagicLinkSent(true);
+        toast({
+          title: 'تم إرسال رابط الدخول',
+          description: 'تفقد بريدك الإلكتروني للدخول بدون كلمة مرور',
+        });
+      }
+    } finally {
+      setMagicLinkLoading(false);
     }
   };
 
@@ -238,6 +279,37 @@ const Auth = () => {
               >
                 {loading ? t('loading') : (isLogin ? t('login') : t('signUp'))}
               </Button>
+              
+              {isLogin && (
+                <>
+                  <div className="relative my-2">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-border" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-2 text-muted-foreground">أو</span>
+                    </div>
+                  </div>
+                  
+                  {magicLinkSent ? (
+                    <div className="bg-primary/10 text-primary text-sm p-3 rounded-lg text-center">
+                      <Mail className="w-5 h-5 mx-auto mb-2" />
+                      تم إرسال رابط الدخول إلى بريدك الإلكتروني
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleMagicLink}
+                      disabled={magicLinkLoading}
+                    >
+                      <Mail className="w-4 h-4 mr-2" />
+                      {magicLinkLoading ? t('loading') : 'دخول بدون كلمة مرور'}
+                    </Button>
+                  )}
+                </>
+              )}
             </form>
           </CardContent>
         </Card>
