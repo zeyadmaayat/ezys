@@ -98,6 +98,43 @@ const Auth = () => {
     }
   };
 
+  const handleMagicLink = async () => {
+    if (!email) {
+      setErrors({ email: t('invalidEmail') });
+      return;
+    }
+    try {
+      emailSchema.parse(email);
+    } catch {
+      setErrors({ email: t('invalidEmail') });
+      return;
+    }
+    
+    setMagicLinkLoading(true);
+    setGeneralError(null);
+    
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/saas/dashboard`,
+        },
+      });
+      
+      if (error) {
+        setGeneralError(error.message);
+      } else {
+        setMagicLinkSent(true);
+        toast({
+          title: 'تم إرسال رابط الدخول',
+          description: 'تفقد بريدك الإلكتروني للدخول بدون كلمة مرور',
+        });
+      }
+    } finally {
+      setMagicLinkLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
