@@ -123,7 +123,7 @@ const Auth = () => {
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
               <Package className="w-7 h-7 text-white" />
             </div>
-            <span className="text-3xl font-bold tracking-tight">LogiPro Hub</span>
+            <span className="text-3xl font-bold tracking-tight">ezy Logistic HUB</span>
           </div>
           <h1 className="text-4xl xl:text-5xl font-bold leading-tight mb-6">
             {isRTL ? 'منصتك المتكاملة لإدارة اللوجستيات' : 'Your All-in-One Logistics Platform'}
@@ -154,7 +154,7 @@ const Auth = () => {
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
               <Package className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-foreground">LogiPro Hub</span>
+            <span className="text-2xl font-bold text-foreground">ezy Logistic HUB</span>
           </div>
 
           {/* Forgot Password View */}

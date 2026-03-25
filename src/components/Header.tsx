@@ -14,7 +14,7 @@ const Header = () => {
             <div className="w-10 h-10 bg-accent-gradient rounded-xl flex items-center justify-center shadow-md">
               <Package className="w-5 h-5 text-accent-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">LogiPro Hub</span>
+            <span className="text-xl font-bold text-foreground">ezy Logistic HUB</span>
           </div>
 
           {/* Desktop Navigation */}

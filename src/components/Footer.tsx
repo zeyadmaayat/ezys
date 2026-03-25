@@ -6,7 +6,7 @@ const Footer = () => {
   const { language } = useLanguage();
 
   const t = {
-    brand: 'LogiPro Hub',
+    brand: 'ezy Logistic HUB',
     tagline: language === 'ar'
       ? 'منصة لوجستية حديثة لفرق سلسلة التوريد المتطورة.'
       : 'The modern logistics platform for forward-thinking supply chain teams.',
@@ -14,7 +14,7 @@ const Footer = () => {
     company: language === 'ar' ? 'الشركة' : 'Company',
     resources: language === 'ar' ? 'الموارد' : 'Resources',
     contact: language === 'ar' ? 'تواصل معنا' : 'Contact Us',
-    rights: language === 'ar' ? '© 2025 LogiPro Hub. جميع الحقوق محفوظة.' : '© 2025 LogiPro Hub. All rights reserved.',
+    rights: language === 'ar' ? '© 2025 ezy Logistic HUB. جميع الحقوق محفوظة.' : '© 2025 ezy Logistic HUB. All rights reserved.',
     privacy: language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy',
     terms: language === 'ar' ? 'شروط الاستخدام' : 'Terms of Service',
     cookies: language === 'ar' ? 'إعدادات الكوكيز' : 'Cookie Settings',

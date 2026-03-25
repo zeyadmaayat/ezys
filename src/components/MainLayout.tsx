@@ -65,7 +65,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <div className="w-10 h-10 bg-accent-gradient rounded-xl flex items-center justify-center shadow-md">
                 <Package className="w-5 h-5 text-accent-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground hidden sm:inline">LogiPro Hub</span>
+              <span className="text-xl font-bold text-foreground hidden sm:inline">ezy Logistic HUB</span>
             </Link>
 
             {/* Desktop Navigation - Pill Container */}
@@ -909,10 +909,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               <div className="w-8 h-8 bg-accent-gradient rounded-lg flex items-center justify-center">
                 <Package className="w-4 h-4 text-accent-foreground" />
               </div>
-              <span className="font-bold text-foreground">LogiPro Hub</span>
+              <span className="font-bold text-foreground">ezy Logistic HUB</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} LogiPro Hub. {t('allRightsReserved')}.
+              © {new Date().getFullYear()} ezy Logistic HUB. {t('allRightsReserved')}.
             </p>
           </div>
         </div>
