@@ -27,7 +27,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailResponse = await resend.emails.send({
-      from: "LogiPro Hub <noreply@logimaayta.lovable.app>",
+      from: "ezy Logistic HUB <noreply@logimaayta.lovable.app>",
       to: ["zeyadmaayta@outlook.com"],
       subject: "🔔 New User Registration - Approval Required",
       html: `
