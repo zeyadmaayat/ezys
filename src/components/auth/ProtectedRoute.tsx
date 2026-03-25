@@ -41,12 +41,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md text-center">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-accent-gradient rounded-xl flex items-center justify-center shadow-lg">
-              <Package className="w-6 h-6 text-accent-foreground" />
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center">
+                <Package className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="text-2xl font-bold text-foreground">ezy<span className="text-primary">Logistic</span></span>
             </div>
-            <span className="text-2xl font-bold text-foreground">ezy Logistic HUB</span>
-          </div>
 
           <Card className="border-border shadow-lg">
             <CardHeader>

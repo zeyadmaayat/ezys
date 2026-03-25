@@ -151,10 +151,10 @@ const Auth = () => {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-              <Package className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <Package className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold text-foreground">ezy Logistic HUB</span>
+            <span className="text-2xl font-bold text-foreground">ezy<span className="text-primary">Logistic</span></span>
           </div>
 
           {/* Forgot Password View */}
