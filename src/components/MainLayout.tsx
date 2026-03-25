@@ -62,10 +62,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-accent-gradient rounded-xl flex items-center justify-center shadow-md">
-                <Package className="w-5 h-5 text-accent-foreground" />
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
+                <Truck className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground hidden sm:inline">ezy Logistic HUB</span>
+              <span className="text-lg font-bold text-foreground hidden sm:inline">ezy<span className="text-primary">Logistic</span></span>
             </Link>
 
             {/* Desktop Navigation - Pill Container */}
