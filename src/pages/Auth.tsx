@@ -119,11 +119,11 @@ const Auth = () => {
           <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-[hsl(var(--primary)/0.2)] blur-3xl" />
         </div>
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 text-white">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-              <Package className="w-7 h-7 text-white" />
+           <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
+              <Package className="w-6 h-6 text-white" />
             </div>
-            <span className="text-3xl font-bold tracking-tight">LogiPro Hub</span>
+            <span className="text-3xl font-bold tracking-tight">ezy<span className="opacity-70">Logistic</span></span>
           </div>
           <h1 className="text-4xl xl:text-5xl font-bold leading-tight mb-6">
             {isRTL ? 'منصتك المتكاملة لإدارة اللوجستيات' : 'Your All-in-One Logistics Platform'}
@@ -151,10 +151,10 @@ const Auth = () => {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-              <Package className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+              <Package className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold text-foreground">LogiPro Hub</span>
+            <span className="text-2xl font-bold text-foreground">ezy<span className="text-primary">Logistic</span></span>
           </div>
 
           {/* Forgot Password View */}

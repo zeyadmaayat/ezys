@@ -62,10 +62,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-accent-gradient rounded-xl flex items-center justify-center shadow-md">
-                <Package className="w-5 h-5 text-accent-foreground" />
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
+                <Truck className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground hidden sm:inline">LogiPro Hub</span>
+              <span className="text-lg font-bold text-foreground hidden sm:inline">ezy<span className="text-primary">Logistic</span></span>
             </Link>
 
             {/* Desktop Navigation - Pill Container */}
@@ -906,13 +906,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-accent-gradient rounded-lg flex items-center justify-center">
-                <Package className="w-4 h-4 text-accent-foreground" />
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Truck className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="font-bold text-foreground">LogiPro Hub</span>
+              <span className="font-bold text-foreground">ezy<span className="text-primary">Logistic</span></span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} LogiPro Hub. {t('allRightsReserved')}.
+              © {new Date().getFullYear()} ezy Logistic HUB. {t('allRightsReserved')}.
             </p>
           </div>
         </div>

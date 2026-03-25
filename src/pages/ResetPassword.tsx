@@ -89,7 +89,7 @@ const ResetPassword = () => {
           <div className="w-12 h-12 bg-accent-gradient rounded-xl flex items-center justify-center shadow-lg">
             <Package className="w-6 h-6 text-accent-foreground" />
           </div>
-          <span className="text-2xl font-bold text-foreground">LogiPro Hub</span>
+          <span className="text-2xl font-bold text-foreground">ezy Logistic HUB</span>
         </div>
 
         <Card className="border-border shadow-lg">

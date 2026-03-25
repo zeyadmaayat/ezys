@@ -1,4 +1,4 @@
-import { Package, Linkedin, Twitter, Github, Mail, Phone, MapPin } from "lucide-react";
+import { Truck, Linkedin, Twitter, Github, Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -6,18 +6,16 @@ const Footer = () => {
   const { language } = useLanguage();
 
   const t = {
-    brand: 'LogiPro Hub',
+    brand: 'ezy Logistic HUB',
     tagline: language === 'ar'
-      ? 'منصة لوجستية حديثة لفرق سلسلة التوريد المتطورة.'
-      : 'The modern logistics platform for forward-thinking supply chain teams.',
+      ? 'منصة لوجستية بسيطة وذكية لإدارة سلسلة التوريد.'
+      : 'Simple, smart logistics platform for modern supply chains.',
     product: language === 'ar' ? 'المنتج' : 'Product',
     company: language === 'ar' ? 'الشركة' : 'Company',
     resources: language === 'ar' ? 'الموارد' : 'Resources',
-    contact: language === 'ar' ? 'تواصل معنا' : 'Contact Us',
-    rights: language === 'ar' ? '© 2025 LogiPro Hub. جميع الحقوق محفوظة.' : '© 2025 LogiPro Hub. All rights reserved.',
-    privacy: language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy',
-    terms: language === 'ar' ? 'شروط الاستخدام' : 'Terms of Service',
-    cookies: language === 'ar' ? 'إعدادات الكوكيز' : 'Cookie Settings',
+    rights: language === 'ar' ? '© 2025 ezy Logistic HUB. جميع الحقوق محفوظة.' : '© 2025 ezy Logistic HUB. All rights reserved.',
+    privacy: language === 'ar' ? 'سياسة الخصوصية' : 'Privacy',
+    terms: language === 'ar' ? 'شروط الاستخدام' : 'Terms',
   };
 
   const productLinks = language === 'ar'
@@ -25,136 +23,82 @@ const Footer = () => {
         { label: 'الميزات', href: '#features' },
         { label: 'الأسعار', href: '#pricing' },
         { label: 'لوحة القيادة', to: '/saas/dashboard' },
-        { label: 'إدارة الشحنات', to: '/saas/shipments' },
+        { label: 'الشحنات', to: '/saas/shipments' },
       ]
     : [
         { label: 'Features', href: '#features' },
         { label: 'Pricing', href: '#pricing' },
         { label: 'Dashboard', to: '/saas/dashboard' },
-        { label: 'Shipment Tracking', to: '/saas/shipments' },
+        { label: 'Shipments', to: '/saas/shipments' },
       ];
 
   const companyLinks = language === 'ar'
-    ? [
-        { label: 'من نحن', href: '#' },
-        { label: 'المدونة', href: '#' },
-        { label: 'الوظائف', href: '#' },
-      ]
-    : [
-        { label: 'About', href: '#' },
-        { label: 'Blog', href: '#' },
-        { label: 'Careers', href: '#' },
-      ];
+    ? [{ label: 'من نحن', href: '#' }, { label: 'المدونة', href: '#' }]
+    : [{ label: 'About', href: '#' }, { label: 'Blog', href: '#' }];
 
   const resourceLinks = language === 'ar'
-    ? [
-        { label: 'الأسئلة الشائعة', href: '#faq' },
-        { label: 'أدوات التدريب', to: '/tools' },
-        { label: 'المساعد الذكي', to: '/logistics-assistant' },
-      ]
-    : [
-        { label: 'FAQ', href: '#faq' },
-        { label: 'Training Tools', to: '/tools' },
-        { label: 'AI Assistant', to: '/logistics-assistant' },
-      ];
+    ? [{ label: 'الأسئلة الشائعة', href: '#faq' }, { label: 'أدوات التدريب', to: '/tools' }]
+    : [{ label: 'FAQ', href: '#faq' }, { label: 'Training Tools', to: '/tools' }];
 
   const renderLink = (link: { label: string; href?: string; to?: string }) => {
     if (link.to) {
-      return (
-        <Link to={link.to} className="text-muted-foreground hover:text-primary transition-colors">
-          {link.label}
-        </Link>
-      );
+      return <Link to={link.to} className="text-primary-foreground/50 hover:text-primary-foreground/80 transition-colors text-sm">{link.label}</Link>;
     }
-    return (
-      <a href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
-        {link.label}
-      </a>
-    );
+    return <a href={link.href} className="text-primary-foreground/50 hover:text-primary-foreground/80 transition-colors text-sm">{link.label}</a>;
   };
 
   return (
     <footer className="bg-hero border-t border-border">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-5 gap-12 lg:gap-8">
-          {/* Brand Column */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid lg:grid-cols-5 gap-10">
+          {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-accent-gradient rounded-xl flex items-center justify-center shadow-md">
-                <Package className="w-5 h-5 text-accent-foreground" />
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
+                <Truck className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-primary-foreground">{t.brand}</span>
+              <span className="text-lg font-bold text-primary-foreground">ezy<span className="text-primary-foreground/70">Logistic</span></span>
             </div>
-            <p className="text-primary-foreground/60 mb-6 max-w-xs">{t.tagline}</p>
-
-            {/* Contact Info */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3 text-primary-foreground/60 text-sm">
-                <Mail className="w-4 h-4" />
-                <span>info@logipro-hub.com</span>
+            <p className="text-primary-foreground/50 mb-5 max-w-xs text-sm">{t.tagline}</p>
+            <div className="space-y-2 mb-5">
+              <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
+                <Mail className="w-3.5 h-3.5" /><span>info@ezylogistic.com</span>
               </div>
-              <div className="flex items-center gap-3 text-primary-foreground/60 text-sm">
-                <Phone className="w-4 h-4" />
-                <span>+966 50 000 0000</span>
+              <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
+                <Phone className="w-3.5 h-3.5" /><span>+966 50 000 0000</span>
               </div>
-              <div className="flex items-center gap-3 text-primary-foreground/60 text-sm">
-                <MapPin className="w-4 h-4" />
-                <span>{language === 'ar' ? 'الرياض، المملكة العربية السعودية' : 'Riyadh, Saudi Arabia'}</span>
+              <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
+                <MapPin className="w-3.5 h-3.5" /><span>{language === 'ar' ? 'الرياض' : 'Riyadh, SA'}</span>
               </div>
             </div>
-
-            {/* Social */}
-            <div className="flex items-center gap-3">
-              <a href="#" className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                <Twitter className="w-5 h-5 text-primary-foreground/70" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                <Linkedin className="w-5 h-5 text-primary-foreground/70" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center hover:bg-primary/20 transition-colors">
-                <Github className="w-5 h-5 text-primary-foreground/70" />
-              </a>
+            <div className="flex items-center gap-2">
+              {[Twitter, Linkedin, Github].map((Icon, i) => (
+                <a key={i} href="#" className="w-8 h-8 bg-primary-foreground/5 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors">
+                  <Icon className="w-4 h-4 text-primary-foreground/40" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Product Links */}
           <div>
-            <h4 className="font-semibold text-primary-foreground mb-4">{t.product}</h4>
-            <ul className="space-y-3">
-              {productLinks.map((link) => (
-                <li key={link.label}>{renderLink(link)}</li>
-              ))}
-            </ul>
+            <h4 className="font-semibold text-primary-foreground/80 mb-3 text-sm">{t.product}</h4>
+            <ul className="space-y-2">{productLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
-
-          {/* Company Links */}
           <div>
-            <h4 className="font-semibold text-primary-foreground mb-4">{t.company}</h4>
-            <ul className="space-y-3">
-              {companyLinks.map((link) => (
-                <li key={link.label}>{renderLink(link)}</li>
-              ))}
-            </ul>
+            <h4 className="font-semibold text-primary-foreground/80 mb-3 text-sm">{t.company}</h4>
+            <ul className="space-y-2">{companyLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
-
-          {/* Resources Links */}
           <div>
-            <h4 className="font-semibold text-primary-foreground mb-4">{t.resources}</h4>
-            <ul className="space-y-3">
-              {resourceLinks.map((link) => (
-                <li key={link.label}>{renderLink(link)}</li>
-              ))}
-            </ul>
+            <h4 className="font-semibold text-primary-foreground/80 mb-3 text-sm">{t.resources}</h4>
+            <ul className="space-y-2">{resourceLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-primary-foreground/50 text-sm">{t.rights}</p>
-          <div className="flex items-center gap-6 text-sm text-primary-foreground/50">
-            <a href="#" className="hover:text-primary transition-colors">{t.privacy}</a>
-            <a href="#" className="hover:text-primary transition-colors">{t.terms}</a>
-            <a href="#" className="hover:text-primary transition-colors">{t.cookies}</a>
+        <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-primary-foreground/30 text-xs">{t.rights}</p>
+          <div className="flex items-center gap-4 text-xs text-primary-foreground/30">
+            <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.privacy}</a>
+            <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.terms}</a>
           </div>
         </div>
       </div>

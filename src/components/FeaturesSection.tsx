@@ -88,7 +88,7 @@ const FeaturesSection = () => {
     titleHighlight: language === 'ar' ? 'لإدارة اللوجستيات' : 'Run Your Logistics',
     subtitle: language === 'ar'
       ? 'من إدارة الطلبات إلى التحليلات المتقدمة، توفر منصتنا جميع الأدوات التي تحتاجها.'
-      : 'From order management to advanced analytics, LogiPro Hub provides all the tools you need to streamline your supply chain operations.',
+      : 'From order management to advanced analytics, ezy Logistic HUB provides all the tools you need to streamline your supply chain.',
     setupTime: language === 'ar' ? 'الإعداد يستغرق أقل من 5 دقائق' : 'Setup takes less than 5 minutes',
   };
 

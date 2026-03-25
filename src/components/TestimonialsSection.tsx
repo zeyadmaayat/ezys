@@ -10,7 +10,7 @@ const TestimonialsSection = () => {
     titleHighlight: language === 'ar' ? 'قادة الصناعة' : 'Industry Leaders',
     subtitle: language === 'ar'
       ? 'اكتشف كيف ساعدت منصتنا الشركات على تحسين عملياتها اللوجستية وزيادة كفاءتها.'
-      : 'Discover how LogiPro Hub has helped companies streamline their logistics and boost operational efficiency.',
+      : 'Discover how ezy Logistic HUB has helped companies streamline their logistics and boost operational efficiency.',
   };
 
   const testimonials = [
@@ -19,8 +19,8 @@ const TestimonialsSection = () => {
       role: language === 'ar' ? 'مدير العمليات' : 'Operations Director',
       company: language === 'ar' ? 'شركة النقل السريع' : 'Express Freight Co.',
       quote: language === 'ar'
-        ? 'منصة LogiPro Hub غيّرت طريقة إدارتنا للشحنات بالكامل. أصبحت لدينا رؤية شاملة لكل عملية في الوقت الفعلي.'
-        : 'LogiPro Hub completely transformed how we manage shipments. We now have full real-time visibility into every operation.',
+        ? 'منصة ezy Logistic HUB غيّرت طريقة إدارتنا للشحنات بالكامل. أصبحت لدينا رؤية شاملة لكل عملية في الوقت الفعلي.'
+        : 'ezy Logistic HUB completely transformed how we manage shipments. We now have full real-time visibility into every operation.',
       rating: 5,
     },
     {
