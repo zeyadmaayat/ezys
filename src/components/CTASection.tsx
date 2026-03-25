@@ -15,7 +15,7 @@ const CTASection = () => {
     titleHighlight: language === 'ar' ? 'عملياتك اللوجستية؟' : 'Logistics Operations?',
     subtitle: language === 'ar'
       ? 'انضم إلى آلاف الشركات التي تستخدم منصتنا لتبسيط سلسلة التوريد وزيادة الكفاءة.'
-      : 'Join thousands of companies already using ezy Logistic HUB to streamline their supply chain and boost efficiency.',
+      : 'Join thousands of companies already using ezy Logistic HUB to simplify their logistics.',
     startTrial: language === 'ar' ? 'ابدأ تجربتك المجانية' : 'Start Your Free Trial',
     scheduleDemo: language === 'ar' ? 'جدولة عرض توضيحي' : 'Schedule a Demo',
   };
