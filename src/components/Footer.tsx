@@ -1,4 +1,5 @@
-import { Truck, Linkedin, Twitter, Github, Mail, Phone, MapPin } from "lucide-react";
+import { Linkedin, Twitter, Github, Mail, Phone, MapPin } from "lucide-react";
+import EzyLogo from "@/components/EzyLogo";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
