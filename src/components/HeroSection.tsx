@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, TrendingUp, Truck, MapPin, Package, FileText } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import EzyLogo from "@/components/EzyLogo";
 
 const HeroSection = () => {
   const { language, isRTL } = useLanguage();

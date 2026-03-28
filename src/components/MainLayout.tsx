@@ -22,6 +22,7 @@ import {
   Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
   ScanBarcode, DollarSign, AlertTriangle
 } from 'lucide-react';
+import EzyLogo from '@/components/EzyLogo';
 import { useState } from 'react';
 
 interface MainLayoutProps {

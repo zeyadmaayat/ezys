@@ -11,12 +11,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-              <Truck className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold text-foreground">ezy<span className="text-primary">Logistic</span></span>
-          </div>
+          <EzyLogo size="sm" />
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
