@@ -120,12 +120,9 @@ const Auth = () => {
           <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-[hsl(var(--primary)/0.2)] blur-3xl" />
         </div>
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 text-white">
-           <div className="flex items-center gap-3 mb-12">
-            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
-              <Package className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-3xl font-bold tracking-tight">ezy<span className="opacity-70">Logistic</span></span>
-          </div>
+           <div className="mb-12">
+              <EzyLogo size="lg" className="[&_span]:!text-white [&_div:last-child_div:last-child]:!text-white/50" />
+           </div>
           <h1 className="text-4xl xl:text-5xl font-bold leading-tight mb-6">
             {isRTL ? 'منصتك المتكاملة لإدارة اللوجستيات' : 'Your All-in-One Logistics Platform'}
           </h1>
