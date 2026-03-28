@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Truck, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import EzyLogo from "@/components/EzyLogo";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
