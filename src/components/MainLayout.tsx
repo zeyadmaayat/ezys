@@ -22,6 +22,7 @@ import {
   Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
   ScanBarcode, DollarSign, AlertTriangle
 } from 'lucide-react';
+import EzyLogo from '@/components/EzyLogo';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -61,11 +62,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-                <Truck className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-lg font-bold text-foreground hidden sm:inline">ezy<span className="text-primary">Logistic</span></span>
+            <Link to="/" className="flex items-center">
+              <EzyLogo size="sm" />
             </Link>
 
             {/* Desktop Navigation - Pill Container */}

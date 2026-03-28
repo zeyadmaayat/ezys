@@ -6,7 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Package, Eye, EyeOff, Mail, ArrowRight, Truck, BarChart3, Shield } from 'lucide-react';
+import { Eye, EyeOff, Mail, ArrowRight, Truck, BarChart3, Shield } from 'lucide-react';
+import EzyLogo from '@/components/EzyLogo';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -119,12 +120,9 @@ const Auth = () => {
           <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-[hsl(var(--primary)/0.2)] blur-3xl" />
         </div>
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 text-white">
-           <div className="flex items-center gap-3 mb-12">
-            <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
-              <Package className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-3xl font-bold tracking-tight">ezy<span className="opacity-70">Logistic</span></span>
-          </div>
+           <div className="mb-12">
+              <EzyLogo size="lg" className="[&_span]:!text-white [&_div:last-child_div:last-child]:!text-white/50" />
+           </div>
           <h1 className="text-4xl xl:text-5xl font-bold leading-tight mb-6">
             {isRTL ? 'منصتك المتكاملة لإدارة اللوجستيات' : 'Your All-in-One Logistics Platform'}
           </h1>
@@ -150,11 +148,8 @@ const Auth = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-background p-6 sm:p-10">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <Package className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-foreground">ezy<span className="text-primary">Logistic</span></span>
+          <div className="flex lg:hidden items-center justify-center mb-8">
+              <EzyLogo size="md" />
           </div>
 
           {/* Forgot Password View */}

@@ -1,4 +1,5 @@
-import { Truck, Linkedin, Twitter, Github, Mail, Phone, MapPin } from "lucide-react";
+import { Linkedin, Twitter, Github, Mail, Phone, MapPin } from "lucide-react";
+import EzyLogo from "@/components/EzyLogo";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -53,11 +54,8 @@ const Footer = () => {
         <div className="grid lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-                <Truck className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-lg font-bold text-primary-foreground">ezy<span className="text-primary-foreground/70">Logistic</span></span>
+            <div className="mb-3">
+              <EzyLogo size="sm" className="[&_span]:!text-primary-foreground [&_div]:!text-primary-foreground/70" />
             </div>
             <p className="text-primary-foreground/50 mb-5 max-w-xs text-sm">{t.tagline}</p>
             <div className="space-y-2 mb-5">
