@@ -59,6 +59,13 @@ import DpWarehouse from "./pages/dp/Warehouse";
 import DpInventoryPage from "./pages/dp/Inventory";
 import DpCodSettlements from "./pages/dp/CodSettlements";
 import DpRiskDashboard from "./pages/dp/RiskDashboard";
+// Sales / CRM Pages
+import SalesDashboard from "./pages/sales/Dashboard";
+import SalesLeads from "./pages/sales/Leads";
+import SalesPipeline from "./pages/sales/Pipeline";
+import SalesQuotations from "./pages/sales/Quotations";
+import SalesOrders from "./pages/sales/Orders";
+import SalesCustomers from "./pages/sales/Customers";
 
 const queryClient = new QueryClient();
 
