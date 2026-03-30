@@ -1,26 +1,22 @@
-<svg width="100%" viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg">
-  
-
-  <!-- Background -->
-  <rect x="0" y="0" width="680" height="300" rx="0" style="fill:rgb(13, 17, 23);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+<svg width="100%" viewBox="50 90 530 140" xmlns="http://www.w3.org/2000/svg">
 
   <!-- Icon: bold square with a sharp "E" cutout -->
-  <rect x="60" y="100" width="100" height="100" rx="10" style="fill:rgb(77, 142, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
-  <!-- E shape cut in white -->
-  <rect x="80" y="118" width="60" height="12" rx="2" style="fill:rgb(13, 17, 23);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
-  <rect x="80" y="144" width="44" height="12" rx="2" style="fill:rgb(13, 17, 23);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
-  <rect x="80" y="170" width="60" height="12" rx="2" style="fill:rgb(13, 17, 23);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
-  <rect x="80" y="118" width="12" height="64" rx="2" style="fill:rgb(13, 17, 23);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect x="60" y="100" width="100" height="100" rx="10" fill="rgb(77, 142, 255)"/>
+  <!-- E shape cut -->
+  <rect x="80" y="118" width="60" height="12" rx="2" fill="rgb(13, 17, 23)"/>
+  <rect x="80" y="144" width="44" height="12" rx="2" fill="rgb(13, 17, 23)"/>
+  <rect x="80" y="170" width="60" height="12" rx="2" fill="rgb(13, 17, 23)"/>
+  <rect x="80" y="118" width="12" height="64" rx="2" fill="rgb(13, 17, 23)"/>
 
   <!-- Wordmark -->
-  <text x="182" y="172" font-family="'Arial Black', 'Impact', sans-serif" font-size="74" font-weight="900" letter-spacing="-3" style="fill:rgb(240, 244, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Arial Black&quot;, Impact, sans-serif;font-size:74px;font-weight:900;text-anchor:start;dominant-baseline:auto">Ezy</text>
-  <text x="350" y="172" font-family="'Arial Black', 'Impact', sans-serif" font-size="74" font-weight="900" letter-spacing="-3" style="fill:rgb(77, 142, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Arial Black&quot;, Impact, sans-serif;font-size:74px;font-weight:900;text-anchor:start;dominant-baseline:auto">Suite</text>
+  <text x="182" y="172" font-family="'Arial Black', 'Impact', sans-serif" font-size="74" font-weight="900" letter-spacing="-3" fill="rgb(240, 244, 255)">Ezy</text>
+  <text x="350" y="172" font-family="'Arial Black', 'Impact', sans-serif" font-size="74" font-weight="900" letter-spacing="-3" fill="rgb(77, 142, 255)">Suite</text>
 
   <!-- Bold accent bar under text -->
-  <rect x="182" y="182" width="168" height="6" rx="3" style="fill:rgb(240, 244, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
-  <rect x="354" y="182" width="218" height="6" rx="3" style="fill:rgb(77, 142, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <rect x="182" y="182" width="168" height="6" rx="3" fill="rgb(240, 244, 255)"/>
+  <rect x="354" y="182" width="218" height="6" rx="3" fill="rgb(77, 142, 255)"/>
 
   <!-- Tagline -->
-  <text x="182" y="216" font-family="Arial, sans-serif" font-size="13" letter-spacing="5" font-weight="400" style="fill:rgb(90, 102, 128);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Arial, sans-serif;font-size:13px;font-weight:400;text-anchor:start;dominant-baseline:auto">ERP · LOGISTICS · FLOW</text>
+  <text x="182" y="216" font-family="Arial, sans-serif" font-size="13" letter-spacing="5" font-weight="400" fill="rgb(90, 102, 128)">ERP · LOGISTICS · FLOW</text>
 
 </svg>
