@@ -59,6 +59,13 @@ import DpWarehouse from "./pages/dp/Warehouse";
 import DpInventoryPage from "./pages/dp/Inventory";
 import DpCodSettlements from "./pages/dp/CodSettlements";
 import DpRiskDashboard from "./pages/dp/RiskDashboard";
+// Sales / CRM Pages
+import SalesDashboard from "./pages/sales/Dashboard";
+import SalesLeads from "./pages/sales/Leads";
+import SalesPipeline from "./pages/sales/Pipeline";
+import SalesQuotations from "./pages/sales/Quotations";
+import SalesOrders from "./pages/sales/Orders";
+import SalesCustomers from "./pages/sales/Customers";
 
 const queryClient = new QueryClient();
 
@@ -128,6 +135,14 @@ const App = () => (
               <Route path="/dp/inventory" element={<ProtectedRoute><DpInventoryPage /></ProtectedRoute>} />
               <Route path="/dp/cod" element={<ProtectedRoute><DpCodSettlements /></ProtectedRoute>} />
               <Route path="/dp/risk" element={<ProtectedRoute><DpRiskDashboard /></ProtectedRoute>} />
+              
+              {/* Sales / CRM Routes */}
+              <Route path="/sales/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
+              <Route path="/sales/leads" element={<ProtectedRoute><SalesLeads /></ProtectedRoute>} />
+              <Route path="/sales/pipeline" element={<ProtectedRoute><SalesPipeline /></ProtectedRoute>} />
+              <Route path="/sales/quotations" element={<ProtectedRoute><SalesQuotations /></ProtectedRoute>} />
+              <Route path="/sales/orders" element={<ProtectedRoute><SalesOrders /></ProtectedRoute>} />
+              <Route path="/sales/customers" element={<ProtectedRoute><SalesCustomers /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

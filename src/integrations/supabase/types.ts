@@ -2425,6 +2425,198 @@ export type Database = {
           },
         ]
       }
+      sales_leads: {
+        Row: {
+          assigned_to: string | null
+          company_id: string
+          company_name: string | null
+          created_at: string | null
+          created_by: string | null
+          email: string | null
+          expected_revenue: number | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          company_id: string
+          company_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          email?: string | null
+          expected_revenue?: number | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          company_id?: string
+          company_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          email?: string | null
+          expected_revenue?: number | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_leads_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_quotation_lines: {
+        Row: {
+          created_at: string | null
+          discount_percent: number | null
+          id: string
+          item_id: string | null
+          item_name: string
+          quantity: number | null
+          quotation_id: string
+          total_price: number | null
+          unit: string | null
+          unit_price: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          discount_percent?: number | null
+          id?: string
+          item_id?: string | null
+          item_name: string
+          quantity?: number | null
+          quotation_id: string
+          total_price?: number | null
+          unit?: string | null
+          unit_price?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          discount_percent?: number | null
+          id?: string
+          item_id?: string | null
+          item_name?: string
+          quantity?: number | null
+          quotation_id?: string
+          total_price?: number | null
+          unit?: string | null
+          unit_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_quotation_lines_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_quotation_lines_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "sales_quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_quotations: {
+        Row: {
+          client_id: string | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          currency: string | null
+          expiry_date: string | null
+          id: string
+          issue_date: string | null
+          lead_id: string | null
+          notes: string | null
+          quotation_number: string
+          status: string | null
+          subtotal: number | null
+          tax_amount: number | null
+          total_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          expiry_date?: string | null
+          id?: string
+          issue_date?: string | null
+          lead_id?: string | null
+          notes?: string | null
+          quotation_number: string
+          status?: string | null
+          subtotal?: number | null
+          tax_amount?: number | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          expiry_date?: string | null
+          id?: string
+          issue_date?: string | null
+          lead_id?: string | null
+          notes?: string | null
+          quotation_number?: string
+          status?: string | null
+          subtotal?: number | null
+          tax_amount?: number | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_quotations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_quotations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_quotations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "sales_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipment_costs: {
         Row: {
           actual_amount: number | null
