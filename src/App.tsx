@@ -66,6 +66,7 @@ import SalesPipeline from "./pages/sales/Pipeline";
 import SalesQuotations from "./pages/sales/Quotations";
 import SalesOrders from "./pages/sales/Orders";
 import SalesCustomers from "./pages/sales/Customers";
+import SalesProducts from "./pages/sales/Products";
 
 const queryClient = new QueryClient();
 
