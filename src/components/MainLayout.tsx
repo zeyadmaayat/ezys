@@ -20,7 +20,7 @@ import {
   Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
   ClipboardList, BookOpen, Bot, History, CreditCard, 
   Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
-  ScanBarcode, DollarSign, AlertTriangle
+  ScanBarcode, DollarSign, AlertTriangle, Target, TrendingUp, Handshake
 } from 'lucide-react';
 import EzyLogo from '@/components/EzyLogo';
 import { useState } from 'react';
@@ -536,6 +536,110 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                       <div>
                         <div className="font-semibold text-sm">{language === 'ar' ? 'المطابقة الثلاثية' : 'Three-Way Match'}</div>
                         <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'PO ↔ GRN ↔ فاتورة' : 'PO ↔ GRN ↔ Invoice'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Sales / CRM Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className={`px-3.5 py-2 rounded-lg transition-all duration-200 text-sm font-semibold flex items-center gap-1.5 outline-none ${
+                  isActivePath('/sales')
+                    ? 'bg-card text-rose-600 shadow-sm ring-1 ring-rose-200/60' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                }`}>
+                  <Handshake className="w-3.5 h-3.5" />
+                  {language === 'ar' ? 'المبيعات' : 'Sales'}
+                  <ChevronDown className="w-3 h-3 opacity-50" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'} className="w-72 p-2 rounded-xl shadow-xl border-border/60 backdrop-blur-xl bg-card max-h-[75vh] overflow-y-auto">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'لوحة التحكم' : 'Overview'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/dashboard')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/dashboard') ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-400 to-rose-600 flex items-center justify-center mr-3 shadow-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'لوحة المبيعات' : 'Sales Dashboard'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'أداء المبيعات والتحليلات' : 'Performance & analytics'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'إدارة العملاء' : 'CRM'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/leads')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/leads') ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Target className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'العملاء المحتملين' : 'Leads'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إدارة العملاء المحتملين' : 'Manage prospects'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/pipeline')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/pipeline') ? 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mr-3 shadow-sm">
+                        <TrendingUp className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'خط الأنابيب' : 'Pipeline'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'مراحل البيع (Kanban)' : 'Kanban sales stages'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/customers')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/customers') ? 'bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Users className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'العملاء' : 'Customers'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'قاعدة بيانات العملاء' : 'Customer database'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'المستندات' : 'Documents'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/quotations')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/quotations') ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mr-3 shadow-sm">
+                        <FileText className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'عروض الأسعار' : 'Quotations'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'إنشاء وإرسال عروض الأسعار' : 'Create & send quotes'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/orders')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/orders') ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mr-3 shadow-sm">
+                        <ShoppingCart className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'أوامر البيع' : 'Sales Orders'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تأكيد وتتبع الطلبات' : 'Confirm & track orders'}</div>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
