@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   BarChart3, Users, FileText, Target, TrendingUp,
-  ChevronLeft, ChevronRight, ShoppingCart, Receipt,
+  ChevronLeft, ChevronRight, ShoppingCart, Receipt, Package,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
