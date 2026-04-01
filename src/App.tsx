@@ -66,6 +66,7 @@ import SalesPipeline from "./pages/sales/Pipeline";
 import SalesQuotations from "./pages/sales/Quotations";
 import SalesOrders from "./pages/sales/Orders";
 import SalesCustomers from "./pages/sales/Customers";
+import SalesProducts from "./pages/sales/Products";
 
 const queryClient = new QueryClient();
 
@@ -138,6 +139,7 @@ const App = () => (
               
               {/* Sales / CRM Routes */}
               <Route path="/sales/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
+              <Route path="/sales/products" element={<ProtectedRoute><SalesProducts /></ProtectedRoute>} />
               <Route path="/sales/leads" element={<ProtectedRoute><SalesLeads /></ProtectedRoute>} />
               <Route path="/sales/pipeline" element={<ProtectedRoute><SalesPipeline /></ProtectedRoute>} />
               <Route path="/sales/quotations" element={<ProtectedRoute><SalesQuotations /></ProtectedRoute>} />
