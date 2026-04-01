@@ -20,7 +20,7 @@ import {
   Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
   ClipboardList, BookOpen, Bot, History, CreditCard, 
   Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
-  ScanBarcode, DollarSign, AlertTriangle
+  ScanBarcode, DollarSign, AlertTriangle, Target, TrendingUp, Handshake
 } from 'lucide-react';
 import EzyLogo from '@/components/EzyLogo';
 import { useState } from 'react';
