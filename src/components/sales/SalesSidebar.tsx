@@ -27,6 +27,7 @@ const navGroups: NavGroup[] = [
     titleAr: 'المبيعات',
     items: [
       { icon: BarChart3, labelEn: 'Dashboard', labelAr: 'لوحة التحكم', path: '/sales/dashboard' },
+      { icon: Package, labelEn: 'Products', labelAr: 'المنتجات', path: '/sales/products' },
       { icon: Target, labelEn: 'Leads', labelAr: 'العملاء المحتملين', path: '/sales/leads' },
       { icon: TrendingUp, labelEn: 'Pipeline', labelAr: 'خط الأنابيب', path: '/sales/pipeline' },
     ],
