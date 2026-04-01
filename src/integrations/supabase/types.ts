@@ -2484,6 +2484,89 @@ export type Database = {
           },
         ]
       }
+      sales_products: {
+        Row: {
+          capacity: string | null
+          category: string
+          company_id: string
+          created_at: string
+          customer_type: string
+          device_info: string | null
+          id: string
+          includes_extender: boolean | null
+          includes_mifi: boolean | null
+          includes_router: boolean | null
+          includes_sim: boolean | null
+          includes_voip: boolean | null
+          includes_wifi_modem: boolean | null
+          is_active: boolean | null
+          name: string
+          price_jd: number
+          segment: string | null
+          sim_price_jd: number | null
+          sort_order: number | null
+          speed: string | null
+          subcategory: string | null
+          updated_at: string
+        }
+        Insert: {
+          capacity?: string | null
+          category: string
+          company_id: string
+          created_at?: string
+          customer_type?: string
+          device_info?: string | null
+          id?: string
+          includes_extender?: boolean | null
+          includes_mifi?: boolean | null
+          includes_router?: boolean | null
+          includes_sim?: boolean | null
+          includes_voip?: boolean | null
+          includes_wifi_modem?: boolean | null
+          is_active?: boolean | null
+          name: string
+          price_jd?: number
+          segment?: string | null
+          sim_price_jd?: number | null
+          sort_order?: number | null
+          speed?: string | null
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string | null
+          category?: string
+          company_id?: string
+          created_at?: string
+          customer_type?: string
+          device_info?: string | null
+          id?: string
+          includes_extender?: boolean | null
+          includes_mifi?: boolean | null
+          includes_router?: boolean | null
+          includes_sim?: boolean | null
+          includes_voip?: boolean | null
+          includes_wifi_modem?: boolean | null
+          is_active?: boolean | null
+          name?: string
+          price_jd?: number
+          segment?: string | null
+          sim_price_jd?: number | null
+          sort_order?: number | null
+          speed?: string | null
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales_quotation_lines: {
         Row: {
           created_at: string | null
