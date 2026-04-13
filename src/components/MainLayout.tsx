@@ -20,9 +20,11 @@ import {
   Truck, FileText, MapPin, ShoppingCart, BarChart3, Shield,
   ClipboardList, BookOpen, Bot, History, CreditCard, 
   Building2, Layers, GraduationCap, RotateCcw, RefreshCw, PackageCheck,
-  ScanBarcode, DollarSign, AlertTriangle, Target, TrendingUp, Handshake
+  ScanBarcode, DollarSign, AlertTriangle, Target, TrendingUp, Handshake,
+  PieChart as PieIcon,
 } from 'lucide-react';
 import EzyLogo from '@/components/EzyLogo';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useState } from 'react';
 
 interface MainLayoutProps {
@@ -616,6 +618,24 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <DropdownMenuSeparator className="my-2 bg-border/40" />
                   <DropdownMenuGroup>
                     <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'الكتالوج' : 'Catalog'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/products')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/products') ? 'bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center mr-3 shadow-sm">
+                        <Package className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'المنتجات' : 'Products'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'كتالوج المنتجات والباقات' : 'Product catalog & plans'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
                       {language === 'ar' ? 'المستندات' : 'Documents'}
                     </DropdownMenuLabel>
                     <DropdownMenuItem 
@@ -826,6 +846,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               >
                 <Globe className="w-5 h-5" />
               </Button>
+
+              {/* Notifications */}
+              {user && <NotificationBell />}
 
               {/* Auth */}
               {loading ? (
