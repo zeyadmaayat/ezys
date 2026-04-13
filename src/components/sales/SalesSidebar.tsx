@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   BarChart3, Users, FileText, Target, TrendingUp,
-  ChevronLeft, ChevronRight, ShoppingCart, Receipt, Package,
+  ChevronLeft, ChevronRight, ShoppingCart, Receipt, Package, PieChart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -38,6 +38,13 @@ const navGroups: NavGroup[] = [
     items: [
       { icon: FileText, labelEn: 'Quotations', labelAr: 'عروض الأسعار', path: '/sales/quotations' },
       { icon: ShoppingCart, labelEn: 'Orders', labelAr: 'الطلبات', path: '/sales/orders' },
+    ],
+  },
+  {
+    titleEn: 'Analytics',
+    titleAr: 'التحليلات',
+    items: [
+      { icon: PieChart, labelEn: 'Reports', labelAr: 'التقارير', path: '/sales/reports' },
     ],
   },
   {
