@@ -998,6 +998,31 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   {language === 'ar' ? 'الفواتير' : 'Invoices'}
                 </Link>
 
+                {/* Sales Section */}
+                <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
+                  {language === 'ar' ? 'المبيعات' : 'Sales'}
+                </div>
+                <Link to="/sales/dashboard" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <BarChart3 className="w-4 h-4" />
+                  {language === 'ar' ? 'لوحة المبيعات' : 'Sales Dashboard'}
+                </Link>
+                <Link to="/sales/products" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Package className="w-4 h-4" />
+                  {language === 'ar' ? 'المنتجات' : 'Products'}
+                </Link>
+                <Link to="/sales/leads" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Target className="w-4 h-4" />
+                  {language === 'ar' ? 'العملاء المحتملين' : 'Leads'}
+                </Link>
+                <Link to="/sales/quotations" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <FileText className="w-4 h-4" />
+                  {language === 'ar' ? 'عروض الأسعار' : 'Quotations'}
+                </Link>
+                <Link to="/sales/reports" className="px-3 py-2 rounded-lg hover:bg-secondary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <PieIcon className="w-4 h-4" />
+                  {language === 'ar' ? 'التقارير' : 'Reports'}
+                </Link>
+
                 {/* Training Section */}
                 <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-2">
                   {language === 'ar' ? 'التدريب' : 'Training'}
