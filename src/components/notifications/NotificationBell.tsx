@@ -2,18 +2,17 @@ import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { format } from 'date-fns';
 
-interface Notification {
+interface AppNotification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'warning' | 'success' | 'error';
+  type: string;
   is_read: boolean;
   created_at: string;
 }
@@ -21,7 +20,7 @@ interface Notification {
 export function NotificationBell() {
   const { user } = useAuth();
   const { language } = useLanguage();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -29,14 +28,14 @@ export function NotificationBell() {
     fetchNotifications();
 
     const channel = supabase
-      .channel('notifications')
+      .channel('user-notifications')
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
         table: 'notifications',
         filter: `user_id=eq.${user.id}`,
       }, (payload) => {
-        setNotifications(prev => [payload.new as Notification, ...prev]);
+        setNotifications(prev => [payload.new as AppNotification, ...prev]);
       })
       .subscribe();
 
@@ -46,32 +45,32 @@ export function NotificationBell() {
   const fetchNotifications = async () => {
     if (!user) return;
     try {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(20);
-      setNotifications((data || []) as Notification[]);
+      setNotifications((data || []) as AppNotification[]);
     } catch (e) {
       console.error('Failed to fetch notifications:', e);
     }
   };
 
   const markAsRead = async (id: string) => {
-    await supabase.from('notifications').update({ is_read: true } as any).eq('id', id);
+    await (supabase as any).from('notifications').update({ is_read: true }).eq('id', id);
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
   };
 
   const markAllRead = async () => {
     if (!user) return;
-    await supabase.from('notifications').update({ is_read: true } as any).eq('user_id', user.id).eq('is_read', false);
+    await (supabase as any).from('notifications').update({ is_read: true }).eq('user_id', user.id).eq('is_read', false);
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
-  const typeColors = {
+  const typeColors: Record<string, string> = {
     info: 'bg-blue-500',
     warning: 'bg-amber-500',
     success: 'bg-emerald-500',
