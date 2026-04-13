@@ -663,6 +663,24 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="my-2 bg-border/40" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-2 mb-1">
+                      {language === 'ar' ? 'التحليلات' : 'Analytics'}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/sales/reports')}
+                      className={`rounded-lg mx-1 py-2.5 ${isActivePath('/sales/reports') ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400' : ''}`}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center mr-3 shadow-sm">
+                        <PieIcon className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm">{language === 'ar' ? 'التقارير' : 'Reports'}</div>
+                        <div className="text-[11px] text-muted-foreground/70">{language === 'ar' ? 'تحليلات وإحصائيات المبيعات' : 'Sales analytics & insights'}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
 
