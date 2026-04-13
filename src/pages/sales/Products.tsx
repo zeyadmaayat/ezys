@@ -15,12 +15,14 @@ const categoryIcons: Record<string, typeof Wifi> = {
   Fiber: Globe,
   '4G': Signal,
   '5G': Zap,
+  Mobile: Smartphone,
 };
 
 const categoryColors: Record<string, string> = {
   Fiber: 'from-blue-500 to-cyan-500',
   '4G': 'from-amber-500 to-orange-500',
   '5G': 'from-violet-500 to-purple-500',
+  Mobile: 'from-green-500 to-emerald-500',
 };
 
 function FeatureBadge({ label, included }: { label: string; included: boolean }) {

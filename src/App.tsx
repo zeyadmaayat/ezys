@@ -67,6 +67,7 @@ import SalesQuotations from "./pages/sales/Quotations";
 import SalesOrders from "./pages/sales/Orders";
 import SalesCustomers from "./pages/sales/Customers";
 import SalesProducts from "./pages/sales/Products";
+import SalesReports from "./pages/sales/Reports";
 
 const queryClient = new QueryClient();
 
@@ -145,6 +146,7 @@ const App = () => (
               <Route path="/sales/quotations" element={<ProtectedRoute><SalesQuotations /></ProtectedRoute>} />
               <Route path="/sales/orders" element={<ProtectedRoute><SalesOrders /></ProtectedRoute>} />
               <Route path="/sales/customers" element={<ProtectedRoute><SalesCustomers /></ProtectedRoute>} />
+              <Route path="/sales/reports" element={<ProtectedRoute><SalesReports /></ProtectedRoute>} />
               
               {/* Admin routes - require admin role */}
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />

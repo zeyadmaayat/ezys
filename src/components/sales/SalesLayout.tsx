@@ -10,7 +10,9 @@ export function SalesLayout({ children }: SalesLayoutProps) {
   return (
     <MainLayout>
       <div className="flex">
-        <SalesSidebar />
+        <div className="hidden md:block">
+          <SalesSidebar />
+        </div>
         <main className="flex-1 min-h-[calc(100vh-4rem)] overflow-x-hidden">
           {children}
         </main>
