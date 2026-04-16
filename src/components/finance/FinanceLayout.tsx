@@ -10,8 +10,10 @@ export function FinanceLayout({ children }: FinanceLayoutProps) {
   return (
     <MainLayout>
       <div className="flex">
-        <FinanceSidebar />
-        <main className="flex-1 min-h-[calc(100vh-4rem)] overflow-x-hidden">
+        <div className="hidden md:block">
+          <FinanceSidebar />
+        </div>
+        <main className="flex-1 min-h-[calc(100vh-3rem)] overflow-x-hidden">
           {children}
         </main>
       </div>

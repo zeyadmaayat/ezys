@@ -13,7 +13,7 @@ export function SalesLayout({ children }: SalesLayoutProps) {
         <div className="hidden md:block">
           <SalesSidebar />
         </div>
-        <main className="flex-1 min-h-[calc(100vh-4rem)] overflow-x-hidden">
+        <main className="flex-1 min-h-[calc(100vh-3rem)] overflow-x-hidden">
           {children}
         </main>
       </div>
