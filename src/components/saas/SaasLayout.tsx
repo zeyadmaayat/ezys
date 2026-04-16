@@ -10,8 +10,10 @@ export function SaasLayout({ children }: SaasLayoutProps) {
   return (
     <MainLayout>
       <div className="flex">
-        <SaasSidebar />
-        <main className="flex-1 min-h-[calc(100vh-4rem)] overflow-x-hidden">
+        <div className="hidden md:block">
+          <SaasSidebar />
+        </div>
+        <main className="flex-1 min-h-[calc(100vh-3rem)] overflow-x-hidden">
           {children}
         </main>
       </div>

@@ -34,18 +34,18 @@ export function FinanceSidebar() {
   return (
     <aside
       className={cn(
-        'h-[calc(100vh-4rem)] sticky top-16 border-r border-border bg-card/80 backdrop-blur-sm transition-all duration-200 flex flex-col',
-        collapsed ? 'w-14' : 'w-56'
+        'h-[calc(100vh-3rem)] sticky top-12 border-r border-border bg-card transition-all duration-200 flex flex-col',
+        collapsed ? 'w-12' : 'w-52'
       )}
     >
-      <div className="flex-1 overflow-y-auto py-3 px-1.5 space-y-4">
+      <div className="flex-1 overflow-y-auto py-2 px-1 space-y-3">
         <div>
           {!collapsed && (
-            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60 font-bold px-3 mb-1.5">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-bold px-2.5 mb-1">
               {language === 'ar' ? 'المالية' : 'Finance'}
             </p>
           )}
-          <div className="space-y-0.5">
+          <div className="space-y-px">
             {navItems.map((item) => {
               const active = isActive(item.path);
               return (
@@ -53,11 +53,11 @@ export function FinanceSidebar() {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={cn(
-                    'w-full flex items-center gap-2.5 rounded-lg text-sm font-medium transition-all duration-150',
-                    collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2',
+                    'w-full flex items-center gap-2 rounded text-[13px] font-medium transition-all',
+                    collapsed ? 'justify-center px-2 py-2' : 'px-2.5 py-1.5',
                     active
-                      ? 'bg-primary/10 text-primary shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                      ? 'bg-primary/10 text-primary font-semibold'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
                   )}
                   title={collapsed ? (language === 'ar' ? item.labelAr : item.labelEn) : undefined}
                 >
@@ -74,14 +74,14 @@ export function FinanceSidebar() {
         </div>
       </div>
 
-      <div className="border-t border-border p-1.5">
+      <div className="border-t border-border p-1">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full h-8 text-muted-foreground"
+          className="w-full h-7 text-muted-foreground"
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
         </Button>
       </div>
     </aside>

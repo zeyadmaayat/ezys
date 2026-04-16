@@ -156,10 +156,9 @@ export function useOrders() {
         .single();
 
       if (shipmentError) {
-        const errorDetails = `Code: ${shipmentError.code}, Message: ${shipmentError.message}, Details: ${shipmentError.details || 'none'}, Hint: ${shipmentError.hint || 'none'}`;
         console.error('Shipment creation error:', shipmentError);
-        toast.error(`Shipment error: ${shipmentError.message}`);
-        return { id: null, error: errorDetails };
+        toast.error('Failed to create shipment. Please check the order details and try again.');
+        return { id: null, error: 'Shipment creation failed' };
       }
 
       // Update order status
@@ -168,11 +167,9 @@ export function useOrders() {
       toast.success('Order converted to shipment');
       return { id: shipment.id };
     } catch (error: unknown) {
-      const err = error as { message?: string; code?: string; details?: string };
-      const errorDetails = `${err.message || 'Unknown error'} (code: ${err.code || 'N/A'})`;
       console.error('Error converting order:', error);
-      toast.error(`Failed to convert: ${errorDetails}`);
-      return { id: null, error: errorDetails };
+      toast.error('Failed to convert order to shipment. Please try again.');
+      return { id: null, error: 'Conversion failed' };
     }
   };
 
