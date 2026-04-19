@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   BarChart3, Users, FileText, Target, TrendingUp,
-  ChevronLeft, ChevronRight, ShoppingCart, Package, PieChart,
+  ChevronLeft, ChevronRight, ShoppingCart, Package, PieChart, Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -22,6 +22,13 @@ interface NavGroup {
 }
 
 const navGroups: NavGroup[] = [
+  {
+    titleEn: 'AI',
+    titleAr: 'الذكاء الاصطناعي',
+    items: [
+      { icon: Sparkles, labelEn: 'AI Assistant', labelAr: 'المساعد الذكي', path: '/ai' },
+    ],
+  },
   {
     titleEn: 'Sales',
     titleAr: 'المبيعات',
