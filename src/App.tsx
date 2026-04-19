@@ -68,6 +68,8 @@ import SalesOrders from "./pages/sales/Orders";
 import SalesCustomers from "./pages/sales/Customers";
 import SalesProducts from "./pages/sales/Products";
 import SalesReports from "./pages/sales/Reports";
+import AiAssistant from "./pages/AiAssistant";
+import { AiAssistantFloating } from "@/components/ai/AiAssistantFloating";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +99,7 @@ const App = () => (
               <Route path="/shipments" element={<ProtectedRoute><MyShipments /></ProtectedRoute>} />
               <Route path="/shipments/:id" element={<ProtectedRoute><ShipmentDetail /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><OpsDashboard /></ProtectedRoute>} />
+              <Route path="/ai" element={<ProtectedRoute><AiAssistant /></ProtectedRoute>} />
               
               {/* ERP Module Routes */}
               <Route path="/erp/customers" element={<ProtectedRoute><CustomersPage /></ProtectedRoute>} />
@@ -154,6 +157,7 @@ const App = () => (
               {/* 404 - also protected */}
               <Route path="*" element={<ProtectedRoute><NotFound /></ProtectedRoute>} />
             </Routes>
+            <AiAssistantFloating />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
