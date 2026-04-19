@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   Receipt, BarChart3, FileCheck, FileText,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -16,6 +16,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  { icon: Sparkles, labelEn: 'AI Assistant', labelAr: 'المساعد الذكي', path: '/ai' },
   { icon: Receipt, labelEn: 'Expenses', labelAr: 'المصاريف', path: '/finance/expenses' },
   { icon: BarChart3, labelEn: 'Reports', labelAr: 'التقارير', path: '/finance/reports' },
   { icon: FileCheck, labelEn: 'Three-Way Match', labelAr: 'المطابقة الثلاثية', path: '/finance/three-way-match' },

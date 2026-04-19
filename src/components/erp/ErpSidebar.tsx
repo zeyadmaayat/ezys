@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import {
   Boxes, Warehouse, MapPin, Package, ShoppingCart, FileText,
   ClipboardList, RotateCcw, RefreshCw, PackageCheck, BarChart3,
-  ChevronLeft, ChevronRight, Layers,
+  ChevronLeft, ChevronRight, Layers, Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -23,6 +23,13 @@ interface NavGroup {
 }
 
 const navGroups: NavGroup[] = [
+  {
+    titleEn: 'AI',
+    titleAr: 'الذكاء الاصطناعي',
+    items: [
+      { icon: Sparkles, labelEn: 'AI Assistant', labelAr: 'المساعد الذكي', path: '/ai' },
+    ],
+  },
   {
     titleEn: 'Operations',
     titleAr: 'العمليات',
