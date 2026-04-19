@@ -107,8 +107,8 @@ export function AiAssistantChat({ variant = 'page', onClose }: Props) {
           </div>
         </header>
 
-        <ScrollArea className="flex-1" ref={scrollRef as any}>
-          <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        <ScrollArea className="flex-1">
+          <div ref={scrollRef} className="max-w-3xl mx-auto px-4 py-6 space-y-6">
             {messages.length === 0 && (
               <div className="text-center py-12">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 mb-4">
