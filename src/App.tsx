@@ -138,6 +138,11 @@ const App = () => (
                 <Route path="/erp/items" element={<ProtectedRoute><ItemsPage /></ProtectedRoute>} />
                 <Route path="/erp/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
                 <Route path="/erp/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
+                <Route path="/erp/inventory/dashboard" element={<ProtectedRoute><InventoryDashboard /></ProtectedRoute>} />
+                <Route path="/erp/inventory/transfers" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
+                <Route path="/erp/inventory/cycle-count" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
+                <Route path="/erp/inventory/reorder" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
+                <Route path="/erp/inventory/batches" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
                 <Route path="/erp/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
                 <Route path="/erp/workflow-check" element={<ProtectedRoute><WorkflowCheckPage /></ProtectedRoute>} />
                 <Route path="/erp/procurement" element={<ProtectedRoute><ProcurementDashboard /></ProtectedRoute>} />
