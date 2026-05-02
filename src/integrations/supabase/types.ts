@@ -607,6 +607,86 @@ export type Database = {
           },
         ]
       }
+      cycle_count_lines: {
+        Row: {
+          counted_at: string | null
+          counted_by: string | null
+          counted_quantity: number | null
+          expected_quantity: number
+          id: string
+          item_id: string
+          notes: string | null
+          session_id: string
+          variance: number | null
+        }
+        Insert: {
+          counted_at?: string | null
+          counted_by?: string | null
+          counted_quantity?: number | null
+          expected_quantity?: number
+          id?: string
+          item_id: string
+          notes?: string | null
+          session_id: string
+          variance?: number | null
+        }
+        Update: {
+          counted_at?: string | null
+          counted_by?: string | null
+          counted_quantity?: number | null
+          expected_quantity?: number
+          id?: string
+          item_id?: string
+          notes?: string | null
+          session_id?: string
+          variance?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cycle_count_lines_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "cycle_count_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cycle_count_sessions: {
+        Row: {
+          closed_at: string | null
+          company_id: string
+          id: string
+          location_id: string
+          notes: string | null
+          session_number: string
+          started_at: string
+          started_by: string | null
+          status: string
+        }
+        Insert: {
+          closed_at?: string | null
+          company_id: string
+          id?: string
+          location_id: string
+          notes?: string | null
+          session_number?: string
+          started_at?: string
+          started_by?: string | null
+          status?: string
+        }
+        Update: {
+          closed_at?: string | null
+          company_id?: string
+          id?: string
+          location_id?: string
+          notes?: string | null
+          session_number?: string
+          started_at?: string
+          started_by?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       dp_cod_settlement_lines: {
         Row: {
           cod_amount: number
@@ -1603,6 +1683,140 @@ export type Database = {
           },
         ]
       }
+      inventory_reorder_rules: {
+        Row: {
+          auto_create_po: boolean
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          item_id: string
+          lead_time_days: number | null
+          location_id: string | null
+          max_quantity: number
+          min_quantity: number
+          preferred_vendor_id: string | null
+          reorder_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          auto_create_po?: boolean
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          item_id: string
+          lead_time_days?: number | null
+          location_id?: string | null
+          max_quantity?: number
+          min_quantity?: number
+          preferred_vendor_id?: string | null
+          reorder_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          auto_create_po?: boolean
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          item_id?: string
+          lead_time_days?: number | null
+          location_id?: string | null
+          max_quantity?: number
+          min_quantity?: number
+          preferred_vendor_id?: string | null
+          reorder_quantity?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory_transfer_lines: {
+        Row: {
+          batch_id: string | null
+          created_at: string
+          id: string
+          item_id: string
+          notes: string | null
+          quantity: number
+          transfer_id: string
+        }
+        Insert: {
+          batch_id?: string | null
+          created_at?: string
+          id?: string
+          item_id: string
+          notes?: string | null
+          quantity?: number
+          transfer_id: string
+        }
+        Update: {
+          batch_id?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string
+          notes?: string | null
+          quantity?: number
+          transfer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_transfer_lines_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_transfers: {
+        Row: {
+          company_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          from_location_id: string
+          id: string
+          notes: string | null
+          status: string
+          to_location_id: string
+          transfer_date: string
+          transfer_number: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          from_location_id: string
+          id?: string
+          notes?: string | null
+          status?: string
+          to_location_id: string
+          transfer_date?: string
+          transfer_number?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          from_location_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          to_location_id?: string
+          transfer_date?: string
+          transfer_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           created_at: string
@@ -1828,6 +2042,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      item_batches: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          expiry_date: string | null
+          id: string
+          item_id: string
+          location_id: string
+          lot_number: string | null
+          manufacture_date: string | null
+          notes: string | null
+          quantity: number
+          serial_number: string | null
+          status: string
+          unit_cost: number | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_id: string
+          location_id: string
+          lot_number?: string | null
+          manufacture_date?: string | null
+          notes?: string | null
+          quantity?: number
+          serial_number?: string | null
+          status?: string
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_id?: string
+          location_id?: string
+          lot_number?: string | null
+          manufacture_date?: string | null
+          notes?: string | null
+          quantity?: number
+          serial_number?: string | null
+          status?: string
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       items: {
         Row: {
@@ -3230,6 +3498,57 @@ export type Database = {
         }
         Relationships: []
       }
+      vision_scans: {
+        Row: {
+          action_taken: string | null
+          ai_result: Json
+          company_id: string
+          created_at: string
+          detected_quantity: number | null
+          id: string
+          image_url: string | null
+          matched_item_id: string | null
+          matched_location_id: string | null
+          notes: string | null
+          reference_id: string | null
+          reference_type: string | null
+          scan_type: string
+          user_id: string
+        }
+        Insert: {
+          action_taken?: string | null
+          ai_result?: Json
+          company_id: string
+          created_at?: string
+          detected_quantity?: number | null
+          id?: string
+          image_url?: string | null
+          matched_item_id?: string | null
+          matched_location_id?: string | null
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          scan_type: string
+          user_id: string
+        }
+        Update: {
+          action_taken?: string | null
+          ai_result?: Json
+          company_id?: string
+          created_at?: string
+          detected_quantity?: number | null
+          id?: string
+          image_url?: string | null
+          matched_item_id?: string | null
+          matched_location_id?: string | null
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          scan_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       warehouses: {
         Row: {
           address_line1: string | null
@@ -3400,6 +3719,10 @@ export type Database = {
       dp_scan_inventory: {
         Args: { _barcode: string; _session_id: string }
         Returns: string
+      }
+      execute_inventory_transfer: {
+        Args: { _transfer_id: string }
+        Returns: Json
       }
       get_user_company_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
