@@ -452,6 +452,23 @@ const InventoryPage = () => {
             )}
           </TabsContent>
         </Tabs>
+
+        <VisionScannerDialog
+          open={scannerOpen}
+          onOpenChange={setScannerOpen}
+          defaultType="product"
+          onAction={async (action, result) => {
+            if (action === 'add' && result.matched_item_id && result.suggested_location_id && result.detected_quantity) {
+              await adjustInventory(
+                String(result.matched_item_id),
+                String(result.suggested_location_id),
+                Number(result.detected_quantity),
+                'Inbound',
+                `AI Vision: ${result.matched_item_name || ''} (${result.confidence || 0}%)`
+              );
+            }
+          }}
+        />
       </div>
     </ErpLayout>
   );
