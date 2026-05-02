@@ -55,6 +55,7 @@ const InventoryPage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [formIndex, setFormIndex] = useState(0);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     item_id: '',
