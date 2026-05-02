@@ -82,14 +82,13 @@ export function useInventoryTransfers() {
     if (!user || !company) { setTransfers([]); setLoading(false); return; }
     try {
       const { data, error } = await supabase.from('inventory_transfers')
-        .select('*, from_location:locations!inventory_transfers_from_location_id_fkey(id, name), to_location:locations!inventory_transfers_to_location_id_fkey(id, name)')
+        .select('*, from_location:locations!transfers_from_location_fk(id, name), to_location:locations!transfers_to_location_fk(id, name)')
         .eq('company_id', company.id).order('created_at', { ascending: false });
       if (error) throw error;
-      setTransfers((data || []) as InventoryTransfer[]);
+      setTransfers((data || []) as unknown as InventoryTransfer[]);
     } catch (e) {
-      // fallback without joins (no FK names)
       const { data } = await supabase.from('inventory_transfers').select('*').eq('company_id', company.id).order('created_at', { ascending: false });
-      setTransfers((data || []) as InventoryTransfer[]);
+      setTransfers((data || []) as unknown as InventoryTransfer[]);
     }
     finally { setLoading(false); }
   }, [user, company]);
