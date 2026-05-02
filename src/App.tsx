@@ -35,6 +35,8 @@ const LocationsPage = lazy(() => import("./pages/erp/Locations"));
 const ItemsPage = lazy(() => import("./pages/erp/Items"));
 const OrdersPage = lazy(() => import("./pages/erp/Orders"));
 const InventoryPage = lazy(() => import("./pages/erp/Inventory"));
+const InventoryDashboard = lazy(() => import("./pages/erp/InventoryDashboard"));
+const InventoryAdvanced = lazy(() => import("./pages/erp/InventoryAdvanced"));
 const InvoicesPage = lazy(() => import("./pages/erp/Invoices"));
 const WorkflowCheckPage = lazy(() => import("./pages/erp/WorkflowCheck"));
 const RequisitionsPage = lazy(() => import("./pages/erp/Requisitions"));
