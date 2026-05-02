@@ -29,8 +29,11 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Search, Download, BoxesIcon, ArrowDownToLine, ArrowUpFromLine,
   History, Plus, Minus, Boxes, Package, AlertTriangle, CheckCircle2,
+  Sparkles, LayoutDashboard, ArrowRightLeft,
 } from 'lucide-react';
 import type { InventoryMovementType } from '@/types/erp';
+import { Link } from 'react-router-dom';
+import { VisionScannerDialog } from '@/components/inventory/VisionScannerDialog';
 
 const movementTypes: { value: InventoryMovementType; labelEn: string; labelAr: string }[] = [
   { value: 'Inbound', labelEn: 'Inbound', labelAr: 'وارد' },
