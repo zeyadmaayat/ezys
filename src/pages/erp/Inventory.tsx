@@ -29,8 +29,11 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Search, Download, BoxesIcon, ArrowDownToLine, ArrowUpFromLine,
   History, Plus, Minus, Boxes, Package, AlertTriangle, CheckCircle2,
+  Sparkles, LayoutDashboard, ArrowRightLeft,
 } from 'lucide-react';
 import type { InventoryMovementType } from '@/types/erp';
+import { Link } from 'react-router-dom';
+import { VisionScannerDialog } from '@/components/inventory/VisionScannerDialog';
 
 const movementTypes: { value: InventoryMovementType; labelEn: string; labelAr: string }[] = [
   { value: 'Inbound', labelEn: 'Inbound', labelAr: 'وارد' },
@@ -52,6 +55,7 @@ const InventoryPage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [formIndex, setFormIndex] = useState(0);
   const [calendarMonth, setCalendarMonth] = useState(new Date());
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     item_id: '',
@@ -138,6 +142,15 @@ const InventoryPage = () => {
               }}
               available={activeTab === 'stock' ? ['list', 'kanban', 'form', 'pivot'] : ['list', 'calendar']}
             />
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/erp/inventory/dashboard"><LayoutDashboard className="w-4 h-4 mr-1.5" />{language === 'ar' ? 'لوحة' : 'Dashboard'}</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/erp/inventory/transfers"><ArrowRightLeft className="w-4 h-4 mr-1.5" />{language === 'ar' ? 'متقدم' : 'Advanced'}</Link>
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setScannerOpen(true)} className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10">
+              <Sparkles className="w-4 h-4" />{language === 'ar' ? 'مسح ذكي' : 'AI Scan'}
+            </Button>
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="w-4 h-4 mr-1.5" />
               {language === 'ar' ? 'تصدير' : 'Export'}
@@ -439,6 +452,23 @@ const InventoryPage = () => {
             )}
           </TabsContent>
         </Tabs>
+
+        <VisionScannerDialog
+          open={scannerOpen}
+          onOpenChange={setScannerOpen}
+          defaultType="product"
+          onAction={async (action, result) => {
+            if (action === 'add' && result.matched_item_id && result.suggested_location_id && result.detected_quantity) {
+              await adjustInventory(
+                String(result.matched_item_id),
+                String(result.suggested_location_id),
+                Number(result.detected_quantity),
+                'Inbound',
+                `AI Vision: ${result.matched_item_name || ''} (${result.confidence || 0}%)`
+              );
+            }
+          }}
+        />
       </div>
     </ErpLayout>
   );
