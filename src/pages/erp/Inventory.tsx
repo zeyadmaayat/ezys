@@ -142,6 +142,15 @@ const InventoryPage = () => {
               }}
               available={activeTab === 'stock' ? ['list', 'kanban', 'form', 'pivot'] : ['list', 'calendar']}
             />
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/erp/inventory/dashboard"><LayoutDashboard className="w-4 h-4 mr-1.5" />{language === 'ar' ? 'لوحة' : 'Dashboard'}</Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/erp/inventory/transfers"><ArrowRightLeft className="w-4 h-4 mr-1.5" />{language === 'ar' ? 'متقدم' : 'Advanced'}</Link>
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setScannerOpen(true)} className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10">
+              <Sparkles className="w-4 h-4" />{language === 'ar' ? 'مسح ذكي' : 'AI Scan'}
+            </Button>
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="w-4 h-4 mr-1.5" />
               {language === 'ar' ? 'تصدير' : 'Export'}
