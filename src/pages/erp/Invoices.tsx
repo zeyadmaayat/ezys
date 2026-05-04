@@ -165,12 +165,20 @@ const InvoicesPage = () => {
               {language === 'ar' ? 'تصدير' : 'Export'}
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {language === 'ar' ? 'فاتورة جديدة' : 'New Invoice'}
-                </Button>
-              </DialogTrigger>
+              <Button onClick={() => guard([
+                { kind: 'permission', condition: !canManageInvoices,
+                  titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
+                  messageAr: 'تحتاج دور Admin أو Finance لإنشاء فاتورة.',
+                  messageEn: 'You need Admin or Finance role to create an invoice.' },
+                { kind: 'prerequisite', condition: customers.length === 0,
+                  titleAr: 'لا يوجد عملاء', titleEn: 'No customers yet',
+                  messageAr: 'يجب إضافة عميل واحد على الأقل قبل إنشاء فاتورة.',
+                  messageEn: 'You must add at least one customer before creating an invoice.',
+                  actionLabelAr: 'إضافة عميل', actionLabelEn: 'Add customer', actionTo: '/erp/customers' },
+              ], () => setIsDialogOpen(true))}>
+                <Plus className="w-4 h-4 mr-2" />
+                {language === 'ar' ? 'فاتورة جديدة' : 'New Invoice'}
+              </Button>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{language === 'ar' ? 'فاتورة جديدة' : 'New Invoice'}</DialogTitle>
