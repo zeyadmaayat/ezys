@@ -96,21 +96,29 @@ export default function ShipmentsPage() {
             <h1 className="text-2xl font-bold">Shipments</h1>
             <p className="text-muted-foreground">Manage your shipments and track their status</p>
           </div>
-          {/* Only Admin/Operations can create shipments */}
-          <RequireRole 
-            roles={['admin', 'operations']} 
-            fallback={
-              <RoleBadge roles={['admin', 'operations']} className="ml-2" />
-            }
-            hideWhenForbidden={false}
-          >
-            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Shipment
-                </Button>
-              </DialogTrigger>
+          {/* Unified guard: permission + prerequisites */}
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <Button
+              onClick={() => guard([
+                { kind: 'permission', condition: !canManageShipments,
+                  titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
+                  messageAr: 'تحتاج دور Admin أو Operations لإنشاء شحنة جديدة. تواصل مع المسؤول.',
+                  messageEn: 'You need Admin or Operations role to create a shipment. Contact your administrator.' },
+                { kind: 'prerequisite', condition: clients.length === 0,
+                  titleAr: 'لا يوجد عملاء', titleEn: 'No clients yet',
+                  messageAr: 'يجب إضافة عميل واحد على الأقل قبل إنشاء شحنة.',
+                  messageEn: 'You must add at least one client before creating a shipment.',
+                  actionLabelAr: 'إضافة عميل', actionLabelEn: 'Add client', actionTo: '/saas/clients' },
+                { kind: 'prerequisite', condition: warehouses.length === 0,
+                  titleAr: 'لا يوجد مستودعات', titleEn: 'No warehouses yet',
+                  messageAr: 'يجب إضافة مستودع واحد على الأقل قبل إنشاء شحنة.',
+                  messageEn: 'You must add at least one warehouse before creating a shipment.',
+                  actionLabelAr: 'إضافة مستودع', actionLabelEn: 'Add warehouse', actionTo: '/saas/warehouses' },
+              ], () => setIsCreateOpen(true))}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              New Shipment
+            </Button>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Create Shipment</DialogTitle>
