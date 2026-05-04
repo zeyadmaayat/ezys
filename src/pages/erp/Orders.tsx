@@ -414,6 +414,7 @@ const OrdersPage = () => {
           </Table>
         </Card>
       </div>
+      <GuardDialog {...dialogProps} />
     </ErpLayout>
   );
 };
