@@ -56,6 +56,8 @@ const InvoicesPage = () => {
   const { language } = useLanguage();
   const { invoices, loading, stats, createInvoice, updateInvoiceStatus, deleteInvoice } = useInvoices();
   const { customers } = useCustomers();
+  const { canManageInvoices } = useCurrentUserRoles();
+  const { guard, dialogProps } = useActionGuard();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
