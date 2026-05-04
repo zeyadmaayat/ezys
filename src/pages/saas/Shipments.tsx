@@ -18,6 +18,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Plus, Loader2, ChevronRight, ArrowLeft, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import { SHIPMENT_STATUS_LABELS, ShipmentStatusV2, ShipmentV2 } from '@/types/saas-erp';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
 
 const statusColors: Record<ShipmentStatusV2, string> = {
   CREATED: 'bg-gray-100 text-gray-800',
