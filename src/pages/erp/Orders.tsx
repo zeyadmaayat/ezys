@@ -37,6 +37,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, Download, ClipboardList, ArrowRight, Truck, X, CheckCircle } from 'lucide-react';
 import type { Order, OrderStatus, OrderItem } from '@/types/erp';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusConfig: Record<OrderStatus, { color: string; labelEn: string; labelAr: string }> = {
   Draft: { color: 'bg-muted text-muted-foreground', labelEn: 'Draft', labelAr: 'مسودة' },
