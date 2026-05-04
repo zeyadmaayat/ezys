@@ -56,6 +56,10 @@ const OrdersPage = () => {
   const { locations } = useLocations();
   const { items } = useItems();
   
+  const { isAdmin, isOperations } = useCurrentUserRoles();
+  const { guard, dialogProps } = useActionGuard();
+  const canCreate = isAdmin || isOperations;
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
