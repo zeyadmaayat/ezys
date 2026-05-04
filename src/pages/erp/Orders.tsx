@@ -174,12 +174,30 @@ const OrdersPage = () => {
               {language === 'ar' ? 'تصدير' : 'Export'}
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  {language === 'ar' ? 'طلب جديد' : 'New Order'}
-                </Button>
-              </DialogTrigger>
+              <Button onClick={() => guard([
+                { kind: 'permission', condition: !canCreate,
+                  titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
+                  messageAr: 'تحتاج دور Admin أو Operations لإنشاء طلب جديد.',
+                  messageEn: 'You need Admin or Operations role to create an order.' },
+                { kind: 'prerequisite', condition: customers.length === 0,
+                  titleAr: 'لا يوجد عملاء', titleEn: 'No customers yet',
+                  messageAr: 'يجب إضافة عميل واحد على الأقل قبل إنشاء طلب.',
+                  messageEn: 'You must add at least one customer before creating an order.',
+                  actionLabelAr: 'إضافة عميل', actionLabelEn: 'Add customer', actionTo: '/erp/customers' },
+                { kind: 'prerequisite', condition: items.length === 0,
+                  titleAr: 'لا يوجد منتجات', titleEn: 'No items yet',
+                  messageAr: 'يجب إضافة منتج/صنف واحد على الأقل قبل إنشاء طلب.',
+                  messageEn: 'You must add at least one item before creating an order.',
+                  actionLabelAr: 'إضافة صنف', actionLabelEn: 'Add item', actionTo: '/erp/items' },
+                { kind: 'prerequisite', condition: locations.length === 0,
+                  titleAr: 'لا يوجد مواقع', titleEn: 'No locations yet',
+                  messageAr: 'يجب إضافة موقع/مستودع واحد قبل إنشاء طلب.',
+                  messageEn: 'You must add at least one location/warehouse first.',
+                  actionLabelAr: 'إضافة موقع', actionLabelEn: 'Add location', actionTo: '/erp/locations' },
+              ], () => setIsDialogOpen(true))}>
+                <Plus className="w-4 h-4 mr-2" />
+                {language === 'ar' ? 'طلب جديد' : 'New Order'}
+              </Button>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{language === 'ar' ? 'طلب جديد' : 'New Order'}</DialogTitle>
