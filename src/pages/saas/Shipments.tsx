@@ -202,8 +202,8 @@ export default function ShipmentsPage() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          </RequireRole>
         </div>
+        <GuardDialog {...dialogProps} />
 
         <Card>
           <CardHeader>
