@@ -40,6 +40,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, Download, Receipt, MoreVertical, Send, CheckCircle, AlertCircle, X, Trash2 } from 'lucide-react';
 import type { Invoice, InvoiceItem, InvoiceStatus } from '@/types/erp';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusConfig: Record<InvoiceStatus, { color: string; labelEn: string; labelAr: string; icon: typeof CheckCircle }> = {
   Draft: { color: 'bg-muted text-muted-foreground', labelEn: 'Draft', labelAr: 'مسودة', icon: Receipt },
