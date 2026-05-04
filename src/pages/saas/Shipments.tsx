@@ -38,6 +38,7 @@ export default function ShipmentsPage() {
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const { guard, dialogProps } = useActionGuard();
   const [formData, setFormData] = useState({
     client_id: '',
     warehouse_id: '',
