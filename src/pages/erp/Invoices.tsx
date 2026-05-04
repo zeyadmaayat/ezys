@@ -437,6 +437,7 @@ const InvoicesPage = () => {
           </Table>
         </Card>
       </div>
+      <GuardDialog {...dialogProps} />
     </ErpLayout>
   );
 };
