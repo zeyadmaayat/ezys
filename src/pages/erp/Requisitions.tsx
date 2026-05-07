@@ -18,6 +18,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, FileText, ArrowRight, X, Send, CheckCircle, XCircle, Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { RequisitionStatus } from '@/types/procurement';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<RequisitionStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
@@ -41,6 +44,9 @@ const RequisitionsPage = () => {
   const { items } = useItems();
   const { clients } = useClients();
   const vendors = clients.filter(c => c.type === 'VENDOR');
+  const { isAdmin, isOperations } = useCurrentUserRoles();
+  const canManage = isAdmin || isOperations;
+  const { guard, dialogProps } = useActionGuard();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<RequisitionStatus | 'All'>('All');
@@ -120,7 +126,20 @@ const RequisitionsPage = () => {
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'طلب جديد' : 'New Requisition'}</Button>
+                <Button onClick={(e) => {
+                  e.preventDefault();
+                  guard([
+                    { kind: 'permission', condition: !canManage,
+                      titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
+                      messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء طلب شراء.',
+                      messageEn: 'You need Admin or Operations role to create a requisition.' },
+                    { kind: 'prerequisite', condition: items.length === 0,
+                      titleAr: 'لا توجد منتجات', titleEn: 'No items',
+                      messageAr: 'يجب إضافة منتجات قبل إنشاء طلب شراء.',
+                      messageEn: 'Add items before creating a requisition.',
+                      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+                  ], () => setIsDialogOpen(true));
+                }}><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'طلب جديد' : 'New Requisition'}</Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
@@ -250,13 +269,22 @@ const RequisitionsPage = () => {
                         </>
                       )}
                       {req.status === 'Approved' && (
-                        <Button variant="default" size="sm" onClick={() => {
+                        <Button variant="default" size="sm" onClick={() => guard([
+                          { kind: 'permission', condition: !canManage,
+                            messageAr: 'لا تملك صلاحية تحويل الطلب إلى أمر شراء.',
+                            messageEn: 'You do not have permission to convert requisitions to POs.' },
+                          { kind: 'prerequisite', condition: vendors.length === 0,
+                            titleAr: 'لا يوجد موردين', titleEn: 'No vendors',
+                            messageAr: 'يجب إضافة مورد قبل تحويل الطلب إلى PO.',
+                            messageEn: 'Add a vendor before converting to a PO.',
+                            actionTo: '/saas/clients', actionLabelAr: 'إضافة مورد', actionLabelEn: 'Add vendor' },
+                        ], () => {
                           setConvertReqId(req.id);
                           setConvertVendorId('');
                           setConvertPaymentTerms('');
                           setConvertDeliveryDate('');
                           setIsConvertOpen(true);
-                        }}>
+                        })}>
                           <ArrowRight className="w-4 h-4 mr-1" />{language === 'ar' ? 'تحويل لـ PO' : 'Convert to PO'}
                         </Button>
                       )}
@@ -355,6 +383,7 @@ const RequisitionsPage = () => {
             </div>
           </DialogContent>
         </Dialog>
+        <GuardDialog {...dialogProps} />
       </div>
     </ErpLayout>
   );

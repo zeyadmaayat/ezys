@@ -11,6 +11,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Search, PackageCheck, Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { GRNStatus, GoodsReceipt } from '@/types/grn';
+import { usePurchaseOrders } from '@/hooks/usePurchaseOrders';
+import { useWarehouses } from '@/hooks/useWarehouses';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<GRNStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
@@ -21,6 +26,13 @@ const GoodsReceiptsPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const { receipts, loading } = useGoodsReceipts();
+  const { purchaseOrders } = usePurchaseOrders();
+  const { warehouses } = useWarehouses();
+  const { isAdmin, isWarehouse } = useCurrentUserRoles();
+  const canManage = isAdmin || isWarehouse;
+  const { guard, dialogProps } = useActionGuard();
+  const receivablePOs = purchaseOrders.filter((po: any) =>
+    ['Sent', 'Acknowledged', 'Partially_Received'].includes(po.status));
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<GRNStatus | 'All'>('All');
 
@@ -65,7 +77,21 @@ const GoodsReceiptsPage = () => {
             <Button variant="outline" onClick={handleExportCSV}>
               <Download className="w-4 h-4 mr-2" />{language === 'ar' ? 'تصدير CSV' : 'Export CSV'}
             </Button>
-            <Button onClick={() => navigate('/erp/receipts/new')}>
+            <Button onClick={() => guard([
+              { kind: 'permission', condition: !canManage,
+                messageAr: 'تحتاج صلاحية Admin أو Warehouse لاستلام البضائع.',
+                messageEn: 'You need Admin or Warehouse role to receive goods.' },
+              { kind: 'prerequisite', condition: warehouses.length === 0,
+                titleAr: 'لا توجد مستودعات', titleEn: 'No warehouses',
+                messageAr: 'يجب إضافة مستودع قبل استلام البضائع.',
+                messageEn: 'Add a warehouse before receiving goods.',
+                actionTo: '/saas/warehouses', actionLabelAr: 'إضافة مستودع', actionLabelEn: 'Add warehouse' },
+              { kind: 'prerequisite', condition: receivablePOs.length === 0,
+                titleAr: 'لا توجد أوامر شراء قابلة للاستلام', titleEn: 'No receivable POs',
+                messageAr: 'يجب أن يكون هناك أمر شراء بحالة Sent / Acknowledged قبل إنشاء GRN.',
+                messageEn: 'You need a PO in Sent/Acknowledged status before creating a GRN.',
+                actionTo: '/erp/purchase-orders', actionLabelAr: 'فتح أوامر الشراء', actionLabelEn: 'Open POs' },
+            ], () => navigate('/erp/receipts/new'))}>
               <Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'استلام جديد' : 'New GRN'}
             </Button>
           </div>
@@ -139,6 +165,7 @@ const GoodsReceiptsPage = () => {
             </TableBody>
           </Table>
         </Card>
+        <GuardDialog {...dialogProps} />
       </div>
     </ErpLayout>
   );
