@@ -43,6 +43,22 @@ const PurchaseOrdersPage = () => {
   const canManage = isAdmin || isOperations;
   const { guard, dialogProps } = useActionGuard();
 
+  const newPoChecks: GuardCheck[] = [
+    { kind: 'permission', condition: !canManage,
+      messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء أمر شراء.',
+      messageEn: 'You need Admin or Operations role to create a PO.' },
+    { kind: 'prerequisite', condition: vendors.length === 0,
+      titleAr: 'لا يوجد موردين', titleEn: 'No vendors',
+      messageAr: 'يجب إضافة مورد أولاً قبل إنشاء أمر شراء.',
+      messageEn: 'Add a vendor before creating a PO.',
+      actionTo: '/saas/clients', actionLabelAr: 'إضافة مورد', actionLabelEn: 'Add vendor' },
+    { kind: 'prerequisite', condition: items.length === 0,
+      titleAr: 'لا توجد منتجات', titleEn: 'No items',
+      messageAr: 'يجب إضافة منتجات أولاً.',
+      messageEn: 'Add items before creating a PO.',
+      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+  ];
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<POStatus | 'All'>('All');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -108,30 +124,16 @@ const PurchaseOrdersPage = () => {
               {language === 'ar' ? 'إدارة أوامر الشراء للموردين' : 'Manage vendor purchase orders'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button variant="outline" onClick={handleExportCSV}>
               <Download className="w-4 h-4 mr-2" />{language === 'ar' ? 'تصدير CSV' : 'Export CSV'}
             </Button>
+            <GuardBadge checks={newPoChecks} />
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={(e) => {
-                  e.preventDefault();
-                  guard([
-                    { kind: 'permission', condition: !canManage,
-                      messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء أمر شراء.',
-                      messageEn: 'You need Admin or Operations role to create a PO.' },
-                    { kind: 'prerequisite', condition: vendors.length === 0,
-                      titleAr: 'لا يوجد موردين', titleEn: 'No vendors',
-                      messageAr: 'يجب إضافة مورد أولاً قبل إنشاء أمر شراء.',
-                      messageEn: 'Add a vendor before creating a PO.',
-                      actionTo: '/saas/clients', actionLabelAr: 'إضافة مورد', actionLabelEn: 'Add vendor' },
-                    { kind: 'prerequisite', condition: items.length === 0,
-                      titleAr: 'لا توجد منتجات', titleEn: 'No items',
-                      messageAr: 'يجب إضافة منتجات أولاً.',
-                      messageEn: 'Add items before creating a PO.',
-                      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
-                  ], () => setIsDialogOpen(true));
-                }}><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'أمر شراء جديد' : 'New PO'}</Button>
+                <Button onClick={(e) => { e.preventDefault(); guard(newPoChecks, () => setIsDialogOpen(true)); }}>
+                  <Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'أمر شراء جديد' : 'New PO'}
+                </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
