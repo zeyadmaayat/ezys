@@ -269,13 +269,22 @@ const RequisitionsPage = () => {
                         </>
                       )}
                       {req.status === 'Approved' && (
-                        <Button variant="default" size="sm" onClick={() => {
+                        <Button variant="default" size="sm" onClick={() => guard([
+                          { kind: 'permission', condition: !canManage,
+                            messageAr: 'لا تملك صلاحية تحويل الطلب إلى أمر شراء.',
+                            messageEn: 'You do not have permission to convert requisitions to POs.' },
+                          { kind: 'prerequisite', condition: vendors.length === 0,
+                            titleAr: 'لا يوجد موردين', titleEn: 'No vendors',
+                            messageAr: 'يجب إضافة مورد قبل تحويل الطلب إلى PO.',
+                            messageEn: 'Add a vendor before converting to a PO.',
+                            actionTo: '/saas/clients', actionLabelAr: 'إضافة مورد', actionLabelEn: 'Add vendor' },
+                        ], () => {
                           setConvertReqId(req.id);
                           setConvertVendorId('');
                           setConvertPaymentTerms('');
                           setConvertDeliveryDate('');
                           setIsConvertOpen(true);
-                        }}>
+                        })}>
                           <ArrowRight className="w-4 h-4 mr-1" />{language === 'ar' ? 'تحويل لـ PO' : 'Convert to PO'}
                         </Button>
                       )}
