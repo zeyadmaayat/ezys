@@ -126,7 +126,20 @@ const RequisitionsPage = () => {
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'طلب جديد' : 'New Requisition'}</Button>
+                <Button onClick={(e) => {
+                  e.preventDefault();
+                  guard([
+                    { kind: 'permission', condition: !canManage,
+                      titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
+                      messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء طلب شراء.',
+                      messageEn: 'You need Admin or Operations role to create a requisition.' },
+                    { kind: 'prerequisite', condition: items.length === 0,
+                      titleAr: 'لا توجد منتجات', titleEn: 'No items',
+                      messageAr: 'يجب إضافة منتجات قبل إنشاء طلب شراء.',
+                      messageEn: 'Add items before creating a requisition.',
+                      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+                  ], () => setIsDialogOpen(true));
+                }}><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'طلب جديد' : 'New Requisition'}</Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
