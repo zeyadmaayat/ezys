@@ -11,6 +11,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Search, PackageCheck, Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { GRNStatus, GoodsReceipt } from '@/types/grn';
+import { usePurchaseOrders } from '@/hooks/usePurchaseOrders';
+import { useWarehouses } from '@/hooks/useWarehouses';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<GRNStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
@@ -21,6 +26,13 @@ const GoodsReceiptsPage = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const { receipts, loading } = useGoodsReceipts();
+  const { purchaseOrders } = usePurchaseOrders();
+  const { warehouses } = useWarehouses();
+  const { isAdmin, isWarehouse } = useCurrentUserRoles();
+  const canManage = isAdmin || isWarehouse;
+  const { guard, dialogProps } = useActionGuard();
+  const receivablePOs = purchaseOrders.filter((po: any) =>
+    ['Sent', 'Acknowledged', 'Partially_Received'].includes(po.status));
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<GRNStatus | 'All'>('All');
 
