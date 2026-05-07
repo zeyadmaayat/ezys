@@ -34,8 +34,9 @@ import {
 import type { InventoryMovementType } from '@/types/erp';
 import { Link } from 'react-router-dom';
 import { VisionScannerDialog } from '@/components/inventory/VisionScannerDialog';
-import { useActionGuard } from '@/hooks/useActionGuard';
+import { useActionGuard, type GuardCheck } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
+import { GuardBadge } from '@/components/guard/GuardBadge';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const movementTypes: { value: InventoryMovementType; labelEn: string; labelAr: string }[] = [
