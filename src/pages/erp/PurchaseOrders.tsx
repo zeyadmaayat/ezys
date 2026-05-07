@@ -18,8 +18,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Plus, Search, ShoppingCart, X, Send, CheckCircle, Package, Download, ChevronDown, ChevronRight, Eye } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { POStatus, POLine } from '@/types/procurement';
-import { useActionGuard } from '@/hooks/useActionGuard';
+import { useActionGuard, type GuardCheck } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
+import { GuardBadge } from '@/components/guard/GuardBadge';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<POStatus, string> = {
