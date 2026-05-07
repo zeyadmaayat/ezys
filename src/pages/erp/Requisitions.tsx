@@ -18,8 +18,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, FileText, ArrowRight, X, Send, CheckCircle, XCircle, Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { RequisitionStatus } from '@/types/procurement';
-import { useActionGuard } from '@/hooks/useActionGuard';
+import { useActionGuard, type GuardCheck } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
+import { GuardBadge } from '@/components/guard/GuardBadge';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<RequisitionStatus, string> = {
@@ -120,27 +121,31 @@ const RequisitionsPage = () => {
               {language === 'ar' ? 'إدارة طلبات الشراء الداخلية' : 'Manage internal purchase requests'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button variant="outline" onClick={handleExportCSV}>
               <Download className="w-4 h-4 mr-2" />{language === 'ar' ? 'تصدير CSV' : 'Export CSV'}
             </Button>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={(e) => {
-                  e.preventDefault();
-                  guard([
-                    { kind: 'permission', condition: !canManage,
-                      titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
-                      messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء طلب شراء.',
-                      messageEn: 'You need Admin or Operations role to create a requisition.' },
-                    { kind: 'prerequisite', condition: items.length === 0,
-                      titleAr: 'لا توجد منتجات', titleEn: 'No items',
-                      messageAr: 'يجب إضافة منتجات قبل إنشاء طلب شراء.',
-                      messageEn: 'Add items before creating a requisition.',
-                      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
-                  ], () => setIsDialogOpen(true));
-                }}><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'طلب جديد' : 'New Requisition'}</Button>
-              </DialogTrigger>
+            {(() => {
+              const newReqChecks: GuardCheck[] = [
+                { kind: 'permission', condition: !canManage,
+                  titleAr: 'صلاحيات غير كافية', titleEn: 'Insufficient permissions',
+                  messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء طلب شراء.',
+                  messageEn: 'You need Admin or Operations role to create a requisition.' },
+                { kind: 'prerequisite', condition: items.length === 0,
+                  titleAr: 'لا توجد منتجات', titleEn: 'No items',
+                  messageAr: 'يجب إضافة منتجات قبل إنشاء طلب شراء.',
+                  messageEn: 'Add items before creating a requisition.',
+                  actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+              ];
+              return (
+                <div className="flex items-center gap-2">
+                  <GuardBadge checks={newReqChecks} />
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button onClick={(e) => { e.preventDefault(); guard(newReqChecks, () => setIsDialogOpen(true)); }}>
+                        <Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'طلب جديد' : 'New Requisition'}
+                      </Button>
+                    </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{language === 'ar' ? 'طلب شراء جديد' : 'New Purchase Requisition'}</DialogTitle>
@@ -192,6 +197,9 @@ const RequisitionsPage = () => {
                 </div>
               </DialogContent>
             </Dialog>
+                </div>
+              );
+            })()}
           </div>
         </div>
 

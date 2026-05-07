@@ -15,8 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, Trash2, FileText, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import type { QuotationStatus } from '@/types/sales';
-import { useActionGuard } from '@/hooks/useActionGuard';
+import { useActionGuard, type GuardCheck } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
+import { GuardBadge } from '@/components/guard/GuardBadge';
 
 const statusColors: Record<QuotationStatus, string> = {
   draft: 'bg-muted text-muted-foreground',
@@ -39,6 +40,19 @@ export default function QuotationsPage() {
   const { clients } = useClients();
   const { products } = useProducts();
   const { guard, dialogProps } = useActionGuard();
+
+  const newQuoteChecks: GuardCheck[] = [
+    { kind: 'prerequisite', condition: clients.length === 0,
+      titleAr: 'لا يوجد عملاء', titleEn: 'No clients',
+      messageAr: 'يجب إضافة عميل قبل إنشاء عرض سعر.',
+      messageEn: 'Add a client before creating a quotation.',
+      actionTo: '/saas/clients', actionLabelAr: 'إضافة عميل', actionLabelEn: 'Add client' },
+    { kind: 'prerequisite', condition: products.length === 0,
+      titleAr: 'لا توجد منتجات', titleEn: 'No products',
+      messageAr: 'يجب إضافة منتجات في الكتالوج قبل إنشاء عرض.',
+      messageEn: 'Add products to the catalog before creating a quotation.',
+      actionTo: '/sales/products', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add product' },
+  ];
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ client_id: '', notes: '' });
@@ -110,24 +124,14 @@ export default function QuotationsPage() {
               {language === 'ar' ? 'إنشاء وإدارة عروض الأسعار' : 'Create and manage sales quotations'}
             </p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" onClick={(e) => {
-                e.preventDefault();
-                guard([
-                  { kind: 'prerequisite', condition: clients.length === 0,
-                    titleAr: 'لا يوجد عملاء', titleEn: 'No clients',
-                    messageAr: 'يجب إضافة عميل قبل إنشاء عرض سعر.',
-                    messageEn: 'Add a client before creating a quotation.',
-                    actionTo: '/saas/clients', actionLabelAr: 'إضافة عميل', actionLabelEn: 'Add client' },
-                  { kind: 'prerequisite', condition: products.length === 0,
-                    titleAr: 'لا توجد منتجات', titleEn: 'No products',
-                    messageAr: 'يجب إضافة منتجات في الكتالوج قبل إنشاء عرض.',
-                    messageEn: 'Add products to the catalog before creating a quotation.',
-                    actionTo: '/sales/products', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add product' },
-                ], () => setDialogOpen(true));
-              }}><Plus className="w-4 h-4 mr-1" /> {language === 'ar' ? 'عرض جديد' : 'New Quotation'}</Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2">
+            <GuardBadge checks={newQuoteChecks} />
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" onClick={(e) => { e.preventDefault(); guard(newQuoteChecks, () => setDialogOpen(true)); }}>
+                  <Plus className="w-4 h-4 mr-1" /> {language === 'ar' ? 'عرض جديد' : 'New Quotation'}
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{language === 'ar' ? 'إنشاء عرض سعر' : 'Create Quotation'}</DialogTitle>
@@ -224,7 +228,8 @@ export default function QuotationsPage() {
                 </Button>
               </div>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
 
         <div className="relative max-w-sm">

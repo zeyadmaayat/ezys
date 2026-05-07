@@ -34,8 +34,9 @@ import {
 import type { InventoryMovementType } from '@/types/erp';
 import { Link } from 'react-router-dom';
 import { VisionScannerDialog } from '@/components/inventory/VisionScannerDialog';
-import { useActionGuard } from '@/hooks/useActionGuard';
+import { useActionGuard, type GuardCheck } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
+import { GuardBadge } from '@/components/guard/GuardBadge';
 import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const movementTypes: { value: InventoryMovementType; labelEn: string; labelAr: string }[] = [
@@ -55,6 +56,22 @@ const InventoryPage = () => {
   const canManage = isAdmin || isWarehouse;
   const { guard, dialogProps } = useActionGuard();
   const warehouseLocs = locations.filter(l => l.location_type === 'warehouse');
+
+  const newMovementChecks: GuardCheck[] = [
+    { kind: 'permission', condition: !canManage,
+      messageAr: 'تحتاج صلاحية Admin أو Warehouse لإجراء حركات مخزون.',
+      messageEn: 'You need Admin or Warehouse role to record movements.' },
+    { kind: 'prerequisite', condition: items.length === 0,
+      titleAr: 'لا توجد منتجات', titleEn: 'No items',
+      messageAr: 'يجب إضافة منتجات قبل تسجيل حركة مخزون.',
+      messageEn: 'Add items before recording a movement.',
+      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+    { kind: 'prerequisite', condition: warehouseLocs.length === 0,
+      titleAr: 'لا توجد مواقع تخزين', titleEn: 'No warehouse locations',
+      messageAr: 'يجب إضافة موقع مستودع قبل تسجيل حركة.',
+      messageEn: 'Add a warehouse location before recording a movement.',
+      actionTo: '/erp/locations', actionLabelAr: 'إضافة موقع', actionLabelEn: 'Add location' },
+  ];
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -162,26 +179,10 @@ const InventoryPage = () => {
               <Download className="w-4 h-4 mr-1.5" />
               {language === 'ar' ? 'تصدير' : 'Export'}
             </Button>
+            <GuardBadge checks={newMovementChecks} />
             <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
               <DialogTrigger asChild>
-                <Button size="sm" onClick={(e) => {
-                  e.preventDefault();
-                  guard([
-                    { kind: 'permission', condition: !canManage,
-                      messageAr: 'تحتاج صلاحية Admin أو Warehouse لإجراء حركات مخزون.',
-                      messageEn: 'You need Admin or Warehouse role to record movements.' },
-                    { kind: 'prerequisite', condition: items.length === 0,
-                      titleAr: 'لا توجد منتجات', titleEn: 'No items',
-                      messageAr: 'يجب إضافة منتجات قبل تسجيل حركة مخزون.',
-                      messageEn: 'Add items before recording a movement.',
-                      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
-                    { kind: 'prerequisite', condition: warehouseLocs.length === 0,
-                      titleAr: 'لا توجد مواقع تخزين', titleEn: 'No warehouse locations',
-                      messageAr: 'يجب إضافة موقع مستودع قبل تسجيل حركة.',
-                      messageEn: 'Add a warehouse location before recording a movement.',
-                      actionTo: '/erp/locations', actionLabelAr: 'إضافة موقع', actionLabelEn: 'Add location' },
-                  ], () => setIsDialogOpen(true));
-                }}>
+                <Button size="sm" onClick={(e) => { e.preventDefault(); guard(newMovementChecks, () => setIsDialogOpen(true)); }}>
                   <Plus className="w-4 h-4 mr-1.5" />
                   {language === 'ar' ? 'حركة جديدة' : 'New Movement'}
                 </Button>
