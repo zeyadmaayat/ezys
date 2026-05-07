@@ -288,6 +288,7 @@ export default function QuotationsPage() {
             </Table>
           </CardContent>
         </Card>
+        <GuardDialog {...dialogProps} />
       </div>
     </SalesLayout>
   );
