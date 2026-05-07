@@ -493,6 +493,7 @@ const InventoryPage = () => {
             }
           }}
         />
+        <GuardDialog {...dialogProps} />
       </div>
     </ErpLayout>
   );
