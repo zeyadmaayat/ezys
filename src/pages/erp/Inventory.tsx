@@ -57,6 +57,22 @@ const InventoryPage = () => {
   const { guard, dialogProps } = useActionGuard();
   const warehouseLocs = locations.filter(l => l.location_type === 'warehouse');
 
+  const newMovementChecks: GuardCheck[] = [
+    { kind: 'permission', condition: !canManage,
+      messageAr: 'تحتاج صلاحية Admin أو Warehouse لإجراء حركات مخزون.',
+      messageEn: 'You need Admin or Warehouse role to record movements.' },
+    { kind: 'prerequisite', condition: items.length === 0,
+      titleAr: 'لا توجد منتجات', titleEn: 'No items',
+      messageAr: 'يجب إضافة منتجات قبل تسجيل حركة مخزون.',
+      messageEn: 'Add items before recording a movement.',
+      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+    { kind: 'prerequisite', condition: warehouseLocs.length === 0,
+      titleAr: 'لا توجد مواقع تخزين', titleEn: 'No warehouse locations',
+      messageAr: 'يجب إضافة موقع مستودع قبل تسجيل حركة.',
+      messageEn: 'Add a warehouse location before recording a movement.',
+      actionTo: '/erp/locations', actionLabelAr: 'إضافة موقع', actionLabelEn: 'Add location' },
+  ];
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('stock');
