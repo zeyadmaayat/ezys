@@ -339,6 +339,7 @@ const PurchaseOrdersPage = () => {
             </TableBody>
           </Table>
         </Card>
+        <GuardDialog {...dialogProps} />
       </div>
     </ErpLayout>
   );
