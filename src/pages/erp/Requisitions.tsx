@@ -374,6 +374,7 @@ const RequisitionsPage = () => {
             </div>
           </DialogContent>
         </Dialog>
+        <GuardDialog {...dialogProps} />
       </div>
     </ErpLayout>
   );
