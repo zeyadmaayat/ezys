@@ -40,6 +40,19 @@ export default function QuotationsPage() {
   const { clients } = useClients();
   const { products } = useProducts();
   const { guard, dialogProps } = useActionGuard();
+
+  const newQuoteChecks: GuardCheck[] = [
+    { kind: 'prerequisite', condition: clients.length === 0,
+      titleAr: 'لا يوجد عملاء', titleEn: 'No clients',
+      messageAr: 'يجب إضافة عميل قبل إنشاء عرض سعر.',
+      messageEn: 'Add a client before creating a quotation.',
+      actionTo: '/saas/clients', actionLabelAr: 'إضافة عميل', actionLabelEn: 'Add client' },
+    { kind: 'prerequisite', condition: products.length === 0,
+      titleAr: 'لا توجد منتجات', titleEn: 'No products',
+      messageAr: 'يجب إضافة منتجات في الكتالوج قبل إنشاء عرض.',
+      messageEn: 'Add products to the catalog before creating a quotation.',
+      actionTo: '/sales/products', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add product' },
+  ];
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ client_id: '', notes: '' });
