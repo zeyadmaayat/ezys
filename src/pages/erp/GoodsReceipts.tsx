@@ -165,6 +165,7 @@ const GoodsReceiptsPage = () => {
             </TableBody>
           </Table>
         </Card>
+        <GuardDialog {...dialogProps} />
       </div>
     </ErpLayout>
   );
