@@ -15,8 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, Trash2, FileText, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import type { QuotationStatus } from '@/types/sales';
-import { useActionGuard } from '@/hooks/useActionGuard';
+import { useActionGuard, type GuardCheck } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
+import { GuardBadge } from '@/components/guard/GuardBadge';
 
 const statusColors: Record<QuotationStatus, string> = {
   draft: 'bg-muted text-muted-foreground',
