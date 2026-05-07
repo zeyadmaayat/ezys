@@ -18,6 +18,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Plus, Search, ShoppingCart, X, Send, CheckCircle, Package, Download, ChevronDown, ChevronRight, Eye } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { POStatus, POLine } from '@/types/procurement';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<POStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
@@ -35,6 +38,9 @@ const PurchaseOrdersPage = () => {
   const { clients } = useClients();
   const { items } = useItems();
   const vendors = clients.filter(c => c.type === 'VENDOR');
+  const { isAdmin, isOperations } = useCurrentUserRoles();
+  const canManage = isAdmin || isOperations;
+  const { guard, dialogProps } = useActionGuard();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<POStatus | 'All'>('All');
@@ -107,7 +113,24 @@ const PurchaseOrdersPage = () => {
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'أمر شراء جديد' : 'New PO'}</Button>
+                <Button onClick={(e) => {
+                  e.preventDefault();
+                  guard([
+                    { kind: 'permission', condition: !canManage,
+                      messageAr: 'تحتاج صلاحية Admin أو Operations لإنشاء أمر شراء.',
+                      messageEn: 'You need Admin or Operations role to create a PO.' },
+                    { kind: 'prerequisite', condition: vendors.length === 0,
+                      titleAr: 'لا يوجد موردين', titleEn: 'No vendors',
+                      messageAr: 'يجب إضافة مورد أولاً قبل إنشاء أمر شراء.',
+                      messageEn: 'Add a vendor before creating a PO.',
+                      actionTo: '/saas/clients', actionLabelAr: 'إضافة مورد', actionLabelEn: 'Add vendor' },
+                    { kind: 'prerequisite', condition: items.length === 0,
+                      titleAr: 'لا توجد منتجات', titleEn: 'No items',
+                      messageAr: 'يجب إضافة منتجات أولاً.',
+                      messageEn: 'Add items before creating a PO.',
+                      actionTo: '/erp/items', actionLabelAr: 'إضافة منتج', actionLabelEn: 'Add item' },
+                  ], () => setIsDialogOpen(true));
+                }}><Plus className="w-4 h-4 mr-2" />{language === 'ar' ? 'أمر شراء جديد' : 'New PO'}</Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
