@@ -197,6 +197,9 @@ const RequisitionsPage = () => {
                 </div>
               </DialogContent>
             </Dialog>
+                </div>
+              );
+            })()}
           </div>
         </div>
 
