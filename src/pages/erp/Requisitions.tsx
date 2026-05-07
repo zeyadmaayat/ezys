@@ -18,6 +18,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Search, FileText, ArrowRight, X, Send, CheckCircle, XCircle, Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/csv-export';
 import type { RequisitionStatus } from '@/types/procurement';
+import { useActionGuard } from '@/hooks/useActionGuard';
+import { GuardDialog } from '@/components/guard/GuardDialog';
+import { useCurrentUserRoles } from '@/hooks/useCurrentUserRoles';
 
 const statusColors: Record<RequisitionStatus, string> = {
   Draft: 'bg-muted text-muted-foreground',
@@ -41,6 +44,9 @@ const RequisitionsPage = () => {
   const { items } = useItems();
   const { clients } = useClients();
   const vendors = clients.filter(c => c.type === 'VENDOR');
+  const { isAdmin, isOperations } = useCurrentUserRoles();
+  const canManage = isAdmin || isOperations;
+  const { guard, dialogProps } = useActionGuard();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<RequisitionStatus | 'All'>('All');
