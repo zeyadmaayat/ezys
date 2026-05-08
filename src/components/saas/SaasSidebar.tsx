@@ -36,7 +36,6 @@ const navGroups: NavGroup[] = [
       { icon: BarChart3, labelEn: 'Dashboard', labelAr: 'لوحة التحكم', path: '/saas/dashboard' },
       { icon: Building2, labelEn: 'Company Setup', labelAr: 'إعداد الشركة', path: '/saas/setup' },
       { icon: Users, labelEn: 'Clients', labelAr: 'العملاء', path: '/saas/clients' },
-      { icon: Warehouse, labelEn: 'Warehouses', labelAr: 'المستودعات', path: '/saas/warehouses' },
     ],
   },
   {
