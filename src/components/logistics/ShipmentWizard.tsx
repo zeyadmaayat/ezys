@@ -76,7 +76,7 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
                 id="origin_country"
                 value={state.origin_country}
                 onChange={(e) => updateField('origin_country', e.target.value)}
-                placeholder={isRTL ? 'مثال: السعودية' : 'e.g., Saudi Arabia'}
+                placeholder={isRTL ? 'مثال: الأردن' : 'e.g., Jordan'}
                 className="mt-1"
               />
             </div>

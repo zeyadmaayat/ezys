@@ -66,7 +66,7 @@ const Footer = () => {
                 <Phone className="w-3.5 h-3.5" /><span>+966 50 000 0000</span>
               </div>
               <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
-                <MapPin className="w-3.5 h-3.5" /><span>{language === 'ar' ? 'الرياض' : 'Riyadh, SA'}</span>
+                <MapPin className="w-3.5 h-3.5" /><span>{language === 'ar' ? 'عمان' : 'Amman, JO'}</span>
               </div>
             </div>
             <div className="flex items-center gap-2">

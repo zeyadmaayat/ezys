@@ -124,7 +124,7 @@ export default function WarehousesPage() {
                     <Label htmlFor="city">City</Label>
                     <Input
                       id="city"
-                      placeholder="Riyadh"
+                      placeholder="Amman"
                       value={formData.city}
                       onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
                     />
