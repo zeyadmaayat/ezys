@@ -52,7 +52,7 @@ const LocationsPage = () => {
     location_type: 'warehouse' as LocationType,
     address_line1: '',
     city: '',
-    country: 'SA',
+    country: 'JO',
   });
 
   const filteredLocations = locations.filter(l =>
@@ -98,7 +98,7 @@ const LocationsPage = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', location_type: 'warehouse', address_line1: '', city: '', country: 'SA' });
+    setFormData({ name: '', location_type: 'warehouse', address_line1: '', city: '', country: 'JO' });
     setEditingLocation(null);
   };
 

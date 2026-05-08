@@ -52,7 +52,7 @@ export function useLocations() {
           city: location.city,
           state: location.state,
           postal_code: location.postal_code,
-          country: location.country || 'SA',
+          country: location.country || 'JO',
           company_id: company.id,
         })
         .select()
