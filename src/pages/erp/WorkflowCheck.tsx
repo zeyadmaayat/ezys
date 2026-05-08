@@ -112,7 +112,7 @@ const WorkflowCheck = () => {
         name: 'Test Main Warehouse',
         location_type: 'warehouse',
         city: 'Riyadh',
-        country: 'SA',
+        country: 'JO',
       });
 
       if (location) {
@@ -152,7 +152,7 @@ const WorkflowCheck = () => {
         name: 'Test Delivery Site',
         location_type: 'distribution_center',
         city: 'Jeddah',
-        country: 'SA',
+        country: 'JO',
       });
 
       if (location) {

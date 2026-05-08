@@ -37,8 +37,6 @@ const navGroups: NavGroup[] = [
       { icon: Boxes, labelEn: 'Inventory', labelAr: 'المخزون', path: '/erp/inventory' },
       { icon: Boxes, labelEn: 'Inventory Dashboard', labelAr: 'لوحة المخزون', path: '/erp/inventory/dashboard' },
       { icon: Boxes, labelEn: 'Transfers & Cycle Count', labelAr: 'النقل والجرد', path: '/erp/inventory/transfers' },
-      { icon: Warehouse, labelEn: 'Warehouses', labelAr: 'المستودعات', path: '/saas/warehouses' },
-      { icon: MapPin, labelEn: 'Locations', labelAr: 'المواقع', path: '/erp/locations' },
       { icon: Package, labelEn: 'Items', labelAr: 'المنتجات', path: '/erp/items' },
     ],
   },

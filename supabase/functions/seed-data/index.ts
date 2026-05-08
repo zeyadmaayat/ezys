@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
         type: c.type,
         email: c.email,
         phone: c.phone,
-        address: { city: "Riyadh", country: "SA" },
+        address: { city: "Amman", country: "JO" },
         created_by: user.id,
       }))
     ).select("id, type");
@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
         company_id: companyId,
         name,
         city: cities[i],
-        country: "SA",
+        country: "JO",
         location: cities[i],
         address_line1: `شارع الملك فهد ${i + 1}`,
       }))
@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
         name,
         email: `customer${i + 1}@example.sa`,
         phone: `+9665030${String(i + 1).padStart(5, "0")}`,
-        billing_address: { city: cities[i % cities.length], country: "SA", street: `شارع ${i + 1}` },
+        billing_address: { city: cities[i % cities.length], country: "JO", street: `شارع ${i + 1}` },
         created_by: user.id,
       }))
     ).select("id");
@@ -171,7 +171,7 @@ Deno.serve(async (req) => {
         name: `موقع ${city}`,
         location_type: locTypes[i % locTypes.length],
         city,
-        country: "SA",
+        country: "JO",
         address_line1: `طريق الملك عبدالعزيز ${i + 10}`,
       }))
     ).select("id");

@@ -51,7 +51,7 @@ export function useWarehouses() {
           location: input.location || null,
           address_line1: input.address_line1 || null,
           city: input.city || null,
-          country: input.country || 'SA',
+          country: input.country || 'JO',
         })
         .select()
         .single();

@@ -26,7 +26,7 @@ export default function WarehousesPage() {
     location: '',
     address_line1: '',
     city: '',
-    country: 'SA',
+    country: 'JO',
   });
 
   const handleCreate = async () => {
@@ -38,7 +38,7 @@ export default function WarehousesPage() {
     
     if (result) {
       setIsCreateOpen(false);
-      setFormData({ name: '', location: '', address_line1: '', city: '', country: 'SA' });
+      setFormData({ name: '', location: '', address_line1: '', city: '', country: 'JO' });
     }
   };
 
@@ -133,7 +133,7 @@ export default function WarehousesPage() {
                     <Label htmlFor="country">Country</Label>
                     <Input
                       id="country"
-                      placeholder="SA"
+                      placeholder="JO"
                       value={formData.country}
                       onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
                     />
