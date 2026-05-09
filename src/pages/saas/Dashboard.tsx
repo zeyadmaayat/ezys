@@ -90,22 +90,22 @@ export default function SaaSDashboard() {
       title: 'Delivered', 
       value: stats.deliveredCount, 
       icon: CheckCircle, 
-      color: 'text-green-600',
-      bgColor: 'bg-green-100'
+      color: 'text-green-600 dark:text-green-400',
+      bgColor: 'bg-green-100 dark:bg-green-950/50'
     },
     { 
       title: 'Pending Invoices', 
       value: stats.pendingInvoices, 
       icon: FileText, 
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100'
+      color: 'text-yellow-600 dark:text-yellow-400',
+      bgColor: 'bg-yellow-100 dark:bg-yellow-950/50'
     },
     { 
       title: 'Total Revenue', 
       value: `$${stats.totalRevenue.toLocaleString()}`, 
       icon: DollarSign, 
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-100'
+      color: 'text-emerald-600 dark:text-emerald-400',
+      bgColor: 'bg-emerald-100 dark:bg-emerald-950/50'
     },
   ];
 
