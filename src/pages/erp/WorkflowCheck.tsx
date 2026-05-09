@@ -151,7 +151,7 @@ const WorkflowCheck = () => {
       const location = await createLocation({
         name: 'Test Delivery Site',
         location_type: 'distribution_center',
-        city: 'Jeddah',
+        city: 'Amman',
         country: 'JO',
       });
 
