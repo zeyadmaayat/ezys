@@ -85,6 +85,7 @@ const SalesReports = lazy(() => import("./pages/sales/Reports"));
 
 // Floating widget — keep eager (small, used everywhere)
 import { AiAssistantFloating } from "@/components/ai/AiAssistantFloating";
+import LumieroBadge from "@/components/LumieroBadge";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -195,6 +196,7 @@ const App = () => (
               </Routes>
             </Suspense>
             <AiAssistantFloating />
+            <LumieroBadge />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
