@@ -61,7 +61,7 @@ export function SavePlanDialog({
               id="plan-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={isRTL ? 'مثال: شحنة إلى دبي' : 'e.g., Shipment to Dubai'}
+              placeholder={isRTL ? 'مثال: شحنة إلى عمان' : 'e.g., Shipment to Amman'}
               className="mt-1"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
