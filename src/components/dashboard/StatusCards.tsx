@@ -19,11 +19,11 @@ const STATUS_ICONS: Record<ShipmentStatus, React.ComponentType<{ className?: str
 };
 
 const STATUS_COLORS: Record<ShipmentStatus, { bg: string; icon: string }> = {
-  Planned: { bg: 'bg-gray-50 dark:bg-gray-900/30', icon: 'text-gray-600' },
-  Booked: { bg: 'bg-blue-50 dark:bg-blue-900/30', icon: 'text-blue-600' },
-  In_Transit: { bg: 'bg-yellow-50 dark:bg-yellow-900/30', icon: 'text-yellow-600' },
-  Cleared: { bg: 'bg-purple-50 dark:bg-purple-900/30', icon: 'text-purple-600' },
-  Delivered: { bg: 'bg-green-50 dark:bg-green-900/30', icon: 'text-green-600' },
+  Planned: { bg: 'bg-muted', icon: 'text-muted-foreground' },
+  Booked: { bg: 'bg-blue-50 dark:bg-blue-950/40', icon: 'text-blue-600 dark:text-blue-400' },
+  In_Transit: { bg: 'bg-yellow-50 dark:bg-yellow-950/40', icon: 'text-yellow-600 dark:text-yellow-400' },
+  Cleared: { bg: 'bg-purple-50 dark:bg-purple-950/40', icon: 'text-purple-600 dark:text-purple-400' },
+  Delivered: { bg: 'bg-green-50 dark:bg-green-950/40', icon: 'text-green-600 dark:text-green-400' },
 };
 
 const STATUS_OPTIONS: ShipmentStatus[] = ['Planned', 'Booked', 'In_Transit', 'Cleared', 'Delivered'];

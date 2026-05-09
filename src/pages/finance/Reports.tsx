@@ -9,7 +9,16 @@ import { Loader2, BarChart3, TrendingUp, TrendingDown, DollarSign } from 'lucide
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
+const COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--primary))',
+  'hsl(var(--ezy-blue-light))',
+  'hsl(var(--accent-foreground))',
+];
 
 export default function ReportsPage() {
   const { language } = useLanguage();
@@ -120,8 +129,8 @@ export default function ReportsPage() {
                 <YAxis className="text-xs" />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="revenue" name={isRTL ? 'الإيرادات' : 'Revenue'} fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expenses" name={isRTL ? 'المصاريف' : 'Expenses'} fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" name={isRTL ? 'الإيرادات' : 'Revenue'} fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="expenses" name={isRTL ? 'المصاريف' : 'Expenses'} fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

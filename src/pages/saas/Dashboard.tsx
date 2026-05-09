@@ -69,43 +69,43 @@ export default function SaaSDashboard() {
       title: 'Total Shipments', 
       value: stats.totalShipments, 
       icon: Package, 
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-100 dark:bg-blue-950/50'
     },
     { 
       title: 'Created', 
       value: stats.createdCount, 
       icon: Package, 
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-100'
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted'
     },
     { 
       title: 'In Transit', 
       value: stats.inTransitCount, 
       icon: Truck, 
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100'
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-100 dark:bg-orange-950/50'
     },
     { 
       title: 'Delivered', 
       value: stats.deliveredCount, 
       icon: CheckCircle, 
-      color: 'text-green-600',
-      bgColor: 'bg-green-100'
+      color: 'text-green-600 dark:text-green-400',
+      bgColor: 'bg-green-100 dark:bg-green-950/50'
     },
     { 
       title: 'Pending Invoices', 
       value: stats.pendingInvoices, 
       icon: FileText, 
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-100'
+      color: 'text-yellow-600 dark:text-yellow-400',
+      bgColor: 'bg-yellow-100 dark:bg-yellow-950/50'
     },
     { 
       title: 'Total Revenue', 
       value: `$${stats.totalRevenue.toLocaleString()}`, 
       icon: DollarSign, 
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-100'
+      color: 'text-emerald-600 dark:text-emerald-400',
+      bgColor: 'bg-emerald-100 dark:bg-emerald-950/50'
     },
   ];
 
