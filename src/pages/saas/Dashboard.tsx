@@ -69,22 +69,22 @@ export default function SaaSDashboard() {
       title: 'Total Shipments', 
       value: stats.totalShipments, 
       icon: Package, 
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-100 dark:bg-blue-950/50'
     },
     { 
       title: 'Created', 
       value: stats.createdCount, 
       icon: Package, 
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-100'
+      color: 'text-muted-foreground',
+      bgColor: 'bg-muted'
     },
     { 
       title: 'In Transit', 
       value: stats.inTransitCount, 
       icon: Truck, 
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100'
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-100 dark:bg-orange-950/50'
     },
     { 
       title: 'Delivered', 

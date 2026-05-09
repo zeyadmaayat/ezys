@@ -22,11 +22,11 @@ import { useActionGuard } from '@/hooks/useActionGuard';
 import { GuardDialog } from '@/components/guard/GuardDialog';
 
 const statusColors: Record<ShipmentStatusV2, string> = {
-  CREATED: 'bg-gray-100 text-gray-800',
-  PICKED_UP: 'bg-blue-100 text-blue-800',
-  IN_WAREHOUSE: 'bg-purple-100 text-purple-800',
-  OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-800',
-  DELIVERED: 'bg-green-100 text-green-800',
+  CREATED: 'bg-muted text-muted-foreground',
+  PICKED_UP: 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300',
+  IN_WAREHOUSE: 'bg-purple-100 text-purple-800 dark:bg-purple-950/50 dark:text-purple-300',
+  OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-800 dark:bg-orange-950/50 dark:text-orange-300',
+  DELIVERED: 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300',
 };
 
 export default function ShipmentsPage() {

@@ -28,11 +28,11 @@ const ALERT_TYPE_CONFIG: Record<string, { label: string; color: string; icon: ty
 };
 
 const SEVERITY_BADGE: Record<string, string> = {
-  CRITICAL: 'bg-red-600 text-white',
-  HIGH: 'bg-orange-500 text-white',
-  MEDIUM: 'bg-amber-400 text-amber-900',
-  LOW: 'bg-slate-200 text-slate-700',
-  INFO: 'bg-blue-100 text-blue-700',
+  CRITICAL: 'bg-red-600 text-white dark:bg-red-700',
+  HIGH: 'bg-orange-500 text-white dark:bg-orange-600',
+  MEDIUM: 'bg-amber-400 text-amber-900 dark:bg-amber-600 dark:text-amber-50',
+  LOW: 'bg-muted text-muted-foreground',
+  INFO: 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
 };
 
 export default function DpRiskDashboard() {

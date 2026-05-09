@@ -194,7 +194,7 @@ export default function AuditLogViewer() {
                         {log.user_email || 'System'}
                       </TableCell>
                       <TableCell>
-                        <Badge className={actionColors[log.action] || 'bg-gray-100 text-gray-800'}>
+                        <Badge className={actionColors[log.action] || 'bg-muted text-muted-foreground'}>
                           {log.action}
                         </Badge>
                       </TableCell>

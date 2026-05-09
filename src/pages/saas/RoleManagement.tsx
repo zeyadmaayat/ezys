@@ -12,12 +12,12 @@ import { ArrowLeft, Loader2, Shield, UserCog, CheckCircle2, XCircle, Clock } fro
 import type { AppRole } from '@/types/erp';
 
 const roleColors: Record<AppRole, string> = {
-  admin: 'bg-red-100 text-red-800',
-  operations: 'bg-blue-100 text-blue-800',
-  warehouse: 'bg-purple-100 text-purple-800',
-  finance: 'bg-green-100 text-green-800',
-  viewer: 'bg-gray-100 text-gray-800',
-  user: 'bg-gray-100 text-gray-600',
+  admin: 'bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300',
+  operations: 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300',
+  warehouse: 'bg-purple-100 text-purple-800 dark:bg-purple-950/50 dark:text-purple-300',
+  finance: 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-300',
+  viewer: 'bg-muted text-muted-foreground',
+  user: 'bg-muted text-muted-foreground',
 };
 
 const roleDescriptions: Record<AppRole, string> = {
