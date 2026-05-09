@@ -88,7 +88,7 @@ export function ShipmentWizard({ shipmentState, onGeneratePlan, isGenerating }: 
                 id="origin_city"
                 value={state.origin_city_or_port}
                 onChange={(e) => updateField('origin_city_or_port', e.target.value)}
-                placeholder={isRTL ? 'مثال: جدة' : 'e.g., Jeddah'}
+                placeholder={isRTL ? 'مثال: عمان' : 'e.g., Amman'}
                 className="mt-1"
               />
             </div>
