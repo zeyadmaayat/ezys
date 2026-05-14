@@ -93,10 +93,11 @@ const Footer = () => {
         </div>
 
         <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-primary-foreground/30 text-xs">{t.rights}</p>
+          <p className="text-primary-foreground/40 text-xs">{t.rights}</p>
           <div className="flex items-center gap-4 text-xs text-primary-foreground/30">
             <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.privacy}</a>
             <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.terms}</a>
+            <span className="font-semibold tracking-wider text-primary/80">LUMIERO · by ZEYAD</span>
           </div>
         </div>
       </div>
