@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, ArrowRight, Truck, BarChart3, Shield } from 'lucide-react';
 import EzyLogo from '@/components/EzyLogo';
+import Seo from '@/components/Seo';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -113,6 +114,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex" dir={isRTL ? 'rtl' : 'ltr'}>
+      <Seo
+        title="Sign in — ezy Logistic HUB"
+        description="Sign in or create an account for ezy Logistic HUB to manage shipments, inventory, and invoices."
+        path="/auth"
+      />
       {/* Left branding panel - hidden on mobile */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden" style={{ background: 'var(--gradient-hero)' }}>
         <div className="absolute inset-0 opacity-10">

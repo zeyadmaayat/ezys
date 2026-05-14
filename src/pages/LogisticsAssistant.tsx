@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import MainLayout from '@/components/MainLayout';
+import Seo from '@/components/Seo';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useShipmentState, ShipmentState } from '@/hooks/useShipmentState';
 import { useShipmentPlans } from '@/hooks/useShipmentPlans';
@@ -164,6 +165,11 @@ Generate the final JSON plan now.`;
 
   return (
     <MainLayout>
+      <Seo
+        title="Logistics AI Assistant — ezy Logistic HUB"
+        description="Plan shipments, compare modes, and estimate logistics costs with an AI-powered assistant."
+        path="/logistics-assistant"
+      />
       <div className="container mx-auto px-4 py-4" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
