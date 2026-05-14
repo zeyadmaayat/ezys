@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import MainLayout from '@/components/MainLayout';
+import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
 import { BarChart3, Package, Truck, ClipboardList, DollarSign } from 'lucide-react';
 import { addDays } from 'date-fns';
@@ -226,6 +227,11 @@ export default function OpsDashboard() {
 
   return (
     <MainLayout>
+      <Seo
+        title="Operations Dashboard — ezy Logistic HUB"
+        description="Live KPIs, shipment status, tasks, and analytics for your logistics operations."
+        path="/dashboard"
+      />
       <div className="container mx-auto py-6 px-4 space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

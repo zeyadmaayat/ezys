@@ -1,4 +1,5 @@
 import MainLayout from '@/components/MainLayout';
+import Seo from '@/components/Seo';
 import HeroSection from '@/components/HeroSection';
 import FeaturesSection from '@/components/FeaturesSection';
 import StatsSection from '@/components/StatsSection';
@@ -10,6 +11,11 @@ import CTASection from '@/components/CTASection';
 const Index = () => {
   return (
     <MainLayout>
+      <Seo
+        title="ezy Logistic HUB — Simple Logistics Management"
+        description="All-in-one bilingual platform to manage shipments, orders, inventory, invoices, and warehouses. Free plan available."
+        path="/"
+      />
       <HeroSection />
       <StatsSection />
       <FeaturesSection />
