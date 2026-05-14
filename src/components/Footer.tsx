@@ -14,7 +14,7 @@ const Footer = () => {
     product: language === 'ar' ? 'المنتج' : 'Product',
     company: language === 'ar' ? 'الشركة' : 'Company',
     resources: language === 'ar' ? 'الموارد' : 'Resources',
-    rights: language === 'ar' ? '© 2025 ezy Logistic HUB. جميع الحقوق محفوظة.' : '© 2025 ezy Logistic HUB. All rights reserved.',
+    rights: language === 'ar' ? '© 2025 ezy Logistic HUB. جميع الحقوق محفوظة. — صُمِّم وطُوِّر بواسطة ZEYAD' : '© 2025 ezy Logistic HUB. All rights reserved. — Designed & built by ZEYAD',
     privacy: language === 'ar' ? 'سياسة الخصوصية' : 'Privacy',
     terms: language === 'ar' ? 'شروط الاستخدام' : 'Terms',
   };
@@ -93,10 +93,11 @@ const Footer = () => {
         </div>
 
         <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-primary-foreground/30 text-xs">{t.rights}</p>
+          <p className="text-primary-foreground/40 text-xs">{t.rights}</p>
           <div className="flex items-center gap-4 text-xs text-primary-foreground/30">
             <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.privacy}</a>
             <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.terms}</a>
+            <span className="font-semibold tracking-wider text-primary/80">LUMIERO · by ZEYAD</span>
           </div>
         </div>
       </div>

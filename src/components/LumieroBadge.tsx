@@ -1,21 +1,23 @@
 import { Sparkles } from "lucide-react";
 
 /**
- * Floating LUMIERO brand badge — appears on every page.
- * Fixed bottom-left, subtle but readable in the dark theme.
+ * Permanent LUMIERO · by ZEYAD ownership badge.
+ * Appears on every page (fixed bottom-left) and is intentionally
+ * non-removable — credits the site creator, ZEYAD.
  */
 const LumieroBadge = () => {
   return (
     <div
-      className="fixed bottom-3 left-3 z-40 pointer-events-none select-none"
-      aria-hidden="true"
+      className="fixed bottom-3 left-3 z-[60] pointer-events-none select-none"
+      data-owner="ZEYAD"
+      aria-label="Built by ZEYAD — LUMIERO"
     >
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-card/70 border border-border/60 backdrop-blur-md shadow-sm">
-        <Sparkles className="w-3 h-3 text-primary" />
-        <span className="text-[10px] font-bold tracking-[0.18em] text-foreground/85">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/80 border border-primary/40 backdrop-blur-md shadow-md ring-1 ring-primary/10">
+        <Sparkles className="w-3.5 h-3.5 text-primary" />
+        <span className="text-[11px] font-extrabold tracking-[0.2em] text-foreground">
           LUMIERO
         </span>
-        <span className="text-[9px] text-muted-foreground/80 tracking-wider">
+        <span className="text-[10px] font-semibold text-primary tracking-wider">
           by ZEYAD
         </span>
       </div>
