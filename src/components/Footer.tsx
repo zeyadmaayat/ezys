@@ -14,7 +14,7 @@ const Footer = () => {
     product: language === 'ar' ? 'المنتج' : 'Product',
     company: language === 'ar' ? 'الشركة' : 'Company',
     resources: language === 'ar' ? 'الموارد' : 'Resources',
-    rights: language === 'ar' ? '© 2025 ezy Logistic HUB. جميع الحقوق محفوظة.' : '© 2025 ezy Logistic HUB. All rights reserved.',
+    rights: language === 'ar' ? '© 2025 ezy Logistic HUB. جميع الحقوق محفوظة. — صُمِّم وطُوِّر بواسطة ZEYAD' : '© 2025 ezy Logistic HUB. All rights reserved. — Designed & built by ZEYAD',
     privacy: language === 'ar' ? 'سياسة الخصوصية' : 'Privacy',
     terms: language === 'ar' ? 'شروط الاستخدام' : 'Terms',
   };
