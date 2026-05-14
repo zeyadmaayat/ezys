@@ -1,0 +1,15 @@
+# ezy Logistic HUB
+
+> Simple, all-in-one logistics platform to manage shipments, orders, inventory, invoices, and warehouses for small and growing businesses.
+
+ezy Logistic HUB (EzySuite) is a multi-tenant SaaS ERP focused on logistics, procurement, sales, and finance. The marketing site is public; the application itself requires sign-in.
+
+## Pages
+
+- [Home](/): Product overview, features, pricing, and FAQ.
+- [Sign in / Sign up](/auth): Account access for the SaaS application.
+
+## Optional
+
+- [Pricing section](/#pricing): Plan tiers (Free, Starter, Pro, Enterprise).
+- [FAQ](/#faq): Common questions about trials, security, languages, AI assistant.
