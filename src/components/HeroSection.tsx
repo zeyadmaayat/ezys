@@ -6,7 +6,7 @@ const HeroSection = () => {
   const { language, isRTL } = useLanguage();
 
   const t = {
-    badge: language === 'ar' ? 'LUMIERO · من زياد' : 'LUMIERO · by ZEYAD',
+    badge: language === 'ar' ? 'من زياد' : 'by ZEYAD',
     ghost: language === 'ar' ? 'لوجستيات' : 'Logistics',
     title1: language === 'ar' ? 'إدارة' : 'Logistics',
     titleHighlight: language === 'ar' ? 'لوجستياتك' : 'Made Easy',

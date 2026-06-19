@@ -97,7 +97,7 @@ const Footer = () => {
           <div className="flex items-center gap-4 text-xs text-primary-foreground/30">
             <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.privacy}</a>
             <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.terms}</a>
-            <span className="font-semibold tracking-wider text-primary/80">LUMIERO · by ZEYAD</span>
+            <span className="font-semibold tracking-wider text-primary/80">by ZEYAD</span>
           </div>
         </div>
       </div>
