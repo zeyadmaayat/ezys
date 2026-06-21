@@ -127,8 +127,11 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: true,
+        keyLen: RESEND_API_KEY.length,
         adminSent: adminRes.status === "fulfilled",
         welcomeSent: welcomeRes.status === "fulfilled",
+        adminError: adminRes.status === "rejected" ? String(adminRes.reason) : null,
+        welcomeError: welcomeRes.status === "rejected" ? String(welcomeRes.reason) : null,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
