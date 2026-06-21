@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-const RESEND_API_KEY = (Deno.env.get("RESEND_API_KEY") || "").trim();
+// Strip any non-ASCII / control characters that can corrupt the auth header
+const RESEND_API_KEY = (Deno.env.get("RESEND_API_KEY") || "")
+  .replace(/[^\x21-\x7E]/g, "")
+  .trim();
 
 // Where admin alerts are sent
 const ADMIN_EMAIL = "zeyadmaayta@outlook.com";
