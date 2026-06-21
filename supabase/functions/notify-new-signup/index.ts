@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = (Deno.env.get("RESEND_API_KEY") || "").trim();
 
 // Where admin alerts are sent
 const ADMIN_EMAIL = "zeyadmaayta@outlook.com";
@@ -20,6 +19,22 @@ interface SignupNotification {
   displayName: string;
 }
 
+async function sendEmail(payload: Record<string, unknown>) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Resend ${res.status}: ${text}`);
+  }
+  return text;
+}
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -30,7 +45,6 @@ const handler = async (req: Request): Promise<Response> => {
     const rawEmail = (body?.email || "").trim();
     const displayName = (body?.displayName || "").trim();
 
-    // Basic validation
     const emailOk =
       typeof rawEmail === "string" &&
       rawEmail.length > 3 &&
@@ -49,7 +63,7 @@ const handler = async (req: Request): Promise<Response> => {
     const now = new Date().toLocaleString("en-GB", { timeZone: "Asia/Amman" });
 
     // 1) Alert email to the admin
-    const adminEmail = resend.emails.send({
+    const adminEmail = sendEmail({
       from: FROM,
       to: [ADMIN_EMAIL],
       subject: "🔔 New User Registration — Approval Required",
@@ -75,7 +89,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     // 2) "We received your request" email to the new user
-    const welcomeEmail = resend.emails.send({
+    const welcomeEmail = sendEmail({
       from: FROM,
       to: [safeEmail],
       subject: "✅ We received your request — ezy Logistic HUB",
@@ -104,8 +118,8 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     const [adminRes, welcomeRes] = await Promise.allSettled([adminEmail, welcomeEmail]);
-    console.log("Admin email:", JSON.stringify(adminRes));
-    console.log("Welcome email:", JSON.stringify(welcomeRes));
+    if (adminRes.status === "rejected") console.error("Admin email failed:", adminRes.reason);
+    if (welcomeRes.status === "rejected") console.error("Welcome email failed:", welcomeRes.reason);
 
     return new Response(
       JSON.stringify({
