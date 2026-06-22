@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,10 +17,11 @@ const passwordSchema = z.string().min(6);
 
 const Auth = () => {
   const { t, isRTL } = useLanguage();
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, refreshAuth } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(location.pathname !== '/signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -34,10 +35,11 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
 
-  if (user) {
-    navigate('/saas/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (user && isLogin && !loading) {
+      navigate('/saas/dashboard', { replace: true });
+    }
+  }, [user, isLogin, loading, navigate]);
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
@@ -62,11 +64,29 @@ const Auth = () => {
         const result = await signUp(email, password, displayName);
         if (result.error) setGeneralError(result.error);
         else {
+          if (!result.sessionActive) {
+            setGeneralError(isRTL ? 'تم إنشاء الحساب. تفقد بريدك الإلكتروني لتأكيد الحساب ثم سجل الدخول.' : 'Account created. Please check your email to confirm your account, then sign in.');
+            return;
+          }
+
+          const profileResult = await supabase.rpc('ensure_signup_request', {
+            _display_name: displayName || email.split('@')[0],
+            _email: email,
+          });
+
+          if (profileResult.error) {
+            console.error('Failed to create signup request:', profileResult.error);
+            setGeneralError(isRTL ? 'تم إنشاء الحساب لكن تعذر تجهيز طلب الموافقة. حاول تسجيل الدخول مرة أخرى.' : 'Account created, but we could not prepare the approval request. Please try signing in again.');
+            return;
+          }
+
           try {
             await supabase.functions.invoke('notify-new-signup', {
               body: { email, displayName: displayName || email.split('@')[0] },
             });
           } catch (e) { console.error('Failed to send signup notification:', e); }
+
+          await refreshAuth();
           navigate('/saas/dashboard');
         }
       }
@@ -81,7 +101,10 @@ const Auth = () => {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: `${window.location.origin}/saas/dashboard` },
+        options: {
+          emailRedirectTo: `${window.location.origin}/saas/dashboard`,
+          shouldCreateUser: false,
+        },
       });
       if (error) setGeneralError(error.message);
       else {

@@ -3787,6 +3787,10 @@ export type Database = {
         Args: { _barcode: string; _session_id: string }
         Returns: string
       }
+      ensure_signup_request: {
+        Args: { _display_name?: string; _email?: string }
+        Returns: Json
+      }
       execute_inventory_transfer: {
         Args: { _transfer_id: string }
         Returns: Json
