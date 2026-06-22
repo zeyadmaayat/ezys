@@ -140,10 +140,9 @@ export function useUserRoles() {
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_approved: approved })
-        .eq('id', userId);
+      const { error } = await supabase.functions.invoke('manage-user-approval', {
+        body: { userId, approved },
+      });
 
       if (error) throw error;
 
