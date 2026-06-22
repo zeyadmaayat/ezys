@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -34,10 +34,11 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
 
-  if (user) {
-    navigate('/saas/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (user && !loading) {
+      navigate('/saas/dashboard', { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
