@@ -17,7 +17,7 @@ const passwordSchema = z.string().min(6);
 
 const Auth = () => {
   const { t, isRTL } = useLanguage();
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, refreshAuth } = useAuth();
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(true);
@@ -62,11 +62,29 @@ const Auth = () => {
         const result = await signUp(email, password, displayName);
         if (result.error) setGeneralError(result.error);
         else {
+          if (!result.sessionActive) {
+            setGeneralError(isRTL ? 'تم إنشاء الحساب. تفقد بريدك الإلكتروني لتأكيد الحساب ثم سجل الدخول.' : 'Account created. Please check your email to confirm your account, then sign in.');
+            return;
+          }
+
+          const profileResult = await supabase.rpc('ensure_signup_request', {
+            _display_name: displayName || email.split('@')[0],
+            _email: email,
+          });
+
+          if (profileResult.error) {
+            console.error('Failed to create signup request:', profileResult.error);
+            setGeneralError(isRTL ? 'تم إنشاء الحساب لكن تعذر تجهيز طلب الموافقة. حاول تسجيل الدخول مرة أخرى.' : 'Account created, but we could not prepare the approval request. Please try signing in again.');
+            return;
+          }
+
           try {
             await supabase.functions.invoke('notify-new-signup', {
               body: { email, displayName: displayName || email.split('@')[0] },
             });
           } catch (e) { console.error('Failed to send signup notification:', e); }
+
+          await refreshAuth();
           navigate('/saas/dashboard');
         }
       }
