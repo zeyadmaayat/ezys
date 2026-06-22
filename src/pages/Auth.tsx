@@ -101,7 +101,10 @@ const Auth = () => {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: `${window.location.origin}/saas/dashboard` },
+        options: {
+          emailRedirectTo: `${window.location.origin}/saas/dashboard`,
+          shouldCreateUser: false,
+        },
       });
       if (error) setGeneralError(error.message);
       else {
