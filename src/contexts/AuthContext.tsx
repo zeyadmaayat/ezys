@@ -12,7 +12,7 @@ interface AuthContextType {
   hasCompany: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: string | null; userId?: string; sessionActive?: boolean }>;
   signOut: () => Promise<void>;
   refreshAuth: () => Promise<void>;
 }
@@ -70,48 +70,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
+    const applySession = async (nextSession: Session | null) => {
+      const nextUser = nextSession?.user ?? null;
+      if (!mounted) return;
+
+      setSession(nextSession);
+      setUser(nextUser);
+
+      if (!nextUser) {
+        setIsAdmin(false);
+        setIsApproved(false);
+        setHasCompany(false);
+        setLoading(false);
+        return;
+      }
+
+      const [admin, approvalResult] = await Promise.all([
+        checkAdminRole(nextUser.id),
+        checkApprovalAndCompany(nextUser.id),
+      ]);
+
+      if (!mounted) return;
+      setIsAdmin(admin);
+      setIsApproved(approvalResult.approved);
+      setHasCompany(approvalResult.hasCompany);
+      setLoading(false);
+    };
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Defer admin/approval check with setTimeout
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id).then(setIsAdmin);
-            checkApprovalAndCompany(session.user.id).then(r => {
-              setIsApproved(r.approved);
-              setHasCompany(r.hasCompany);
-            });
-          }, 0);
-        } else {
-          setIsAdmin(false);
-          setIsApproved(false);
-          setHasCompany(false);
-        }
-        
-        setLoading(false);
+        setLoading(true);
+        void applySession(session);
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        checkAdminRole(session.user.id).then(setIsAdmin);
-        checkApprovalAndCompany(session.user.id).then(r => {
-          setIsApproved(r.approved);
-          setHasCompany(r.hasCompany);
-        });
-      }
-      
-      setLoading(false);
+      void applySession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
@@ -132,11 +136,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string, displayName?: string): Promise<{ error: string | null }> => {
+  const signUp = async (email: string, password: string, displayName?: string): Promise<{ error: string | null; userId?: string; sessionActive?: boolean }> => {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -155,7 +159,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       
       toast({ title: t('signUpSuccess') });
-      return { error: null };
+      return { error: null, userId: data.user?.id, sessionActive: !!data.session };
     } catch (err) {
       return { error: 'An unexpected error occurred' };
     }
