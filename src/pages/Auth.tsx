@@ -35,10 +35,10 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user && !loading) {
+    if (user && isLogin && !loading) {
       navigate('/saas/dashboard', { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, isLogin, loading, navigate]);
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
