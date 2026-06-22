@@ -26,16 +26,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Always allow access to company setup page for authenticated users
-  if (location.pathname === '/saas/setup') {
-    return <>{children}</>;
-  }
-
-  // If user has no company, redirect to setup
-  if (!hasCompany && !isAdmin) {
-    return <Navigate to="/saas/setup" replace />;
-  }
-
   // Admins always have access, non-approved users see pending screen
   if (!isApproved && !isAdmin) {
     return (
@@ -70,6 +60,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         </div>
       </div>
     );
+  }
+
+  // Allow company setup only after the access request is approved
+  if (location.pathname === '/saas/setup') {
+    return <>{children}</>;
+  }
+
+  // If approved user has no company, redirect to setup
+  if (!hasCompany && !isAdmin) {
+    return <Navigate to="/saas/setup" replace />;
   }
 
   return <>{children}</>;
