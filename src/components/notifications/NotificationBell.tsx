@@ -27,6 +27,22 @@ export function NotificationBell() {
     if (!user) return;
     fetchNotifications();
 
+    // ── Realtime channel authorization ──────────────────────────────────
+    // The channel topic MUST be `notifications:<user.id>` and MUST be opened
+    // as a PRIVATE channel. This matches the RLS policy on `realtime.messages`:
+    //
+    //   "Users access own notification realtime topic"
+    //   USING ( realtime.topic() = 'notifications:' || auth.uid()::text )
+    //
+    // Because the channel is private, Realtime enforces that SELECT policy
+    // before delivering any message, so a user can only subscribe to their
+    // own topic — a different `user.id` would fail authorization.
+    //
+    // The postgres_changes `filter` below is a second guard at the row level:
+    // it only streams `notifications` rows where user_id = the current user,
+    // mirroring the `notifications` SELECT policy (auth.uid() = user_id).
+    // Inserts are restricted to the service role, so notifications can only be
+    // created server-side (e.g. the signup/approval flow), never by clients.
     const channel = supabase
       .channel(`notifications:${user.id}`, { config: { private: true } })
       .on('postgres_changes', {
