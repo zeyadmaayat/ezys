@@ -69,7 +69,7 @@ const HeroSection = () => {
               </h1>
             </div>
 
-            <p className={`text-lg text-primary-foreground/60 mt-8 max-w-lg leading-relaxed ${isRTL ? 'mr-0 ml-auto lg:ml-0' : 'mx-auto lg:mx-0'} animate-fade-up`} style={{ animationDelay: "0.2s" }}>
+            <p className={`text-lg text-hero-foreground/70 mt-8 max-w-lg leading-relaxed ${isRTL ? 'mr-0 ml-auto lg:ml-0' : 'mx-auto lg:mx-0'} animate-fade-up`} style={{ animationDelay: "0.2s" }}>
               {t.subtitle}
             </p>
 
