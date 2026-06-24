@@ -75,14 +75,14 @@ const HeroSection = () => {
 
             <div className={`flex flex-col sm:flex-row gap-4 mt-10 justify-center lg:justify-${isRTL ? 'end' : 'start'} animate-fade-up`} style={{ animationDelay: "0.3s" }}>
               <Link
-                to="/saas/dashboard"
+                to="/signup"
                 className="px-8 py-4 bg-gradient-to-br from-orange to-orange/90 text-white font-bold rounded-xl shadow-[0_10px_40px_-10px_hsl(var(--orange)/0.5)] hover:shadow-[0_15px_50px_-10px_hsl(var(--orange)/0.7)] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 group"
               >
                 {t.getStarted}
                 <ArrowRight className={`w-5 h-5 ${isRTL ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'} transition-transform`} />
               </Link>
               <Link
-                to="/logistics-assistant"
+                to="/login"
                 className="px-8 py-4 bg-hero-foreground/5 hover:bg-hero-foreground/10 text-hero-foreground font-semibold rounded-xl border border-hero-foreground/15 backdrop-blur-sm transition-all flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5 text-primary" />
