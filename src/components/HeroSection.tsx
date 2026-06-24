@@ -83,7 +83,7 @@ const HeroSection = () => {
               </Link>
               <Link
                 to="/logistics-assistant"
-                className="px-8 py-4 bg-primary-foreground/5 hover:bg-primary-foreground/10 text-primary-foreground font-semibold rounded-xl border border-primary-foreground/10 backdrop-blur-sm transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 bg-hero-foreground/5 hover:bg-hero-foreground/10 text-hero-foreground font-semibold rounded-xl border border-hero-foreground/15 backdrop-blur-sm transition-all flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5 text-primary" />
                 {t.watchDemo}
