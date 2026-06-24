@@ -43,9 +43,9 @@ const Footer = () => {
 
   const renderLink = (link: { label: string; href?: string; to?: string }) => {
     if (link.to) {
-      return <Link to={link.to} className="text-primary-foreground/50 hover:text-primary-foreground/80 transition-colors text-sm">{link.label}</Link>;
+      return <Link to={link.to} className="text-hero-foreground/50 hover:text-hero-foreground/80 transition-colors text-sm">{link.label}</Link>;
     }
-    return <a href={link.href} className="text-primary-foreground/50 hover:text-primary-foreground/80 transition-colors text-sm">{link.label}</a>;
+    return <a href={link.href} className="text-hero-foreground/50 hover:text-hero-foreground/80 transition-colors text-sm">{link.label}</a>;
   };
 
   return (
@@ -55,48 +55,48 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="mb-3">
-              <EzyLogo size="sm" className="[&_span]:!text-primary-foreground [&_div]:!text-primary-foreground/70" />
+              <EzyLogo size="sm" className="[&_span]:!text-hero-foreground [&_div]:!text-hero-foreground/70" />
             </div>
-            <p className="text-primary-foreground/50 mb-5 max-w-xs text-sm">{t.tagline}</p>
+            <p className="text-hero-foreground/50 mb-5 max-w-xs text-sm">{t.tagline}</p>
             <div className="space-y-2 mb-5">
-              <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
+              <div className="flex items-center gap-2 text-hero-foreground/40 text-xs">
                 <Mail className="w-3.5 h-3.5" /><span>info@ezylogistic.com</span>
               </div>
-              <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
+              <div className="flex items-center gap-2 text-hero-foreground/40 text-xs">
                 <Phone className="w-3.5 h-3.5" /><span>+966 50 000 0000</span>
               </div>
-              <div className="flex items-center gap-2 text-primary-foreground/40 text-xs">
+              <div className="flex items-center gap-2 text-hero-foreground/40 text-xs">
                 <MapPin className="w-3.5 h-3.5" /><span>{language === 'ar' ? 'عمان' : 'Amman, JO'}</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {[Twitter, Linkedin, Github].map((Icon, i) => (
-                <a key={i} href="#" className="w-8 h-8 bg-primary-foreground/5 rounded-lg flex items-center justify-center hover:bg-primary-foreground/10 transition-colors">
-                  <Icon className="w-4 h-4 text-primary-foreground/40" />
+                <a key={i} href="#" className="w-8 h-8 bg-hero-foreground/5 rounded-lg flex items-center justify-center hover:bg-hero-foreground/10 transition-colors">
+                  <Icon className="w-4 h-4 text-hero-foreground/40" />
                 </a>
               ))}
             </div>
           </div>
 
           <div>
-            <h4 className="font-semibold text-primary-foreground/80 mb-3 text-sm">{t.product}</h4>
+            <h4 className="font-semibold text-hero-foreground/80 mb-3 text-sm">{t.product}</h4>
             <ul className="space-y-2">{productLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
           <div>
-            <h4 className="font-semibold text-primary-foreground/80 mb-3 text-sm">{t.company}</h4>
+            <h4 className="font-semibold text-hero-foreground/80 mb-3 text-sm">{t.company}</h4>
             <ul className="space-y-2">{companyLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
           <div>
-            <h4 className="font-semibold text-primary-foreground/80 mb-3 text-sm">{t.resources}</h4>
+            <h4 className="font-semibold text-hero-foreground/80 mb-3 text-sm">{t.resources}</h4>
             <ul className="space-y-2">{resourceLinks.map(l => <li key={l.label}>{renderLink(l)}</li>)}</ul>
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-primary-foreground/40 text-xs">{t.rights}</p>
-          <div className="flex items-center gap-4 text-xs text-primary-foreground/30">
-            <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.privacy}</a>
-            <a href="#" className="hover:text-primary-foreground/50 transition-colors">{t.terms}</a>
+        <div className="mt-10 pt-6 border-t border-hero-foreground/10 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-hero-foreground/40 text-xs">{t.rights}</p>
+          <div className="flex items-center gap-4 text-xs text-hero-foreground/30">
+            <a href="#" className="hover:text-hero-foreground/50 transition-colors">{t.privacy}</a>
+            <a href="#" className="hover:text-hero-foreground/50 transition-colors">{t.terms}</a>
             <span className="font-semibold tracking-wider text-primary/80">by ZEYAD</span>
           </div>
         </div>

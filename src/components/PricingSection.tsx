@@ -111,22 +111,22 @@ const PricingSection = () => {
               )}
 
               <div className={`w-12 h-12 rounded-xl ${plan.highlighted ? 'bg-primary/20' : 'bg-primary/10'} flex items-center justify-center mb-4`}>
-                <plan.icon className={`w-6 h-6 ${plan.highlighted ? 'text-primary-foreground' : plan.iconColor}`} />
+                <plan.icon className={`w-6 h-6 ${plan.highlighted ? 'text-hero-foreground' : plan.iconColor}`} />
               </div>
 
-              <h3 className={`text-xl font-bold mb-1 ${plan.highlighted ? 'text-primary-foreground' : 'text-foreground'}`}>
+              <h3 className={`text-xl font-bold mb-1 ${plan.highlighted ? 'text-hero-foreground' : 'text-foreground'}`}>
                 {plan.name}
               </h3>
-              <p className={`text-sm mb-4 ${plan.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+              <p className={`text-sm mb-4 ${plan.highlighted ? 'text-hero-foreground/70' : 'text-muted-foreground'}`}>
                 {plan.description}
               </p>
 
               <div className="mb-6">
-                <span className={`text-4xl font-extrabold ${plan.highlighted ? 'text-primary-foreground' : 'text-foreground'}`}>
+                <span className={`text-4xl font-extrabold ${plan.highlighted ? 'text-hero-foreground' : 'text-foreground'}`}>
                   {plan.price}
                 </span>
                 {plan.price !== t.free && plan.price !== t.custom && (
-                  <span className={`text-sm ${plan.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                  <span className={`text-sm ${plan.highlighted ? 'text-hero-foreground/70' : 'text-muted-foreground'}`}>
                     {t.monthly}
                   </span>
                 )}
@@ -136,7 +136,7 @@ const PricingSection = () => {
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2">
                     <Check className={`w-5 h-5 mt-0.5 shrink-0 ${plan.highlighted ? 'text-green-400' : 'text-primary'}`} />
-                    <span className={`text-sm ${plan.highlighted ? 'text-primary-foreground/90' : 'text-foreground/80'}`}>
+                    <span className={`text-sm ${plan.highlighted ? 'text-hero-foreground/90' : 'text-foreground/80'}`}>
                       {feature}
                     </span>
                   </li>
