@@ -64,14 +64,14 @@ const StatsSection = () => {
               }`}
               style={{ transitionDelay: `${index * 150}ms` }}
             >
-              <div className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground mb-2">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-hero-foreground mb-2">
                 <AnimatedNumber 
                   value={stat.value} 
                   suffix={stat.suffix} 
                   isVisible={isVisible} 
                 />
               </div>
-              <p className="text-primary-foreground/70 font-medium">
+              <p className="text-hero-foreground/70 font-medium">
                 {stat.label}
               </p>
             </div>

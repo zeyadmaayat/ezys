@@ -31,18 +31,18 @@ const CTASection = () => {
           </div>
 
           <div className="relative z-10 px-6 py-16 lg:px-16 lg:py-24 text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-primary-foreground mb-6 max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-hero-foreground mb-6 max-w-3xl mx-auto">
               {t.title1}{" "}
               <span className="text-gradient">{t.titleHighlight}</span>
             </h2>
-            <p className="text-lg text-primary-foreground/70 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-hero-foreground/70 mb-8 max-w-2xl mx-auto">
               {t.subtitle}
             </p>
 
             {/* Benefits */}
             <div className="flex flex-wrap items-center justify-center gap-6 mb-10">
               {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-center gap-2 text-primary-foreground/80">
+                <div key={benefit} className="flex items-center gap-2 text-hero-foreground/80">
                   <CheckCircle className="w-5 h-5 text-accent" />
                   <span className="font-medium">{benefit}</span>
                 </div>

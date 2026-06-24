@@ -30,9 +30,9 @@ const HeroSection = () => {
   };
 
   const stats = [
-    { label: t.orders, value: '142', accent: 'text-primary-foreground/70' },
+    { label: t.orders, value: '142', accent: 'text-hero-foreground/70' },
     { label: t.inTransit, value: '38', accent: 'text-orange' },
-    { label: t.delivered, value: '1,847', accent: 'text-primary-foreground/70' },
+    { label: t.delivered, value: '1,847', accent: 'text-hero-foreground/70' },
     { label: t.invoices, value: '$24K', accent: 'text-primary' },
   ];
 
@@ -56,20 +56,20 @@ const HeroSection = () => {
             </div>
 
             <div className="relative">
-              <span className="absolute -top-10 lg:-top-12 left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 text-[80px] lg:text-[120px] font-extrabold text-primary-foreground/[0.04] leading-none select-none pointer-events-none uppercase whitespace-nowrap">
+              <span className="absolute -top-10 lg:-top-12 left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 text-[80px] lg:text-[120px] font-extrabold text-hero-foreground/[0.04] leading-none select-none pointer-events-none uppercase whitespace-nowrap">
                 {t.ghost}
               </span>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight animate-fade-up" style={{ animationDelay: "0.1s" }}>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-hero-foreground leading-[1.1] tracking-tight animate-fade-up" style={{ animationDelay: "0.1s" }}>
                 {t.title1}{" "}
                 <br className="hidden lg:block" />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/70 to-primary-foreground">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-hero-foreground">
                   {t.titleHighlight}
                 </span>
                 {t.title2 && <>{" "}{t.title2}</>}
               </h1>
             </div>
 
-            <p className={`text-lg text-primary-foreground/60 mt-8 max-w-lg leading-relaxed ${isRTL ? 'mr-0 ml-auto lg:ml-0' : 'mx-auto lg:mx-0'} animate-fade-up`} style={{ animationDelay: "0.2s" }}>
+            <p className={`text-lg text-hero-foreground/70 mt-8 max-w-lg leading-relaxed ${isRTL ? 'mr-0 ml-auto lg:ml-0' : 'mx-auto lg:mx-0'} animate-fade-up`} style={{ animationDelay: "0.2s" }}>
               {t.subtitle}
             </p>
 
@@ -83,7 +83,7 @@ const HeroSection = () => {
               </Link>
               <Link
                 to="/logistics-assistant"
-                className="px-8 py-4 bg-primary-foreground/5 hover:bg-primary-foreground/10 text-primary-foreground font-semibold rounded-xl border border-primary-foreground/10 backdrop-blur-sm transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 bg-hero-foreground/5 hover:bg-hero-foreground/10 text-hero-foreground font-semibold rounded-xl border border-hero-foreground/15 backdrop-blur-sm transition-all flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5 text-primary" />
                 {t.watchDemo}
