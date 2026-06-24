@@ -30,9 +30,9 @@ const HeroSection = () => {
   };
 
   const stats = [
-    { label: t.orders, value: '142', accent: 'text-primary-foreground/70' },
+    { label: t.orders, value: '142', accent: 'text-hero-foreground/70' },
     { label: t.inTransit, value: '38', accent: 'text-orange' },
-    { label: t.delivered, value: '1,847', accent: 'text-primary-foreground/70' },
+    { label: t.delivered, value: '1,847', accent: 'text-hero-foreground/70' },
     { label: t.invoices, value: '$24K', accent: 'text-primary' },
   ];
 
