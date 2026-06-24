@@ -67,6 +67,7 @@ export default {
   			},
   			slate: 'hsl(var(--slate))',
   			ice: 'hsl(var(--ice))',
+  			'hero-foreground': 'hsl(var(--hero-foreground))',
   			ezy: {
   				blue: 'hsl(var(--ezy-blue))',
   				'blue-light': 'hsl(var(--ezy-blue-light))',
