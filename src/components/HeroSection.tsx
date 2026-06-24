@@ -56,13 +56,13 @@ const HeroSection = () => {
             </div>
 
             <div className="relative">
-              <span className="absolute -top-10 lg:-top-12 left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 text-[80px] lg:text-[120px] font-extrabold text-primary-foreground/[0.04] leading-none select-none pointer-events-none uppercase whitespace-nowrap">
+              <span className="absolute -top-10 lg:-top-12 left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 text-[80px] lg:text-[120px] font-extrabold text-hero-foreground/[0.04] leading-none select-none pointer-events-none uppercase whitespace-nowrap">
                 {t.ghost}
               </span>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-primary-foreground leading-[1.1] tracking-tight animate-fade-up" style={{ animationDelay: "0.1s" }}>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-hero-foreground leading-[1.1] tracking-tight animate-fade-up" style={{ animationDelay: "0.1s" }}>
                 {t.title1}{" "}
                 <br className="hidden lg:block" />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/70 to-primary-foreground">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-hero-foreground">
                   {t.titleHighlight}
                 </span>
                 {t.title2 && <>{" "}{t.title2}</>}
