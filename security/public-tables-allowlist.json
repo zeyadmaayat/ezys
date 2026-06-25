@@ -1,0 +1,10 @@
+{
+  "$schema": "./public-tables-allowlist.schema.json",
+  "description": "Formal allowlist for the cross-company security CI gate (scripts/check-cross-company-security.mjs). Tables listed here are intentionally PUBLIC / non-tenant-scoped and are excluded from cross-company isolation checks. Prefer this file over scattering `-- cross-company-ok` comments across migrations. Each entry MUST document the reason so reviewers understand why isolation does not apply.",
+  "publicTables": [
+    {
+      "table": "dp_status_transitions",
+      "reason": "Static reference data (valid shipment status transition graph). Same for every company; read-only lookup with no tenant rows."
+    }
+  ]
+}
