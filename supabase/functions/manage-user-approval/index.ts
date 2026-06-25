@@ -62,6 +62,40 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, serviceKey);
 
+    // Company scoping: an admin may only manage users that belong to their
+    // own company. Prevents cross-company approval / privilege escalation.
+    const { data: requesterProfile, error: reqProfileErr } = await adminClient
+      .from("profiles")
+      .select("company_id")
+      .eq("id", requesterId)
+      .maybeSingle();
+
+    const { data: targetProfile, error: targetProfileErr } = await adminClient
+      .from("profiles")
+      .select("company_id")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (reqProfileErr || targetProfileErr || !targetProfile) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const requesterCompany = requesterProfile?.company_id ?? null;
+    const targetCompany = targetProfile?.company_id ?? null;
+
+    // Allow approving brand-new users that have no company yet (pending signups),
+    // otherwise both companies must match.
+    if (targetCompany !== null && targetCompany !== requesterCompany) {
+      return new Response(JSON.stringify({ error: "Cross-company action not allowed" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
     const { error: profileError } = await adminClient
       .from("profiles")
       .update({ is_approved: approved })
