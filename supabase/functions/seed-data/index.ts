@@ -25,10 +25,23 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) throw new Error("Not authenticated");
 
+    // Only company admins may seed demo data.
+    const { data: isAdmin, error: roleError } = await userClient.rpc("has_role", {
+      _user_id: user.id,
+      _role: "admin",
+    });
+    if (roleError || !isAdmin) {
+      return new Response(JSON.stringify({ error: "Admin access required" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { data: profile } = await userClient.from("profiles").select("company_id").eq("id", user.id).single();
     if (!profile?.company_id) throw new Error("No company found");
 
     const companyId = profile.company_id;
+
 
     // Service client for inserts
     const db = createClient(supabaseUrl, serviceKey);
