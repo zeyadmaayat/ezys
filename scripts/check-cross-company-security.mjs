@@ -107,15 +107,21 @@ for (const file of files) {
 
     const snippet = stmt.slice(0, 160).replace(/\s+/g, " ");
 
-    // 1. company_id IS NULL leak.
-    if (/\bcompany_id\s+is\s+null\b/.test(lower)) {
+    // A read-exposing policy is anything that isn't a pure INSERT policy
+    // (SELECT / UPDATE / DELETE / ALL, or no FOR clause = ALL). Allowing
+    // company_id IS NULL in an INSERT WITH CHECK is not a cross-company read leak.
+    const isInsertOnly = /\bfor\s+insert\b/.test(lower);
+
+    // 1. company_id IS NULL leak (read paths only).
+    if (!isInsertOnly && /\bcompany_id\s+is\s+null\b/.test(lower)) {
       violations.push({
         file,
         table,
-        rule: "company_id IS NULL in policy — exposes orphan rows cross-company",
+        rule: "company_id IS NULL in read policy — exposes orphan rows cross-company",
         snippet,
       });
     }
+
 
     // 2. USING (true) / WITH CHECK (true) disables isolation.
     if (/\b(using|with\s+check)\s*\(\s*true\s*\)/.test(lower)) {
