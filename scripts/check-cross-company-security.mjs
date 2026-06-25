@@ -138,6 +138,10 @@ for (const file of files) {
     const table = mentionsTenantTable(stmt);
     if (!table) continue;
 
+    // Formal allowlist: intentionally public tables are exempt from isolation checks.
+    if (PUBLIC_TABLE_ALLOWLIST.has(table.toLowerCase())) continue;
+
+
     const snippet = stmt.slice(0, 160).replace(/\s+/g, " ");
 
     // A read-exposing policy is anything that isn't a pure INSERT policy
