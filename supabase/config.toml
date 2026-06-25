@@ -4,4 +4,4 @@ project_id = "zzwhshjevftnlrcewzas"
 verify_jwt = false
 
 [functions.notify-new-signup]
-verify_jwt = false
+verify_jwt = true
