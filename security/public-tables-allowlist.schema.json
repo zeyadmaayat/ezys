@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cross-company public tables allowlist",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "description": { "type": "string" },
+    "publicTables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "table": { "type": "string", "description": "Table name (without schema prefix)." },
+          "reason": { "type": "string", "description": "Why this table is intentionally public / not tenant-scoped." }
+        },
+        "required": ["table", "reason"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["publicTables"],
+  "additionalProperties": true
+}

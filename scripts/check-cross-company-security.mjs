@@ -21,11 +21,44 @@
  *   2. `USING (true)` / `WITH CHECK (true)` — disables company isolation.
  *   3. FOR SELECT policy whose body never references company/user scoping.
  *
- * Escape hatch: add `-- cross-company-ok` on the statement for an intentional
- * public table.
+ * Escape hatches (two options):
+ *   A. Formal allowlist (preferred): add the table to
+ *      `security/public-tables-allowlist.json` with a documented reason. This
+ *      keeps intentional public tables tracked in one reviewable place.
+ *   B. Inline: add `-- cross-company-ok` on the statement for a one-off.
  */
 import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import { execSync } from "node:child_process";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Load the formal allowlist of intentionally-public tables from
+ * security/public-tables-allowlist.json. Returns a lowercased Set of table names.
+ */
+function loadPublicTableAllowlist() {
+  const path = resolve(__dirname, "..", "security", "public-tables-allowlist.json");
+  if (!existsSync(path)) return new Set();
+  try {
+    const parsed = JSON.parse(readFileSync(path, "utf8"));
+    const entries = Array.isArray(parsed.publicTables) ? parsed.publicTables : [];
+    return new Set(
+      entries
+        .map((e) => (typeof e === "string" ? e : e && e.table))
+        .filter(Boolean)
+        .map((t) => t.toLowerCase())
+    );
+  } catch (err) {
+    console.error(
+      `⚠️  Could not parse security/public-tables-allowlist.json: ${err.message}`
+    );
+    process.exit(1);
+  }
+}
+
+const PUBLIC_TABLE_ALLOWLIST = loadPublicTableAllowlist();
 
 const TENANT_TABLES = [
   "customers",
@@ -105,6 +138,10 @@ for (const file of files) {
     const table = mentionsTenantTable(stmt);
     if (!table) continue;
 
+    // Formal allowlist: intentionally public tables are exempt from isolation checks.
+    if (PUBLIC_TABLE_ALLOWLIST.has(table.toLowerCase())) continue;
+
+
     const snippet = stmt.slice(0, 160).replace(/\s+/g, " ");
 
     // A read-exposing policy is anything that isn't a pure INSERT policy
@@ -163,8 +200,9 @@ if (violations.length > 0) {
   console.error(
     `${violations.length} cross-company risk(s) found in new migrations. Scope the ` +
       `policy by company_id = get_user_company_id(auth.uid()) (drop any ` +
-      `"company_id IS NULL" / "USING (true)"), or annotate the statement with ` +
-      `"-- cross-company-ok" if it is intentionally public.\n`
+      `"company_id IS NULL" / "USING (true)"). If a table is intentionally public, ` +
+      `add it to security/public-tables-allowlist.json with a reason (preferred), ` +
+      `or annotate the statement with "-- cross-company-ok".\n`
   );
   process.exit(1);
 }
