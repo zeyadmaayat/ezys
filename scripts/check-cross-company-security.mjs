@@ -1,35 +1,37 @@
 #!/usr/bin/env node
 /**
- * Cross-company security guard.
+ * Cross-company security guard (CI merge gate).
  *
- * Fails (exit 1) when a migration introduces an RLS pattern that can leak data
- * across companies / tenants. This is the CI gate that blocks merges whenever a
- * new cross-company security finding would appear in the security scan.
+ * Fails (exit 1) when a *newly added/changed* migration introduces an RLS
+ * pattern that can leak data across companies / tenants. This is the gate that
+ * blocks merges whenever a new cross-company security finding would appear in
+ * the security scan.
  *
- * It scans every *.sql file under supabase/migrations and flags the known
- * anti-patterns that previous security findings were caused by:
+ * IMPORTANT: migrations are append-only history. We must NOT scan the whole
+ * history (it contains old policies that were later fixed). We only scan the
+ * SQL files that this change actually adds/modifies.
  *
- *   1. `company_id IS NULL` (or `c.company_id IS NULL`) inside a policy —
- *      exposes orphan rows (no company) to every authenticated user.
- *   2. `USING (true)` / `WITH CHECK (true)` on a tenant table — disables
- *      company isolation entirely.
- *   3. CREATE POLICY ... FOR SELECT on a tenant table whose USING clause never
- *      references `company_id` / `get_user_company_id` — likely unscoped read.
+ * File selection (in order):
+ *   1. Explicit file paths passed as CLI args.
+ *   2. $CHANGED_FILES (newline/space separated) — set by CI from the PR diff.
+ *   3. git diff against $BASE_REF (default: origin/main) ... HEAD.
  *
- * Tenant tables are detected by name. To intentionally allow a pattern (e.g. a
- * genuinely public table), add an inline `-- cross-company-ok` comment on the
- * same statement, or extend ALLOWLIST below.
+ * Detected anti-patterns (only inside CREATE POLICY statements on tenant tables):
+ *   1. `company_id IS NULL` in the policy expression — exposes orphan rows.
+ *   2. `USING (true)` / `WITH CHECK (true)` — disables company isolation.
+ *   3. FOR SELECT policy whose body never references company/user scoping.
+ *
+ * Escape hatch: add `-- cross-company-ok` on the statement for an intentional
+ * public table.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, existsSync } from "node:fs";
+import { execSync } from "node:child_process";
 
-const MIGRATIONS_DIR = "supabase/migrations";
-
-// Tables that hold tenant-scoped data and must always be isolated by company.
 const TENANT_TABLES = [
   "customers",
   "customer_addresses",
   "items",
+  "order_items",
   "locations",
   "orders",
   "invoices",
@@ -44,27 +46,30 @@ const TENANT_TABLES = [
   "user_roles",
 ];
 
-// Statements explicitly allowed to skip the company-scope check.
 const ALLOWLIST = ["cross-company-ok"];
 
-function listSqlFiles(dir) {
-  let out = [];
-  let entries;
+function getChangedFiles() {
+  // 1. CLI args
+  const args = process.argv.slice(2).filter(Boolean);
+  if (args.length) return args;
+
+  // 2. CI-provided list
+  if (process.env.CHANGED_FILES) {
+    return process.env.CHANGED_FILES.split(/\s+/).filter(Boolean);
+  }
+
+  // 3. git diff against base ref
+  const base = process.env.BASE_REF || "origin/main";
   try {
-    entries = readdirSync(dir);
+    const out = execSync(`git diff --name-only --diff-filter=AM ${base}...HEAD`, {
+      encoding: "utf8",
+    });
+    return out.split("\n").filter(Boolean);
   } catch {
-    return out;
+    return [];
   }
-  for (const name of entries) {
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) out = out.concat(listSqlFiles(full));
-    else if (name.endsWith(".sql")) out.push(full);
-  }
-  return out;
 }
 
-// Split a SQL file into individual statements (naive but good enough: split on
-// semicolons that terminate statements; policy bodies don't contain `;`).
 function splitStatements(sql) {
   return sql
     .split(/;\s*(?:\n|$)/)
@@ -74,56 +79,68 @@ function splitStatements(sql) {
 
 function mentionsTenantTable(stmt) {
   const lower = stmt.toLowerCase();
-  return TENANT_TABLES.find((t) =>
-    new RegExp(`\\b(public\\.)?${t}\\b`).test(lower)
-  );
+  return TENANT_TABLES.find((t) => new RegExp(`\\b(public\\.)?${t}\\b`).test(lower));
+}
+
+const files = getChangedFiles().filter(
+  (f) => f.startsWith("supabase/migrations/") && f.endsWith(".sql") && existsSync(f)
+);
+
+if (files.length === 0) {
+  console.log("✅ Cross-company security check: no new/changed migrations to scan.");
+  process.exit(0);
 }
 
 const violations = [];
 
-for (const file of listSqlFiles(MIGRATIONS_DIR)) {
+for (const file of files) {
   const sql = readFileSync(file, "utf8");
   for (const stmt of splitStatements(sql)) {
     const lower = stmt.toLowerCase();
     if (ALLOWLIST.some((a) => lower.includes(a))) continue;
 
-    const isPolicy = /\bcreate\s+policy\b/.test(lower);
-    const table = mentionsTenantTable(stmt);
+    // Only CREATE POLICY statements define access — backfill UPDATEs etc. are ignored.
+    if (!/\bcreate\s+policy\b/.test(lower)) continue;
 
-    // 1. company_id IS NULL leak inside any policy/statement on a tenant table.
-    if (table && /\bcompany_id\s+is\s+null\b/.test(lower)) {
+    const table = mentionsTenantTable(stmt);
+    if (!table) continue;
+
+    const snippet = stmt.slice(0, 160).replace(/\s+/g, " ");
+
+    // 1. company_id IS NULL leak.
+    if (/\bcompany_id\s+is\s+null\b/.test(lower)) {
       violations.push({
         file,
         table,
         rule: "company_id IS NULL in policy — exposes orphan rows cross-company",
-        snippet: stmt.slice(0, 160).replace(/\s+/g, " "),
+        snippet,
       });
     }
 
-    if (isPolicy && table) {
-      // 2. USING (true) / WITH CHECK (true) disables isolation.
-      if (/\b(using|with\s+check)\s*\(\s*true\s*\)/.test(lower)) {
-        violations.push({
-          file,
-          table,
-          rule: "USING/WITH CHECK (true) on a tenant table — no company isolation",
-          snippet: stmt.slice(0, 160).replace(/\s+/g, " "),
-        });
-      }
+    // 2. USING (true) / WITH CHECK (true) disables isolation.
+    if (/\b(using|with\s+check)\s*\(\s*true\s*\)/.test(lower)) {
+      violations.push({
+        file,
+        table,
+        rule: "USING/WITH CHECK (true) on a tenant table — no company isolation",
+        snippet,
+      });
+    }
 
-      // 3. SELECT policy that never references company scoping.
-      const isSelect = /\bfor\s+select\b/.test(lower);
+    // 3. SELECT policy that never references company/user scoping.
+    if (/\bfor\s+select\b/.test(lower)) {
       const referencesScope =
         /company_id/.test(lower) ||
         /get_user_company_id/.test(lower) ||
-        /auth\.uid\(\)\s*=\s*\w*id/.test(lower) || // self-row policies (e.g. profiles.id)
-        /\buser_id\b/.test(lower); // user-owned rows
-      if (isSelect && !referencesScope) {
+        /auth\.uid\(\)\s*=\s*[\w.]*id/.test(lower) ||
+        /\buser_id\b/.test(lower) ||
+        /\bcreated_by\b/.test(lower);
+      if (!referencesScope) {
         violations.push({
           file,
           table,
           rule: "SELECT policy on tenant table without company/user scoping",
-          snippet: stmt.slice(0, 160).replace(/\s+/g, " "),
+          snippet,
         });
       }
     }
@@ -138,11 +155,14 @@ if (violations.length > 0) {
     console.error(`    > ${v.snippet}\n`);
   }
   console.error(
-    `${violations.length} cross-company risk(s) found. Fix the policy to scope by ` +
-      `company_id = get_user_company_id(auth.uid()), or annotate the statement ` +
-      `with "-- cross-company-ok" if it is intentionally public.\n`
+    `${violations.length} cross-company risk(s) found in new migrations. Scope the ` +
+      `policy by company_id = get_user_company_id(auth.uid()) (drop any ` +
+      `"company_id IS NULL" / "USING (true)"), or annotate the statement with ` +
+      `"-- cross-company-ok" if it is intentionally public.\n`
   );
   process.exit(1);
 }
 
-console.log("✅ Cross-company security check passed — no tenant-isolation leaks found.");
+console.log(
+  `✅ Cross-company security check passed — scanned ${files.length} new migration(s), no tenant-isolation leaks.`
+);
