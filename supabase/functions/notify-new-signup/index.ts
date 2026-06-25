@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
 
 const RESEND_API_KEY = (Deno.env.get("RESEND_API_KEY") || "").trim();
 
@@ -41,6 +42,33 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Require an authenticated caller (the freshly signed-up user) so this
+    // endpoint cannot be abused as an open email relay.
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    const callerId = claimsData?.claims?.sub;
+    const callerEmail = (claimsData?.claims?.email || "").toString().toLowerCase();
+
+    if (claimsError || !callerId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const body: SignupNotification = await req.json();
     const rawEmail = (body?.email || "").trim();
     const displayName = (body?.displayName || "").trim();
@@ -57,6 +85,16 @@ const handler = async (req: Request): Promise<Response> => {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
+
+    // The caller may only request a notification for their own account email.
+    if (callerEmail && rawEmail.toLowerCase() !== callerEmail) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+
 
     const safeName = (displayName || rawEmail.split("@")[0]).slice(0, 100);
     const safeEmail = rawEmail.slice(0, 255);
