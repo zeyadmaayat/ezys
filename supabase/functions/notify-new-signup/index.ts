@@ -86,6 +86,16 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    // The caller may only request a notification for their own account email.
+    if (callerEmail && rawEmail.toLowerCase() !== callerEmail) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+
+
     const safeName = (displayName || rawEmail.split("@")[0]).slice(0, 100);
     const safeEmail = rawEmail.slice(0, 255);
     const now = new Date().toLocaleString("en-GB", { timeZone: "Asia/Amman" });
