@@ -1,0 +1,41 @@
+name: Security – Cross-company isolation
+
+# Blocks merges when a NEW migration introduces a cross-company (multi-tenant)
+# data-isolation leak in its RLS policies. Only migrations added/changed in the
+# pull request are scanned — existing history is left alone.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "scripts/check-cross-company-security.mjs"
+      - ".github/workflows/security-cross-company.yml"
+
+jobs:
+  cross-company-check:
+    name: Cross-company isolation check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Determine changed migrations
+        id: changed
+        run: |
+          BASE="origin/${{ github.base_ref }}"
+          git fetch origin "${{ github.base_ref }}" --depth=1 || true
+          FILES=$(git diff --name-only --diff-filter=AM "$BASE...HEAD" -- 'supabase/migrations/**' | tr '\n' ' ')
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+
+      - name: Run cross-company security guard
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: node scripts/check-cross-company-security.mjs
