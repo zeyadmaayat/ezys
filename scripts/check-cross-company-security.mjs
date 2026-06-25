@@ -200,8 +200,9 @@ if (violations.length > 0) {
   console.error(
     `${violations.length} cross-company risk(s) found in new migrations. Scope the ` +
       `policy by company_id = get_user_company_id(auth.uid()) (drop any ` +
-      `"company_id IS NULL" / "USING (true)"), or annotate the statement with ` +
-      `"-- cross-company-ok" if it is intentionally public.\n`
+      `"company_id IS NULL" / "USING (true)"). If a table is intentionally public, ` +
+      `add it to security/public-tables-allowlist.json with a reason (preferred), ` +
+      `or annotate the statement with "-- cross-company-ok".\n`
   );
   process.exit(1);
 }
