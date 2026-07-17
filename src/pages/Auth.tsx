@@ -35,11 +35,17 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
 
+  // Preserve ?next=<same-origin-path> across sign-in/sign-up so OAuth consent
+  // (or any other deep link) returns the user where they came from.
+  const rawNext = new URLSearchParams(location.search).get('next');
+  const safeNext = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : null;
+  const postAuthTarget = safeNext ?? '/saas/dashboard';
+
   useEffect(() => {
     if (user && isLogin && !loading) {
-      navigate('/saas/dashboard', { replace: true });
+      navigate(postAuthTarget, { replace: true });
     }
-  }, [user, isLogin, loading, navigate]);
+  }, [user, isLogin, loading, navigate, postAuthTarget]);
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
@@ -59,7 +65,7 @@ const Auth = () => {
       if (isLogin) {
         const result = await signIn(email, password);
         if (result.error) setGeneralError(result.error);
-        else navigate('/saas/dashboard');
+        else navigate(postAuthTarget);
       } else {
         const result = await signUp(email, password, displayName);
         if (result.error) setGeneralError(result.error);
@@ -87,7 +93,7 @@ const Auth = () => {
           } catch (e) { console.error('Failed to send signup notification:', e); }
 
           await refreshAuth();
-          navigate('/saas/dashboard');
+          navigate(postAuthTarget);
         }
       }
     } finally { setLoading(false); }

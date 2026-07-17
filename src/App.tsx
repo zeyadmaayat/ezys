@@ -28,6 +28,7 @@ const ShipmentDetail = lazy(() => import("./pages/ShipmentDetail"));
 const OpsDashboard = lazy(() => import("./pages/OpsDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AiAssistant = lazy(() => import("./pages/AiAssistant"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 // ERP
 const CustomersPage = lazy(() => import("./pages/erp/Customers"));
@@ -119,6 +120,9 @@ const App = () => (
                 <Route path="/login" element={<Auth />} />
                 <Route path="/signup" element={<Auth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+
+                {/* OAuth consent route (public — handles its own auth redirect) */}
+                <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
                 {/* Protected routes - require authentication */}
                 <Route path="/" element={<Index />} />
