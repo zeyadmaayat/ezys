@@ -169,11 +169,27 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     console.error("Error sending signup notifications:", error);
+    await sendAlert("notify-new-signup", "error", String(error?.message ?? error));
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 };
+
+async function sendAlert(source: string, severity: string, message: string, context: unknown = {}) {
+  try {
+    const secret = Deno.env.get("ALERT_WEBHOOK_SECRET");
+    const url = Deno.env.get("SUPABASE_URL");
+    if (!secret || !url) return;
+    await fetch(`${url}/functions/v1/send-alert`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-alert-secret": secret },
+      body: JSON.stringify({ source, severity, message, context }),
+    });
+  } catch (e) {
+    console.error("alert dispatch failed", e);
+  }
+}
 
 serve(handler);

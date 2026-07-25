@@ -116,9 +116,25 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error("Approval update failed:", error);
+    await sendAlert("manage-user-approval", "error", String(error));
     return new Response(JSON.stringify({ error: "Could not update approval" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+
+async function sendAlert(source: string, severity: string, message: string, context: unknown = {}) {
+  try {
+    const secret = Deno.env.get("ALERT_WEBHOOK_SECRET");
+    const url = Deno.env.get("SUPABASE_URL");
+    if (!secret || !url) return;
+    await fetch(`${url}/functions/v1/send-alert`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-alert-secret": secret },
+      body: JSON.stringify({ source, severity, message, context }),
+    });
+  } catch (e) {
+    console.error("alert dispatch failed", e);
+  }
+}
