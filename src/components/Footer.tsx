@@ -95,8 +95,8 @@ const Footer = () => {
         <div className="mt-10 pt-6 border-t border-hero-foreground/10 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-hero-foreground/40 text-xs">{t.rights}</p>
           <div className="flex items-center gap-4 text-xs text-hero-foreground/30">
-            <a href="#" className="hover:text-hero-foreground/50 transition-colors">{t.privacy}</a>
-            <a href="#" className="hover:text-hero-foreground/50 transition-colors">{t.terms}</a>
+            <Link to="/privacy" className="hover:text-hero-foreground/50 transition-colors">{t.privacy}</Link>
+            <Link to="/terms" className="hover:text-hero-foreground/50 transition-colors">{t.terms}</Link>
             <span className="font-semibold tracking-wider text-primary/80">by ZEYAD</span>
           </div>
         </div>

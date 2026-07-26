@@ -128,6 +128,8 @@ const App = () => (
 
                 {/* Protected routes - require authentication */}
                 <Route path="/" element={<Index />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
                 <Route path="/category/:slug" element={<ProtectedRoute><CategoryDetail /></ProtectedRoute>} />
                 <Route path="/category/:categorySlug/topic/:topicSlug" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
