@@ -29,6 +29,8 @@ const OpsDashboard = lazy(() => import("./pages/OpsDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AiAssistant = lazy(() => import("./pages/AiAssistant"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 
 // ERP
 const CustomersPage = lazy(() => import("./pages/erp/Customers"));
