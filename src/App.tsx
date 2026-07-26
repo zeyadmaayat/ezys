@@ -29,6 +29,8 @@ const OpsDashboard = lazy(() => import("./pages/OpsDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AiAssistant = lazy(() => import("./pages/AiAssistant"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 
 // ERP
 const CustomersPage = lazy(() => import("./pages/erp/Customers"));
@@ -126,6 +128,8 @@ const App = () => (
 
                 {/* Protected routes - require authentication */}
                 <Route path="/" element={<Index />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
                 <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
                 <Route path="/category/:slug" element={<ProtectedRoute><CategoryDetail /></ProtectedRoute>} />
                 <Route path="/category/:categorySlug/topic/:topicSlug" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
