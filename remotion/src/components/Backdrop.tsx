@@ -1,5 +1,5 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
-import { C } from "./theme";
+import { C } from "../theme";
 
 export const Backdrop: React.FC = () => {
   const frame = useCurrentFrame();
