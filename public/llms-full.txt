@@ -1,0 +1,127 @@
+# ezy Logistic HUB (EzySuite) — Full Project Documentation
+
+> A multi-tenant SaaS Logistics ERP built by ZEYAD. Modules: Operations (shipments),
+> Procurement, Inventory/WMS, Sales/CRM, Finance, Domestic Pro (last-mile), plus an
+> AI assistant and an OAuth-protected MCP server.
+> Public site: https://ezys.lovable.app
+
+## 1. Product overview
+
+ezy Logistic HUB is an end-to-end ERP for logistics, procurement, sales and finance
+operations. Every record is isolated per company (`company_id`), access is governed by a
+5-tier role system, and new users require manual admin approval before they can use the
+platform.
+
+Regional defaults: Country `JO` (Jordan), City `Amman`. Currency reporting in JOD.
+Interface: dark navy theme, Notion-style inventory views, Odoo-inspired list/form/kanban
+components. Bilingual (Arabic / English).
+
+## 2. Public pages (no login)
+
+- `/` — marketing landing page: hero, stats, features, pricing, testimonials, FAQ, CTA.
+- `/auth` — sign in / sign up / password reset (supports a `next` redirect param).
+- `/reset-password` — password reset completion.
+- `/privacy` — Privacy Policy (bilingual): data collection, multi-tenant isolation,
+  user rights, retention, Jordanian governing law.
+- `/terms` — Terms of Service (bilingual): subscription, acceptable use, liability limits.
+- `/.lovable/oauth/consent` — OAuth 2.1 consent screen for MCP clients.
+
+## 3. Application modules (login + admin approval required)
+
+### 3.1 Operations / Shipments
+- Dashboard with KPIs, status cards, activity feed, task inbox, analytics charts.
+- Shipment lifecycle: Created → Picked up → In transit → Out for delivery → Delivered.
+- Shipment detail: costs section, tasks section, POD (proof of delivery) upload,
+  documents, alerts, and a shipment creation wizard.
+- Standard ID prefixes across the system: ORD-, INV-, SHP-, REQ-, PO-, GRN-, EXP-.
+
+### 3.2 Procurement (ERP)
+- Requisitions → Purchase Orders → Goods Receipts (GRN) → 3-way matching.
+- Blanket orders, return orders, procurement dashboard, internal messages panel,
+  workflow check screen that validates the end-to-end chain.
+
+### 3.3 Inventory / WMS
+- Inventory dashboard with enterprise KPIs, advanced inventory grid, items, locations.
+- Reorder points, stock transfers, cycle counts, batch/lot/serial and expiry tracking,
+  valuation and barcode support.
+- Notion-style views: list, kanban, calendar, pivot, and form view.
+- AI Vision Scanner: capture a photo of a document, invoice or product with the camera;
+  the `inventory-vision` function identifies the item, quantity and location and returns
+  an Add / Avoid / Put-on-shelf recommendation.
+
+### 3.4 Sales / CRM
+- Leads, pipeline, quotations, orders, customers, products, sales dashboard and reports.
+- Telecom specialization with Orange Jordan plans and pricing.
+
+### 3.5 Finance
+- Expenses, statements, financial reports in JOD, and 3-way match verification.
+
+### 3.6 Domestic Pro (last-mile engine)
+- Scan-driven operations: drivers, zones, shelves, warehouse, shipments,
+  COD settlements, driver risk scores, risk dashboard, governance events.
+
+### 3.7 Administration
+- Company setup, role management, clients, invoices, warehouses, audit log,
+  admin console for user approval.
+
+## 4. Cross-cutting systems
+
+### Unified Action Guard
+Every blocked action opens a small dialog explaining the exact reason: missing
+permission (RBAC), a missing prerequisite (e.g. "add a client first"), or an invalid
+workflow state. Inline `GuardBadge` tooltips show requirements before the click.
+
+### AI Assistant
+- In-app assistant (floating widget + full page) with conversation history.
+- Context-aware: when the user asks about their shipments, orders or invoices, live
+  company data is injected into the prompt.
+- Markdown rendering and PDF export of any conversation.
+- A separate Logistics Assistant handles complex shipping documents and plans, with
+  saved plans and action-plan processing.
+
+### Security model
+- Row-level security on every table, scoped by `company_id` via `get_user_company_id()`.
+- Roles stored in a dedicated `user_roles` table and checked with a `has_role()`
+  security-definer function — never on the profile row.
+- Admin approval funnel: `is_approved = false` by default; the admin receives an email
+  alert on each signup and the applicant receives an acknowledgement email.
+- CI gate (`scripts/check-cross-company-security.mjs` + GitHub Action) blocks migrations
+  that introduce cross-company leaks, with a formal allowlist file for intentionally
+  public tables.
+- Centralized `send-alert` function emails critical backend errors with rate limiting.
+
+## 5. Backend functions
+
+| Function | Purpose |
+| --- | --- |
+| `ai-assistant` | Streaming context-aware chat over company data |
+| `logistics-assistant` | Document-heavy logistics planning assistant |
+| `inventory-vision` | Camera/photo recognition for inventory actions |
+| `manage-user-approval` | Secure admin approval of pending users |
+| `notify-new-signup` | Admin alert + applicant acknowledgement emails |
+| `send-alert` | Central critical-error email dispatch (rate limited) |
+| `seed-data` | Admin-only demo data seeding |
+| `cleanup-staging-users` | Removes staging/test accounts |
+| `mcp` | OAuth-protected MCP server endpoint |
+
+## 6. MCP server (for AI clients)
+
+Endpoint: `https://zzwhshjevftnlrcewzas.supabase.co/functions/v1/mcp`
+Auth: OAuth 2.1 with dynamic client registration. The assistant acts as the signed-in
+user, so all tenant isolation and RBAC still apply.
+
+Tools:
+- `whoami` — verify the connection and return the signed-in user.
+- `list_shipments` — company shipments, optional status filter.
+- `list_orders` — company orders, optional status filter.
+- `list_invoices` — company invoices, optional status filter.
+- `list_clients` — company clients.
+
+Connect it in ChatGPT, Claude Desktop or Cursor to let an AI read the live workspace.
+
+## 7. Technology
+
+React 18 + Vite + TypeScript + Tailwind CSS, shadcn/ui components, React Router,
+TanStack Query. Backend on Lovable Cloud (Postgres, auth, storage, edge functions).
+AI through the Lovable AI Gateway. Deployment via Lovable publish, with an optional
+GitHub Actions workflow for automated builds.

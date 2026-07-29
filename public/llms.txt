@@ -4,10 +4,16 @@
 
 ezy Logistic HUB (EzySuite) is a multi-tenant SaaS ERP focused on logistics, procurement, sales, and finance. The marketing site is public; the application itself requires sign-in.
 
+## Full documentation
+
+- [Complete project documentation](/llms-full.txt): every module, workflow, security rule, backend function, and the MCP server — the best single link to give an AI.
+
 ## Pages
 
 - [Home](/): Product overview, features, pricing, and FAQ.
 - [Sign in / Sign up](/auth): Account access for the SaaS application.
+- [Privacy Policy](/privacy): Data collection, isolation, and user rights.
+- [Terms of Service](/terms): Subscription, acceptable use, liability.
 
 ## Optional
 
