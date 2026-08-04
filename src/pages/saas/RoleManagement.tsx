@@ -95,7 +95,12 @@ export default function RoleManagement() {
             <h1 className="text-2xl font-bold">Role Management</h1>
             <p className="text-muted-foreground">Assign roles and approve new users</p>
           </div>
+          <Button variant="outline" onClick={() => navigate('/saas/field-permissions')}>
+            <Shield className="mr-2 h-4 w-4" />
+            Field permissions
+          </Button>
         </div>
+
 
         {/* Pending Approvals */}
         {pendingUsers.length > 0 && (
