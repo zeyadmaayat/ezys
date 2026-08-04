@@ -449,7 +449,7 @@ export default function InvoicesPage() {
                             {payment.invoice?.invoice_number || '—'}
                           </TableCell>
                           <TableCell className="text-end font-semibold text-green-600">
-                            +{Number(payment.amount).toLocaleString()} {payment.invoice?.currency || 'SAR'}
+                            +<SecureValue entity="payments" field="amount" value={payment.amount} format={(v) => Number(v).toLocaleString()} /> {payment.invoice?.currency || 'SAR'}
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline">{paymentMethodLabels[payment.method]}</Badge>
