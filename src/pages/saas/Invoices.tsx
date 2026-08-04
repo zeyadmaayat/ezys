@@ -25,6 +25,7 @@ import {
 import { format } from 'date-fns';
 import { InvoiceStatusV2, PaymentMethod, SUPPORTED_CURRENCIES } from '@/types/saas-erp';
 import { downloadInvoicePDF } from '@/lib/invoice-pdf';
+import { SecureValue } from '@/components/rbac/FieldGate';
 
 const statusConfig: Record<InvoiceStatusV2, { color: string; icon: typeof FileText }> = {
   Draft: { color: 'bg-muted text-muted-foreground', icon: FileText },
