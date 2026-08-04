@@ -25,6 +25,7 @@ import {
 import { format } from 'date-fns';
 import { InvoiceStatusV2, PaymentMethod, SUPPORTED_CURRENCIES } from '@/types/saas-erp';
 import { downloadInvoicePDF } from '@/lib/invoice-pdf';
+import { SecureValue } from '@/components/rbac/FieldGate';
 
 const statusConfig: Record<InvoiceStatusV2, { color: string; icon: typeof FileText }> = {
   Draft: { color: 'bg-muted text-muted-foreground', icon: FileText },
@@ -353,7 +354,7 @@ export default function InvoicesPage() {
                                 : '—'}
                             </TableCell>
                             <TableCell className="text-end font-semibold">
-                              {Number(invoice.amount).toLocaleString()} <span className="text-xs text-muted-foreground">{invoice.currency || 'SAR'}</span>
+                              <SecureValue entity="invoices" field="amount" value={invoice.amount} format={(v) => Number(v).toLocaleString()} /> <span className="text-xs text-muted-foreground">{invoice.currency || 'SAR'}</span>
                             </TableCell>
                             <TableCell>
                               <Badge className={cfg.color}>{invoice.status}</Badge>
@@ -448,7 +449,7 @@ export default function InvoicesPage() {
                             {payment.invoice?.invoice_number || '—'}
                           </TableCell>
                           <TableCell className="text-end font-semibold text-green-600">
-                            +{Number(payment.amount).toLocaleString()} {payment.invoice?.currency || 'SAR'}
+                            +<SecureValue entity="payments" field="amount" value={payment.amount} format={(v) => Number(v).toLocaleString()} /> {payment.invoice?.currency || 'SAR'}
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline">{paymentMethodLabels[payment.method]}</Badge>
