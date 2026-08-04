@@ -59,6 +59,7 @@ const SaaSClients = lazy(() => import("./pages/saas/Clients"));
 const SaaSWarehouses = lazy(() => import("./pages/saas/Warehouses"));
 const SaaSInvoices = lazy(() => import("./pages/saas/Invoices"));
 const RoleManagement = lazy(() => import("./pages/saas/RoleManagement"));
+const FieldPermissions = lazy(() => import("./pages/saas/FieldPermissions"));
 const AuditLog = lazy(() => import("./pages/saas/AuditLog"));
 
 // Finance
