@@ -176,6 +176,7 @@ const App = () => (
                 <Route path="/finance/three-way-match" element={<ProtectedRoute><ThreeWayMatchPage /></ProtectedRoute>} />
                 <Route path="/finance/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
                 <Route path="/saas/roles" element={<AdminRoute><RoleManagement /></AdminRoute>} />
+                <Route path="/saas/field-permissions" element={<AdminRoute><FieldPermissions /></AdminRoute>} />
                 <Route path="/saas/audit-log" element={<AdminRoute><AuditLog /></AdminRoute>} />
 
                 {/* Domestic Pro Routes */}
