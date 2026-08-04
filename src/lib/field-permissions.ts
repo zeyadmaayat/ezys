@@ -35,6 +35,7 @@ const READ_WIDE: AppRole[] = ['admin', 'operations', 'finance', 'viewer'];
 
 export const FIELD_POLICIES: Record<string, EntityFieldPolicies> = {
   invoices: {
+    amount: { read: READ_WIDE, write: FIN, mask: 'dots', labelEn: 'Invoice amount', labelAr: 'مبلغ الفاتورة' },
     total_amount: { read: READ_WIDE, write: FIN, mask: 'dots', labelEn: 'Total amount', labelAr: 'المبلغ الإجمالي' },
     tax_amount: { read: READ_WIDE, write: FIN, mask: 'dots', labelEn: 'Tax amount', labelAr: 'قيمة الضريبة' },
     discount_amount: { read: FIN, write: FIN, mask: 'dots', labelEn: 'Discount', labelAr: 'الخصم' },
