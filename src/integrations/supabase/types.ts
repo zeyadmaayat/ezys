@@ -3803,6 +3803,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_company_admin_of: { Args: { _owner_id: string }; Returns: boolean }
       is_user_approved: { Args: { _user_id: string }; Returns: boolean }
       log_audit_event: {
         Args: {
