@@ -173,6 +173,48 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[]
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -3663,6 +3705,110 @@ export type Database = {
           },
         ]
       }
+      webhook_deliveries: {
+        Row: {
+          attempt: number
+          company_id: string
+          created_at: string
+          delivered_at: string | null
+          endpoint_id: string
+          error: string | null
+          event_type: string
+          id: string
+          max_attempts: number
+          next_retry_at: string
+          payload: Json
+          response_body: string | null
+          response_status: number | null
+          status: string
+        }
+        Insert: {
+          attempt?: number
+          company_id: string
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id: string
+          error?: string | null
+          event_type: string
+          id?: string
+          max_attempts?: number
+          next_retry_at?: string
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+        }
+        Update: {
+          attempt?: number
+          company_id?: string
+          created_at?: string
+          delivered_at?: string | null
+          endpoint_id?: string
+          error?: string | null
+          event_type?: string
+          id?: string
+          max_attempts?: number
+          next_retry_at?: string
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_endpoints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_endpoints: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          events: string[]
+          failure_count: number
+          id: string
+          is_active: boolean
+          last_delivery_at: string | null
+          secret: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          events?: string[]
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_delivery_at?: string | null
+          secret: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          events?: string[]
+          failure_count?: number
+          id?: string
+          is_active?: boolean
+          last_delivery_at?: string | null
+          secret?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       dp_company_risk_index: {
@@ -3752,6 +3898,10 @@ export type Database = {
       }
     }
     Functions: {
+      create_api_key: {
+        Args: { _name: string; _scopes?: string[] }
+        Returns: Json
+      }
       create_company_and_assign_admin: {
         Args: { _name: string }
         Returns: {
@@ -3786,6 +3936,10 @@ export type Database = {
       dp_scan_inventory: {
         Args: { _barcode: string; _session_id: string }
         Returns: string
+      }
+      enqueue_webhook_event: {
+        Args: { _company_id: string; _event_type: string; _payload: Json }
+        Returns: number
       }
       ensure_signup_request: {
         Args: { _display_name?: string; _email?: string }
