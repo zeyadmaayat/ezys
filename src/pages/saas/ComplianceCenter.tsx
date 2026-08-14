@@ -374,7 +374,7 @@ export default function ComplianceCenter() {
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               <p>{isAr ? '١. تفعيل الدخول الموحّد SAML للمؤسسات.' : '1. Enable SAML single sign-on for enterprises.'}</p>
               <p>{isAr ? '٢. توثيق تجربة استعادة النسخ الاحتياطي.' : '2. Document a backup restore drill.'}</p>
-              <p>{isAr ? '٣. إضافة اختيار منطقة البيانات لكل عميل.' : '3. Add per-customer data residency選 selection.'}</p>
+              <p>{isAr ? '٣. إضافة اختيار منطقة البيانات لكل عميل.' : '3. Add per-customer data residency selection.'}</p>
             </CardContent>
           </Card>
         </div>
