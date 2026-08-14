@@ -52,6 +52,7 @@ const navGroups: NavGroup[] = [
     items: [
       { icon: Shield, labelEn: 'Roles', labelAr: 'الصلاحيات', path: '/saas/roles' },
       { icon: ScrollText, labelEn: 'Audit Log', labelAr: 'سجل المراجعة', path: '/saas/audit-log' },
+      { icon: Building2, labelEn: 'Compliance', labelAr: 'الامتثال', path: '/saas/compliance' },
     ],
   },
 ];
