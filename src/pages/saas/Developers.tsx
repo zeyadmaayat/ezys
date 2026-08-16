@@ -158,6 +158,7 @@ export default function Developers() {
       <Seo
         title="Developer Platform — ezys Logistic HUB"
         description="REST API keys, webhooks with HMAC signatures and automatic retries for the ezys logistics platform."
+        path="/saas/developers"
       />
       <div className="p-4 md:p-6 space-y-5 max-w-6xl">
         <header className="space-y-1">
