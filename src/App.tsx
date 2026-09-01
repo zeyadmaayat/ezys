@@ -62,6 +62,7 @@ const RoleManagement = lazy(() => import("./pages/saas/RoleManagement"));
 const FieldPermissions = lazy(() => import("./pages/saas/FieldPermissions"));
 const AuditLog = lazy(() => import("./pages/saas/AuditLog"));
 const ComplianceCenter = lazy(() => import("./pages/saas/ComplianceCenter"));
+const DevelopersPage = lazy(() => import("./pages/saas/Developers"));
 
 // Finance
 const ExpensesPage = lazy(() => import("./pages/finance/Expenses"));
@@ -180,6 +181,7 @@ const App = () => (
                 <Route path="/saas/field-permissions" element={<AdminRoute><FieldPermissions /></AdminRoute>} />
                 <Route path="/saas/audit-log" element={<AdminRoute><AuditLog /></AdminRoute>} />
                 <Route path="/saas/compliance" element={<AdminRoute><ComplianceCenter /></AdminRoute>} />
+                <Route path="/saas/developers" element={<AdminRoute><DevelopersPage /></AdminRoute>} />
 
                 {/* Domestic Pro Routes */}
                 <Route path="/dp" element={<ProtectedRoute><DpDashboard /></ProtectedRoute>} />

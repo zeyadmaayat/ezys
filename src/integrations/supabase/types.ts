@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -3763,6 +3763,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      webhook_dispatch_secrets: {
+        Row: {
+          created_at: string
+          id: string
+          secret: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          secret: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          secret?: string
+        }
+        Relationships: []
       }
       webhook_endpoints: {
         Row: {
