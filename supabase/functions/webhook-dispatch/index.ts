@@ -38,12 +38,24 @@ Deno.serve(async (req) => {
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
 
+  // --- Resolve dispatcher secret (env var or latest row in secure config table) ---
+  let dispatchSecret = DISPATCH_SECRET;
+  if (!dispatchSecret) {
+    const { data: secretRow } = await admin
+      .from("webhook_dispatch_secrets")
+      .select("secret")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    dispatchSecret = secretRow?.secret ?? null;
+  }
+
   // --- Authorization ---
   const providedSecret = req.headers.get("x-dispatch-secret");
   let authorized = false;
   let scopedCompany: string | null = null;
 
-  if (DISPATCH_SECRET && providedSecret === DISPATCH_SECRET) {
+  if (dispatchSecret && providedSecret === dispatchSecret) {
     authorized = true;
   } else {
     const authHeader = req.headers.get("authorization") ?? "";

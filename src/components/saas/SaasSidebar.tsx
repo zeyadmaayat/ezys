@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   Building2, Users, Warehouse, Package, FileText, Shield,
-  ScrollText, BarChart3, ChevronLeft, ChevronRight, Settings, Sparkles,
+  ScrollText, BarChart3, ChevronLeft, ChevronRight, Settings, Sparkles, Code2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -53,6 +53,7 @@ const navGroups: NavGroup[] = [
       { icon: Shield, labelEn: 'Roles', labelAr: 'الصلاحيات', path: '/saas/roles' },
       { icon: ScrollText, labelEn: 'Audit Log', labelAr: 'سجل المراجعة', path: '/saas/audit-log' },
       { icon: Building2, labelEn: 'Compliance', labelAr: 'الامتثال', path: '/saas/compliance' },
+      { icon: Code2, labelEn: 'Developers', labelAr: 'المطورون', path: '/saas/developers' },
     ],
   },
 ];
