@@ -1,14 +1,6 @@
-declare const process: { env: Record<string, string | undefined> };
-import { createClient } from "@supabase/supabase-js";
-import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
+import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-
-function db(ctx: ToolContext) {
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
+import { supabaseForUser } from "../supabase";
 
 export default defineTool({
   name: "list_shipments",
@@ -24,8 +16,7 @@ export default defineTool({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = db(ctx);
-    let q = supabase
+    let q = supabaseForUser(ctx)
       .from("shipments_v2")
       .select("id,tracking_number,status,origin,destination,created_at")
       .order("created_at", { ascending: false })
