@@ -3,7 +3,11 @@ import listShipments from "./tools/list-shipments";
 import listOrders from "./tools/list-orders";
 import listInvoices from "./tools/list-invoices";
 import listClients from "./tools/list-clients";
+import listInventory from "./tools/list-inventory";
+import listPurchaseOrders from "./tools/list-purchase-orders";
+import listExpenses from "./tools/list-expenses";
 import whoami from "./tools/whoami";
+
 
 // Build the OAuth issuer from the project ref (Vite inlines this at build
 // time). The fallback keeps the entry evaluable during manifest extraction.
