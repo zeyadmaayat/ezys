@@ -18,10 +18,20 @@ export default defineMcp({
   title: "ezy Logistic HUB",
   version: "0.1.0",
   instructions:
-    "Tools for ezy Logistic HUB (Logistics ERP). Query the signed-in user's company data: shipments, orders, invoices, clients. All tools respect company isolation and RBAC via row-level security.",
+    "Tools for ezy Logistic HUB (Logistics ERP). Query the signed-in user's company data: shipments, orders, invoices, clients, inventory, purchase orders and expenses. All tools respect company isolation and RBAC via row-level security.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [whoami, listShipments, listOrders, listInvoices, listClients],
+  tools: [
+    whoami,
+    listShipments,
+    listOrders,
+    listInvoices,
+    listClients,
+    listInventory,
+    listPurchaseOrders,
+    listExpenses,
+  ],
 });
+

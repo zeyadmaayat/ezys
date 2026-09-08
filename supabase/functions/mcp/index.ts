@@ -158,9 +158,91 @@ var list_clients_default = defineTool4({
   }
 });
 
-// src/lib/mcp/tools/whoami.ts
+// src/lib/mcp/tools/list-inventory.ts
 import { defineTool as defineTool5 } from "npm:@lovable.dev/mcp-js@0.23.0";
-var whoami_default = defineTool5({
+import { z as z5 } from "npm:zod@^4.4.3";
+var list_inventory_default = defineTool5({
+  name: "list_inventory",
+  title: "List inventory",
+  description: "List the signed-in user's company inventory items with quantities. Optionally only items at or below their reorder point.",
+  inputSchema: {
+    low_stock_only: z5.boolean().optional().describe("If true, only return items at or below the reorder point."),
+    limit: z5.number().int().min(1).max(200).optional().describe("Max rows to return. Default 50.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ low_stock_only, limit }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const { data, error } = await supabaseForUser(ctx).from("inventory").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    const rows = data ?? [];
+    const filtered = low_stock_only ? rows.filter((r) => {
+      const qty = Number(r.quantity ?? r.quantity_on_hand ?? 0);
+      const reorder = Number(r.reorder_point ?? r.reorder_level ?? 0);
+      return reorder > 0 && qty <= reorder;
+    }) : rows;
+    return {
+      content: [{ type: "text", text: JSON.stringify(filtered, null, 2) }],
+      structuredContent: { items: filtered, count: filtered.length }
+    };
+  }
+});
+
+// src/lib/mcp/tools/list-purchase-orders.ts
+import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z6 } from "npm:zod@^4.4.3";
+var list_purchase_orders_default = defineTool6({
+  name: "list_purchase_orders",
+  title: "List purchase orders",
+  description: "List the signed-in user's company purchase orders, most recent first. Optionally filter by status.",
+  inputSchema: {
+    status: z6.string().optional().describe("Optional purchase order status filter (e.g. 'draft', 'approved')."),
+    limit: z6.number().int().min(1).max(100).optional().describe("Max rows to return. Default 20.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ status, limit }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    let q = supabaseForUser(ctx).from("purchase_orders").select("*").order("created_at", { ascending: false }).limit(limit ?? 20);
+    if (status) q = q.eq("status", status);
+    const { data, error } = await q;
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    return {
+      content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+      structuredContent: { purchase_orders: data ?? [] }
+    };
+  }
+});
+
+// src/lib/mcp/tools/list-expenses.ts
+import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z7 } from "npm:zod@^4.4.3";
+var list_expenses_default = defineTool7({
+  name: "list_expenses",
+  title: "List expenses",
+  description: "List the signed-in user's company expenses, most recent first.",
+  inputSchema: {
+    limit: z7.number().int().min(1).max(200).optional().describe("Max rows to return. Default 50.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ limit }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const { data, error } = await supabaseForUser(ctx).from("expenses").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    return {
+      content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+      structuredContent: { expenses: data ?? [] }
+    };
+  }
+});
+
+// src/lib/mcp/tools/whoami.ts
+import { defineTool as defineTool8 } from "npm:@lovable.dev/mcp-js@0.23.0";
+var whoami_default = defineTool8({
   name: "whoami",
   title: "Who am I",
   description: "Return the signed-in user's id and email, useful to verify the MCP connection.",
@@ -184,12 +266,21 @@ var mcp_default = defineMcp({
   name: "ezy-logistic-hub-mcp",
   title: "ezy Logistic HUB",
   version: "0.1.0",
-  instructions: "Tools for ezy Logistic HUB (Logistics ERP). Query the signed-in user's company data: shipments, orders, invoices, clients. All tools respect company isolation and RBAC via row-level security.",
+  instructions: "Tools for ezy Logistic HUB (Logistics ERP). Query the signed-in user's company data: shipments, orders, invoices, clients, inventory, purchase orders and expenses. All tools respect company isolation and RBAC via row-level security.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  tools: [whoami_default, list_shipments_default, list_orders_default, list_invoices_default, list_clients_default]
+  tools: [
+    whoami_default,
+    list_shipments_default,
+    list_orders_default,
+    list_invoices_default,
+    list_clients_default,
+    list_inventory_default,
+    list_purchase_orders_default,
+    list_expenses_default
+  ]
 });
 
 // lovable-mcp-supabase-entry.ts

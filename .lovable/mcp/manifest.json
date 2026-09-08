@@ -135,6 +135,83 @@
           }
         },
         "outputSchema": null
+      },
+      {
+        "name": "list_inventory",
+        "title": "List inventory",
+        "description": "List the signed-in user's company inventory items with quantities. Optionally only items at or below their reorder point.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "low_stock_only": {
+              "description": "If true, only return items at or below the reorder point.",
+              "type": "boolean"
+            },
+            "limit": {
+              "description": "Max rows to return. Default 50.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_purchase_orders",
+        "title": "List purchase orders",
+        "description": "List the signed-in user's company purchase orders, most recent first. Optionally filter by status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Optional purchase order status filter (e.g. 'draft', 'approved').",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Max rows to return. Default 20.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_expenses",
+        "title": "List expenses",
+        "description": "List the signed-in user's company expenses, most recent first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Max rows to return. Default 50.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
       }
     ]
   }
