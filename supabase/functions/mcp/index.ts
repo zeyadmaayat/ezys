@@ -6,15 +6,56 @@
 import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.23.0";
 
 // src/lib/mcp/tools/list-shipments.ts
-import { createClient } from "npm:@supabase/supabase-js@^2.89.0";
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z } from "npm:zod@^4.4.3";
-function db(ctx) {
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
+
+// src/lib/mcp/supabase.ts
+import { createClient } from "npm:@supabase/supabase-js@^2.89.0";
+function runtimeEnv(name) {
+  const runtime = globalThis;
+  return runtime.Deno?.env?.get?.(name) ?? runtime.process?.env?.[name];
+}
+function configuredEnv(names) {
+  for (const name of names) {
+    const value = runtimeEnv(name)?.trim();
+    if (value) return value;
+  }
+  return void 0;
+}
+function supabaseProjectUrl() {
+  const url = configuredEnv(["SUPABASE_URL", "VITE_SUPABASE_URL"]);
+  if (!url) throw new Error("SUPABASE_URL (or VITE_SUPABASE_URL) is required");
+  return url;
+}
+function supabasePublishableKey() {
+  const direct = configuredEnv(["SUPABASE_PUBLISHABLE_KEY", "VITE_SUPABASE_PUBLISHABLE_KEY"]);
+  if (direct) return direct;
+  const keyset = runtimeEnv("SUPABASE_PUBLISHABLE_KEYS");
+  if (keyset) {
+    try {
+      const parsed = JSON.parse(keyset);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        const keys = parsed;
+        const key = [keys.default, ...Object.values(keys)].find((v) => typeof v === "string" && v.trim().startsWith("sb_publishable_"))?.trim();
+        if (key) return key;
+      }
+    } catch {
+    }
+  }
+  const legacy = configuredEnv(["SUPABASE_ANON_KEY", "VITE_SUPABASE_ANON_KEY"]);
+  if (legacy) return legacy;
+  throw new Error("SUPABASE_PUBLISHABLE_KEY, SUPABASE_PUBLISHABLE_KEYS, or SUPABASE_ANON_KEY is required");
+}
+function supabaseForUser(ctx) {
+  const token = ctx.getToken();
+  if (!token) throw new Error("supabaseForUser requires a verified OAuth token");
+  return createClient(supabaseProjectUrl(), supabasePublishableKey(), {
+    global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
 }
+
+// src/lib/mcp/tools/list-shipments.ts
 var list_shipments_default = defineTool({
   name: "list_shipments",
   title: "List shipments",
@@ -28,8 +69,7 @@ var list_shipments_default = defineTool({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const supabase = db(ctx);
-    let q = supabase.from("shipments_v2").select("id,tracking_number,status,origin,destination,created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
+    let q = supabaseForUser(ctx).from("shipments_v2").select("id,tracking_number,status,origin,destination,created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
     if (status) q = q.eq("status", status);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -41,15 +81,8 @@ var list_shipments_default = defineTool({
 });
 
 // src/lib/mcp/tools/list-orders.ts
-import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.89.0";
 import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z2 } from "npm:zod@^4.4.3";
-function db2(ctx) {
-  return createClient2(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var list_orders_default = defineTool2({
   name: "list_orders",
   title: "List orders",
@@ -63,7 +96,7 @@ var list_orders_default = defineTool2({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    let q = db2(ctx).from("orders").select("id,order_number,status,total_amount,created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
+    let q = supabaseForUser(ctx).from("orders").select("id,order_number,status,total_amount,created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
     if (status) q = q.eq("status", status);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -75,15 +108,8 @@ var list_orders_default = defineTool2({
 });
 
 // src/lib/mcp/tools/list-invoices.ts
-import { createClient as createClient3 } from "npm:@supabase/supabase-js@^2.89.0";
 import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z3 } from "npm:zod@^4.4.3";
-function db3(ctx) {
-  return createClient3(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var list_invoices_default = defineTool3({
   name: "list_invoices",
   title: "List invoices",
@@ -97,7 +123,7 @@ var list_invoices_default = defineTool3({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    let q = db3(ctx).from("invoices_v2").select("id,invoice_number,status,amount,currency,due_date,created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
+    let q = supabaseForUser(ctx).from("invoices_v2").select("id,invoice_number,status,amount,currency,due_date,created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
     if (status) q = q.eq("status", status);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -109,15 +135,8 @@ var list_invoices_default = defineTool3({
 });
 
 // src/lib/mcp/tools/list-clients.ts
-import { createClient as createClient4 } from "npm:@supabase/supabase-js@^2.89.0";
 import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z4 } from "npm:zod@^4.4.3";
-function db4(ctx) {
-  return createClient4(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var list_clients_default = defineTool4({
   name: "list_clients",
   title: "List clients",
@@ -130,7 +149,7 @@ var list_clients_default = defineTool4({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
-    const { data, error } = await db4(ctx).from("clients").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
+    const { data, error } = await supabaseForUser(ctx).from("clients").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {
       content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
@@ -139,9 +158,91 @@ var list_clients_default = defineTool4({
   }
 });
 
-// src/lib/mcp/tools/whoami.ts
+// src/lib/mcp/tools/list-inventory.ts
 import { defineTool as defineTool5 } from "npm:@lovable.dev/mcp-js@0.23.0";
-var whoami_default = defineTool5({
+import { z as z5 } from "npm:zod@^4.4.3";
+var list_inventory_default = defineTool5({
+  name: "list_inventory",
+  title: "List inventory",
+  description: "List the signed-in user's company inventory items with quantities. Optionally only items at or below their reorder point.",
+  inputSchema: {
+    low_stock_only: z5.boolean().optional().describe("If true, only return items at or below the reorder point."),
+    limit: z5.number().int().min(1).max(200).optional().describe("Max rows to return. Default 50.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ low_stock_only, limit }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const { data, error } = await supabaseForUser(ctx).from("inventory").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    const rows = data ?? [];
+    const filtered = low_stock_only ? rows.filter((r) => {
+      const qty = Number(r.quantity ?? r.quantity_on_hand ?? 0);
+      const reorder = Number(r.reorder_point ?? r.reorder_level ?? 0);
+      return reorder > 0 && qty <= reorder;
+    }) : rows;
+    return {
+      content: [{ type: "text", text: JSON.stringify(filtered, null, 2) }],
+      structuredContent: { items: filtered, count: filtered.length }
+    };
+  }
+});
+
+// src/lib/mcp/tools/list-purchase-orders.ts
+import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z6 } from "npm:zod@^4.4.3";
+var list_purchase_orders_default = defineTool6({
+  name: "list_purchase_orders",
+  title: "List purchase orders",
+  description: "List the signed-in user's company purchase orders, most recent first. Optionally filter by status.",
+  inputSchema: {
+    status: z6.string().optional().describe("Optional purchase order status filter (e.g. 'draft', 'approved')."),
+    limit: z6.number().int().min(1).max(100).optional().describe("Max rows to return. Default 20.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ status, limit }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    let q = supabaseForUser(ctx).from("purchase_orders").select("*").order("created_at", { ascending: false }).limit(limit ?? 20);
+    if (status) q = q.eq("status", status);
+    const { data, error } = await q;
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    return {
+      content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+      structuredContent: { purchase_orders: data ?? [] }
+    };
+  }
+});
+
+// src/lib/mcp/tools/list-expenses.ts
+import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z7 } from "npm:zod@^4.4.3";
+var list_expenses_default = defineTool7({
+  name: "list_expenses",
+  title: "List expenses",
+  description: "List the signed-in user's company expenses, most recent first.",
+  inputSchema: {
+    limit: z7.number().int().min(1).max(200).optional().describe("Max rows to return. Default 50.")
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ limit }, ctx) => {
+    if (!ctx.isAuthenticated()) {
+      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    }
+    const { data, error } = await supabaseForUser(ctx).from("expenses").select("*").order("created_at", { ascending: false }).limit(limit ?? 50);
+    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    return {
+      content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
+      structuredContent: { expenses: data ?? [] }
+    };
+  }
+});
+
+// src/lib/mcp/tools/whoami.ts
+import { defineTool as defineTool8 } from "npm:@lovable.dev/mcp-js@0.23.0";
+var whoami_default = defineTool8({
   name: "whoami",
   title: "Who am I",
   description: "Return the signed-in user's id and email, useful to verify the MCP connection.",
@@ -165,12 +266,21 @@ var mcp_default = defineMcp({
   name: "ezy-logistic-hub-mcp",
   title: "ezy Logistic HUB",
   version: "0.1.0",
-  instructions: "Tools for ezy Logistic HUB (Logistics ERP). Query the signed-in user's company data: shipments, orders, invoices, clients. All tools respect company isolation and RBAC via row-level security.",
+  instructions: "Tools for ezy Logistic HUB (Logistics ERP). Query the signed-in user's company data: shipments, orders, invoices, clients, inventory, purchase orders and expenses. All tools respect company isolation and RBAC via row-level security.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  tools: [whoami_default, list_shipments_default, list_orders_default, list_invoices_default, list_clients_default]
+  tools: [
+    whoami_default,
+    list_shipments_default,
+    list_orders_default,
+    list_invoices_default,
+    list_clients_default,
+    list_inventory_default,
+    list_purchase_orders_default,
+    list_expenses_default
+  ]
 });
 
 // lovable-mcp-supabase-entry.ts
