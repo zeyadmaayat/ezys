@@ -22,34 +22,11 @@ const TopicDetail = lazy(() => import("./pages/TopicDetail"));
 const Search = lazy(() => import("./pages/Search"));
 const Tools = lazy(() => import("./pages/Tools"));
 const Admin = lazy(() => import("./pages/Admin"));
-const LogisticsAssistant = lazy(() => import("./pages/LogisticsAssistant"));
-const MyShipments = lazy(() => import("./pages/MyShipments"));
-const ShipmentDetail = lazy(() => import("./pages/ShipmentDetail"));
-const OpsDashboard = lazy(() => import("./pages/OpsDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AiAssistant = lazy(() => import("./pages/AiAssistant"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
-
-// ERP
-const CustomersPage = lazy(() => import("./pages/erp/Customers"));
-const LocationsPage = lazy(() => import("./pages/erp/Locations"));
-const ItemsPage = lazy(() => import("./pages/erp/Items"));
-const OrdersPage = lazy(() => import("./pages/erp/Orders"));
-const InventoryPage = lazy(() => import("./pages/erp/Inventory"));
-const InventoryDashboard = lazy(() => import("./pages/erp/InventoryDashboard"));
-const InventoryAdvanced = lazy(() => import("./pages/erp/InventoryAdvanced"));
-const InvoicesPage = lazy(() => import("./pages/erp/Invoices"));
-const WorkflowCheckPage = lazy(() => import("./pages/erp/WorkflowCheck"));
-const RequisitionsPage = lazy(() => import("./pages/erp/Requisitions"));
-const PurchaseOrdersPage = lazy(() => import("./pages/erp/PurchaseOrders"));
-const ProcurementDashboard = lazy(() => import("./pages/erp/ProcurementDashboard"));
-const ReturnOrdersPage = lazy(() => import("./pages/erp/ReturnOrders"));
-const BlanketOrdersPage = lazy(() => import("./pages/erp/BlanketOrders"));
-const GoodsReceiptsPage = lazy(() => import("./pages/erp/GoodsReceipts"));
-const GoodsReceiptNewPage = lazy(() => import("./pages/erp/GoodsReceiptNew"));
-const GoodsReceiptDetailPage = lazy(() => import("./pages/erp/GoodsReceiptDetail"));
 
 // SaaS
 const CompanySetup = lazy(() => import("./pages/saas/CompanySetup"));
@@ -69,25 +46,6 @@ const ExpensesPage = lazy(() => import("./pages/finance/Expenses"));
 const ReportsPage = lazy(() => import("./pages/finance/Reports"));
 const ThreeWayMatchPage = lazy(() => import("./pages/finance/ThreeWayMatch"));
 const StatementsPage = lazy(() => import("./pages/finance/Statements"));
-
-// Domestic Pro
-const DpDashboard = lazy(() => import("./pages/dp/Dashboard"));
-const DpShipments = lazy(() => import("./pages/dp/Shipments"));
-const DpDrivers = lazy(() => import("./pages/dp/Drivers"));
-const DpWarehouse = lazy(() => import("./pages/dp/Warehouse"));
-const DpInventoryPage = lazy(() => import("./pages/dp/Inventory"));
-const DpCodSettlements = lazy(() => import("./pages/dp/CodSettlements"));
-const DpRiskDashboard = lazy(() => import("./pages/dp/RiskDashboard"));
-
-// Sales / CRM
-const SalesDashboard = lazy(() => import("./pages/sales/Dashboard"));
-const SalesLeads = lazy(() => import("./pages/sales/Leads"));
-const SalesPipeline = lazy(() => import("./pages/sales/Pipeline"));
-const SalesQuotations = lazy(() => import("./pages/sales/Quotations"));
-const SalesOrders = lazy(() => import("./pages/sales/Orders"));
-const SalesCustomers = lazy(() => import("./pages/sales/Customers"));
-const SalesProducts = lazy(() => import("./pages/sales/Products"));
-const SalesReports = lazy(() => import("./pages/sales/Reports"));
 
 // Floating widget — keep eager (small, used everywhere)
 import { AiAssistantFloating } from "@/components/ai/AiAssistantFloating";

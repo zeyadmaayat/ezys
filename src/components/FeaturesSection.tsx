@@ -24,7 +24,7 @@ const FeaturesSection = () => {
         ? 'أنشئ وتتبع الطلبات من البداية إلى النهاية مع سير عمل آلي وتحديثات فورية.'
         : 'Create and track orders from start to finish with automated workflows and real-time status updates.',
       color: "bg-primary/10 text-primary",
-      link: "/erp/orders",
+      link: "/saas/shipments",
     },
     {
       icon: Truck,
@@ -42,7 +42,7 @@ const FeaturesSection = () => {
         ? 'راقب مستويات المخزون عبر المستودعات مع تتبع الحركة وتحسين المخزون.'
         : 'Monitor stock levels across warehouses with movement tracking and stock optimization.',
       color: "bg-purple-500/10 text-purple-500",
-      link: "/erp/inventory",
+      link: "/saas/warehouses",
     },
     {
       icon: FileText,

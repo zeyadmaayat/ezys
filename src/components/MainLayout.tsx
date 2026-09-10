@@ -62,14 +62,13 @@ const modules: TopNavModule[] = [
     labelEn: 'Operations',
     labelAr: 'العمليات',
     icon: Truck,
-    pathPrefix: ['/saas/shipments', '/erp/orders', '/saas/dashboard', '/dashboard'],
+    pathPrefix: ['/saas/shipments', '/saas/dashboard'],
     groups: [
       {
         titleEn: 'Shipments',
         titleAr: 'الشحنات',
         items: [
           { icon: Truck, labelEn: 'Shipments', labelAr: 'الشحنات', path: '/saas/shipments' },
-          { icon: ShoppingCart, labelEn: 'Orders', labelAr: 'الطلبات', path: '/erp/orders' },
         ],
       },
       {
@@ -77,100 +76,23 @@ const modules: TopNavModule[] = [
         titleAr: 'لوحات التحكم',
         items: [
           { icon: BarChart3, labelEn: 'Dashboard', labelAr: 'لوحة القيادة', path: '/saas/dashboard' },
-          { icon: ClipboardList, labelEn: 'Ops Center', labelAr: 'مركز العمليات', path: '/dashboard' },
-        ],
-      },
-    ],
-  },
-  {
-    key: 'dp',
-    labelEn: 'Domestic Pro',
-    labelAr: 'التوصيل المحلي',
-    icon: Package,
-    pathPrefix: ['/dp'],
-    groups: [
-      {
-        titleEn: 'Shipments',
-        titleAr: 'الشحنات',
-        items: [
-          { icon: BarChart3, labelEn: 'Dashboard', labelAr: 'لوحة القيادة', path: '/dp' },
-          { icon: Truck, labelEn: 'Shipments', labelAr: 'الشحنات', path: '/dp/shipments' },
-          { icon: Users, labelEn: 'Drivers', labelAr: 'السائقين', path: '/dp/drivers' },
-        ],
-      },
-      {
-        titleEn: 'Warehouse & Finance',
-        titleAr: 'المستودع والمالية',
-        items: [
-          { icon: Warehouse, labelEn: 'Warehouse', labelAr: 'المستودع', path: '/dp/warehouse' },
-          { icon: ScanBarcode, labelEn: 'Inventory Audit', labelAr: 'الجرد', path: '/dp/inventory' },
-          { icon: DollarSign, labelEn: 'COD Settlements', labelAr: 'تسويات COD', path: '/dp/cod' },
-        ],
-      },
-      {
-        titleEn: 'Governance',
-        titleAr: 'الحوكمة',
-        items: [
-          { icon: Shield, labelEn: 'Risk & Governance', labelAr: 'المخاطر', path: '/dp/risk' },
-        ],
-      },
-    ],
-  },
-  {
-    key: 'procurement',
-    labelEn: 'Procurement',
-    labelAr: 'المشتريات',
-    icon: ShoppingCart,
-    pathPrefix: ['/erp/procurement', '/erp/requisitions', '/erp/purchase-orders', '/erp/return-orders', '/erp/blanket-orders', '/erp/receipts'],
-    groups: [
-      {
-        titleEn: 'Overview',
-        titleAr: 'نظرة عامة',
-        items: [
-          { icon: BarChart3, labelEn: 'Dashboard', labelAr: 'لوحة المشتريات', path: '/erp/procurement' },
-        ],
-      },
-      {
-        titleEn: 'Purchase Cycle',
-        titleAr: 'دورة الشراء',
-        items: [
-          { icon: FileText, labelEn: 'Requisitions (PR)', labelAr: 'طلبات الشراء', path: '/erp/requisitions' },
-          { icon: ShoppingCart, labelEn: 'Purchase Orders (PO)', labelAr: 'أوامر الشراء', path: '/erp/purchase-orders' },
-          { icon: PackageCheck, labelEn: 'Receiving (GRN)', labelAr: 'استلام البضائع', path: '/erp/receipts' },
-        ],
-      },
-      {
-        titleEn: 'Returns & Contracts',
-        titleAr: 'الإرجاعات والعقود',
-        items: [
-          { icon: RotateCcw, labelEn: 'Return to Vendor', labelAr: 'إرجاع للمورد', path: '/erp/return-orders' },
-          { icon: RefreshCw, labelEn: 'Blanket Orders', labelAr: 'عقود التوريد', path: '/erp/blanket-orders' },
         ],
       },
     ],
   },
   {
     key: 'data',
-    labelEn: 'Inventory',
-    labelAr: 'المخزون',
+    labelEn: 'Master Data',
+    labelAr: 'البيانات',
     icon: Layers,
-    pathPrefix: ['/saas/clients', '/saas/warehouses', '/erp/locations', '/erp/items', '/erp/inventory', '/erp/customers'],
+    pathPrefix: ['/saas/clients', '/saas/warehouses'],
     groups: [
       {
-        titleEn: 'Clients & Vendors',
-        titleAr: 'العملاء والموردين',
+        titleEn: 'Clients & Warehouses',
+        titleAr: 'العملاء والمستودعات',
         items: [
           { icon: Users, labelEn: 'Clients', labelAr: 'العملاء', path: '/saas/clients' },
-        ],
-      },
-      {
-        titleEn: 'Inventory & Items',
-        titleAr: 'المخزون والمنتجات',
-        items: [
           { icon: Building2, labelEn: 'Warehouses', labelAr: 'المستودعات', path: '/saas/warehouses' },
-          { icon: MapPin, labelEn: 'Locations', labelAr: 'المواقع', path: '/erp/locations' },
-          { icon: Boxes, labelEn: 'Items/SKUs', labelAr: 'المنتجات', path: '/erp/items' },
-          { icon: Package, labelEn: 'Inventory', labelAr: 'المخزون', path: '/erp/inventory' },
         ],
       },
     ],
@@ -202,52 +124,11 @@ const modules: TopNavModule[] = [
     ],
   },
   {
-    key: 'sales',
-    labelEn: 'Sales',
-    labelAr: 'المبيعات',
-    icon: Handshake,
-    pathPrefix: ['/sales'],
-    groups: [
-      {
-        titleEn: 'Overview',
-        titleAr: 'نظرة عامة',
-        items: [
-          { icon: BarChart3, labelEn: 'Dashboard', labelAr: 'لوحة المبيعات', path: '/sales/dashboard' },
-        ],
-      },
-      {
-        titleEn: 'CRM',
-        titleAr: 'إدارة العملاء',
-        items: [
-          { icon: Target, labelEn: 'Leads', labelAr: 'العملاء المحتملين', path: '/sales/leads' },
-          { icon: TrendingUp, labelEn: 'Pipeline', labelAr: 'خط الأنابيب', path: '/sales/pipeline' },
-          { icon: Users, labelEn: 'Customers', labelAr: 'العملاء', path: '/sales/customers' },
-        ],
-      },
-      {
-        titleEn: 'Catalog & Documents',
-        titleAr: 'الكتالوج والمستندات',
-        items: [
-          { icon: Package, labelEn: 'Products', labelAr: 'المنتجات', path: '/sales/products' },
-          { icon: FileText, labelEn: 'Quotations', labelAr: 'عروض الأسعار', path: '/sales/quotations' },
-          { icon: ShoppingCart, labelEn: 'Sales Orders', labelAr: 'أوامر البيع', path: '/sales/orders' },
-        ],
-      },
-      {
-        titleEn: 'Analytics',
-        titleAr: 'التحليلات',
-        items: [
-          { icon: PieIcon, labelEn: 'Reports', labelAr: 'التقارير', path: '/sales/reports' },
-        ],
-      },
-    ],
-  },
-  {
     key: 'training',
     labelEn: 'Training',
     labelAr: 'التدريب',
     icon: GraduationCap,
-    pathPrefix: ['/categories', '/tools', '/logistics-assistant', '/shipments'],
+    pathPrefix: ['/categories', '/tools'],
     groups: [
       {
         titleEn: 'Learning',
@@ -255,14 +136,6 @@ const modules: TopNavModule[] = [
         items: [
           { icon: BookOpen, labelEn: 'Categories', labelAr: 'الفئات', path: '/categories' },
           { icon: PlayCircle, labelEn: 'Training Tools', labelAr: 'أدوات التدريب', path: '/tools' },
-        ],
-      },
-      {
-        titleEn: 'AI Assistant',
-        titleAr: 'المساعد الذكي',
-        items: [
-          { icon: Bot, labelEn: 'Logistics Assistant', labelAr: 'المساعد اللوجستي', path: '/logistics-assistant' },
-          { icon: Truck, labelEn: 'My Shipments', labelAr: 'شحناتي', path: '/shipments' },
         ],
       },
     ],
