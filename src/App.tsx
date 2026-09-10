@@ -96,33 +96,8 @@ const App = () => (
                 <Route path="/category/:categorySlug/topic/:topicSlug" element={<ProtectedRoute><TopicDetail /></ProtectedRoute>} />
                 <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
                 <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
-                <Route path="/logistics-assistant" element={<ProtectedRoute><LogisticsAssistant /></ProtectedRoute>} />
-                <Route path="/shipments" element={<ProtectedRoute><MyShipments /></ProtectedRoute>} />
-                <Route path="/shipments/:id" element={<ProtectedRoute><ShipmentDetail /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><OpsDashboard /></ProtectedRoute>} />
                 <Route path="/ai" element={<ProtectedRoute><AiAssistant /></ProtectedRoute>} />
 
-                {/* ERP Module Routes */}
-                <Route path="/erp/customers" element={<ProtectedRoute><CustomersPage /></ProtectedRoute>} />
-                <Route path="/erp/locations" element={<ProtectedRoute><LocationsPage /></ProtectedRoute>} />
-                <Route path="/erp/items" element={<ProtectedRoute><ItemsPage /></ProtectedRoute>} />
-                <Route path="/erp/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-                <Route path="/erp/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-                <Route path="/erp/inventory/dashboard" element={<ProtectedRoute><InventoryDashboard /></ProtectedRoute>} />
-                <Route path="/erp/inventory/transfers" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
-                <Route path="/erp/inventory/cycle-count" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
-                <Route path="/erp/inventory/reorder" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
-                <Route path="/erp/inventory/batches" element={<ProtectedRoute><InventoryAdvanced /></ProtectedRoute>} />
-                <Route path="/erp/invoices" element={<ProtectedRoute><InvoicesPage /></ProtectedRoute>} />
-                <Route path="/erp/workflow-check" element={<ProtectedRoute><WorkflowCheckPage /></ProtectedRoute>} />
-                <Route path="/erp/procurement" element={<ProtectedRoute><ProcurementDashboard /></ProtectedRoute>} />
-                <Route path="/erp/requisitions" element={<ProtectedRoute><RequisitionsPage /></ProtectedRoute>} />
-                <Route path="/erp/purchase-orders" element={<ProtectedRoute><PurchaseOrdersPage /></ProtectedRoute>} />
-                <Route path="/erp/return-orders" element={<ProtectedRoute><ReturnOrdersPage /></ProtectedRoute>} />
-                <Route path="/erp/blanket-orders" element={<ProtectedRoute><BlanketOrdersPage /></ProtectedRoute>} />
-                <Route path="/erp/receipts" element={<ProtectedRoute><GoodsReceiptsPage /></ProtectedRoute>} />
-                <Route path="/erp/receipts/new" element={<ProtectedRoute><GoodsReceiptNewPage /></ProtectedRoute>} />
-                <Route path="/erp/receipts/:id" element={<ProtectedRoute><GoodsReceiptDetailPage /></ProtectedRoute>} />
 
                 {/* SaaS ERP Routes */}
                 <Route path="/saas/setup" element={<ProtectedRoute><CompanySetup /></ProtectedRoute>} />
