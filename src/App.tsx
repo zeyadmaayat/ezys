@@ -116,25 +116,6 @@ const App = () => (
                 <Route path="/saas/compliance" element={<AdminRoute><ComplianceCenter /></AdminRoute>} />
                 <Route path="/saas/developers" element={<AdminRoute><DevelopersPage /></AdminRoute>} />
 
-                {/* Domestic Pro Routes */}
-                <Route path="/dp" element={<ProtectedRoute><DpDashboard /></ProtectedRoute>} />
-                <Route path="/dp/shipments" element={<ProtectedRoute><DpShipments /></ProtectedRoute>} />
-                <Route path="/dp/drivers" element={<ProtectedRoute><DpDrivers /></ProtectedRoute>} />
-                <Route path="/dp/warehouse" element={<ProtectedRoute><DpWarehouse /></ProtectedRoute>} />
-                <Route path="/dp/inventory" element={<ProtectedRoute><DpInventoryPage /></ProtectedRoute>} />
-                <Route path="/dp/cod" element={<ProtectedRoute><DpCodSettlements /></ProtectedRoute>} />
-                <Route path="/dp/risk" element={<ProtectedRoute><DpRiskDashboard /></ProtectedRoute>} />
-
-                {/* Sales / CRM Routes */}
-                <Route path="/sales/dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
-                <Route path="/sales/products" element={<ProtectedRoute><SalesProducts /></ProtectedRoute>} />
-                <Route path="/sales/leads" element={<ProtectedRoute><SalesLeads /></ProtectedRoute>} />
-                <Route path="/sales/pipeline" element={<ProtectedRoute><SalesPipeline /></ProtectedRoute>} />
-                <Route path="/sales/quotations" element={<ProtectedRoute><SalesQuotations /></ProtectedRoute>} />
-                <Route path="/sales/orders" element={<ProtectedRoute><SalesOrders /></ProtectedRoute>} />
-                <Route path="/sales/customers" element={<ProtectedRoute><SalesCustomers /></ProtectedRoute>} />
-                <Route path="/sales/reports" element={<ProtectedRoute><SalesReports /></ProtectedRoute>} />
-
                 {/* Admin routes - require admin role */}
                 <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
 
