@@ -8,7 +8,9 @@ import {
   TEST_USER_ID,
 } from '@/test/supabaseMock';
 
-const mock = createSupabaseMock();
+const mock = vi.hoisted(() => ({ ref: null as any }));
+const supabaseMock = createSupabaseMock();
+mock.ref = supabaseMock;
 
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: mock.supabase,

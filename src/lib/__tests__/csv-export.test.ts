@@ -60,7 +60,7 @@ describe('exportToCSV', () => {
     const csv = captureCsv([
       { tracking_number: 'SHP-2', amount: null, client: null },
     ]);
-    expect(csv.split('\n')[1]).toBe('"SHP-2","",""');
+    expect(csv.split("\n")[1]).toBe(String.raw`"SHP-2",,`);
   });
 
   it('escapes embedded double quotes', () => {
