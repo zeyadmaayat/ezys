@@ -1,16 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import {
-  createSupabaseMock,
   testCompany,
   TEST_COMPANY_ID,
   OTHER_COMPANY_ID,
   TEST_USER_ID,
 } from '@/test/supabaseMock';
 
-const mock = vi.hoisted(() => ({ ref: null as any }));
-const supabaseMock = createSupabaseMock();
-mock.ref = supabaseMock;
+const mock = await vi.hoisted(
+  async () => (await import('@/test/supabaseMock')).createSupabaseMock(),
+);
 
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: mock.supabase,
