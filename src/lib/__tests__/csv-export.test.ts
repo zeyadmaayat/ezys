@@ -13,32 +13,40 @@ const columns: ExportColumn<Row>[] = [
   { key: 'client.name', header: 'Client' },
 ];
 
-function captureCsv(rows: Row[]): string {
-  let captured = '';
-  const blobSpy = vi
-    .spyOn(globalThis, 'Blob')
-    .mockImplementation(((parts: string[]) => {
-      captured = parts.join('');
-      return { size: 0, type: 'text/csv' } as unknown as Blob;
-    }) as unknown as typeof Blob);
+const RealBlob = globalThis.Blob;
+let captured = '';
 
-  exportToCSV(rows, columns, 'shipments');
-  blobSpy.mockRestore();
+/** Replace Blob so we can read the CSV text the exporter builds. */
+function stubBlob() {
+  captured = '';
+  class FakeBlob {
+    constructor(parts: unknown[] = []) {
+      captured = parts.map(String).join('');
+    }
+  }
+  globalThis.Blob = FakeBlob as unknown as typeof Blob;
+}
+
+function captureCsv(rows: Row[], cols: ExportColumn<Row>[] = columns): string {
+  exportToCSV(rows, cols, 'shipments');
   return captured.replace('\ufeff', '');
 }
 
 describe('exportToCSV', () => {
   beforeEach(() => {
+    stubBlob();
     URL.createObjectURL = vi.fn(() => 'blob:mock');
     URL.revokeObjectURL = vi.fn();
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
   });
 
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    globalThis.Blob = RealBlob;
+    vi.restoreAllMocks();
+  });
 
   it('writes a quoted header row from the column definitions', () => {
-    const csv = captureCsv([]);
-    expect(csv).toBe('"Tracking","Amount","Client"');
+    expect(captureCsv([])).toBe('"Tracking","Amount","Client"');
   });
 
   it('resolves nested keys with dot notation', () => {
@@ -63,24 +71,18 @@ describe('exportToCSV', () => {
   });
 
   it('applies a custom column formatter', () => {
-    let captured = '';
-    vi.spyOn(globalThis, 'Blob').mockImplementation(((parts: string[]) => {
-      captured = parts.join('');
-      return {} as Blob;
-    }) as unknown as typeof Blob);
-
-    exportToCSV(
+    const csv = captureCsv(
       [{ tracking_number: 'SHP-4', amount: 50, client: null }],
       [{ key: 'amount', header: 'Amount', format: (v) => `${v} JOD` }],
-      'invoices',
     );
-    expect(captured).toContain('"50 JOD"');
+    expect(csv).toContain('"50 JOD"');
   });
 
   it('names the file with the given prefix and current date', () => {
     const anchor = document.createElement('a');
     const createSpy = vi.spyOn(document, 'createElement').mockReturnValue(anchor);
-    vi.spyOn(globalThis, 'Blob').mockImplementation((() => ({}) as Blob) as unknown as typeof Blob);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(((n: Node) => n) as never);
+    vi.spyOn(document.body, 'removeChild').mockImplementation(((n: Node) => n) as never);
 
     exportToCSV([], columns, 'invoices');
     createSpy.mockRestore();
