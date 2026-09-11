@@ -15,8 +15,13 @@ vi.mock('@/integrations/supabase/client', () => ({
   supabase: mock.supabase,
 }));
 
-const authState = { user: { id: TEST_USER_ID } as { id: string } | null };
-const companyState = { company: testCompany as typeof testCompany | null };
+const { authState, companyState } = await vi.hoisted(async () => {
+  const m = await import('@/test/supabaseMock');
+  return {
+    authState: { user: { id: m.TEST_USER_ID } as { id: string } | null },
+    companyState: { company: m.testCompany as typeof m.testCompany | null },
+  };
+});
 
 vi.mock('@/contexts/AuthContext', () => ({ useAuth: () => authState }));
 vi.mock('@/hooks/useCompany', () => ({ useCompany: () => companyState }));
