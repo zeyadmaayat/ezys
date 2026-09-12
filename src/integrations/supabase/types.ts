@@ -1472,6 +1472,130 @@ export type Database = {
           },
         ]
       }
+      fleet_drivers: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          license_expiry: string | null
+          license_number: string | null
+          notes: string | null
+          phone: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean
+          license_expiry?: string | null
+          license_number?: string | null
+          notes?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          license_expiry?: string | null
+          license_number?: string | null
+          notes?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_drivers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleet_vehicles: {
+        Row: {
+          capacity_kg: number | null
+          capacity_m3: number | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          insurance_expiry: string | null
+          is_active: boolean
+          make_model: string | null
+          notes: string | null
+          odometer_km: number | null
+          plate_number: string
+          registration_expiry: string | null
+          status: string
+          updated_at: string
+          vehicle_type: string
+        }
+        Insert: {
+          capacity_kg?: number | null
+          capacity_m3?: number | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          insurance_expiry?: string | null
+          is_active?: boolean
+          make_model?: string | null
+          notes?: string | null
+          odometer_km?: number | null
+          plate_number: string
+          registration_expiry?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_type?: string
+        }
+        Update: {
+          capacity_kg?: number | null
+          capacity_m3?: number | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          insurance_expiry?: string | null
+          is_active?: boolean
+          make_model?: string | null
+          notes?: string | null
+          odometer_km?: number | null
+          plate_number?: string
+          registration_expiry?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleet_vehicles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goods_receipt_lines: {
         Row: {
           created_at: string
@@ -3265,6 +3389,66 @@ export type Database = {
           },
         ]
       }
+      shipment_events: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          event_type: string
+          id: string
+          is_public: boolean
+          latitude: number | null
+          location_text: string | null
+          longitude: number | null
+          shipment_id: string
+          status: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          event_type?: string
+          id?: string
+          is_public?: boolean
+          latitude?: number | null
+          location_text?: string | null
+          longitude?: number | null
+          shipment_id: string
+          status?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          event_type?: string
+          id?: string
+          is_public?: boolean
+          latitude?: number | null
+          location_text?: string | null
+          longitude?: number | null
+          shipment_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipment_events_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipment_plans: {
         Row: {
           created_at: string
@@ -3297,6 +3481,57 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      shipment_positions: {
+        Row: {
+          company_id: string
+          heading: number | null
+          id: string
+          latitude: number
+          longitude: number
+          recorded_at: string
+          shipment_id: string
+          source: string
+          speed_kmh: number | null
+        }
+        Insert: {
+          company_id: string
+          heading?: number | null
+          id?: string
+          latitude: number
+          longitude: number
+          recorded_at?: string
+          shipment_id: string
+          source?: string
+          speed_kmh?: number | null
+        }
+        Update: {
+          company_id?: string
+          heading?: number | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          recorded_at?: string
+          shipment_id?: string
+          source?: string
+          speed_kmh?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_positions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipment_positions_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shipment_tasks: {
         Row: {
@@ -3434,14 +3669,24 @@ export type Database = {
           company_id: string
           created_at: string
           created_by: string | null
+          current_lat: number | null
+          current_lng: number | null
           destination: string
+          destination_lat: number | null
+          destination_lng: number | null
+          driver_id: string | null
+          eta: string | null
           expected_delivery: string | null
           id: string
+          last_position_at: string | null
           notes: string | null
           origin: string
+          origin_lat: number | null
+          origin_lng: number | null
           status: Database["public"]["Enums"]["shipment_status_v2"]
           tracking_number: string | null
           updated_at: string
+          vehicle_id: string | null
           warehouse_id: string | null
         }
         Insert: {
@@ -3450,14 +3695,24 @@ export type Database = {
           company_id: string
           created_at?: string
           created_by?: string | null
+          current_lat?: number | null
+          current_lng?: number | null
           destination: string
+          destination_lat?: number | null
+          destination_lng?: number | null
+          driver_id?: string | null
+          eta?: string | null
           expected_delivery?: string | null
           id?: string
+          last_position_at?: string | null
           notes?: string | null
           origin: string
+          origin_lat?: number | null
+          origin_lng?: number | null
           status?: Database["public"]["Enums"]["shipment_status_v2"]
           tracking_number?: string | null
           updated_at?: string
+          vehicle_id?: string | null
           warehouse_id?: string | null
         }
         Update: {
@@ -3466,14 +3721,24 @@ export type Database = {
           company_id?: string
           created_at?: string
           created_by?: string | null
+          current_lat?: number | null
+          current_lng?: number | null
           destination?: string
+          destination_lat?: number | null
+          destination_lng?: number | null
+          driver_id?: string | null
+          eta?: string | null
           expected_delivery?: string | null
           id?: string
+          last_position_at?: string | null
           notes?: string | null
           origin?: string
+          origin_lat?: number | null
+          origin_lng?: number | null
           status?: Database["public"]["Enums"]["shipment_status_v2"]
           tracking_number?: string | null
           updated_at?: string
+          vehicle_id?: string | null
           warehouse_id?: string | null
         }
         Relationships: [
@@ -3489,6 +3754,20 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_v2_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_v2_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_vehicles"
             referencedColumns: ["id"]
           },
           {
@@ -3658,41 +3937,177 @@ export type Database = {
         }
         Relationships: []
       }
-      warehouses: {
+      warehouse_bins: {
         Row: {
-          address_line1: string | null
-          city: string | null
+          bin_type: string | null
+          capacity_units: number | null
+          code: string
           company_id: string
-          country: string | null
           created_at: string
           id: string
           is_active: boolean
+          occupied_units: number
+          updated_at: string
+          warehouse_id: string
+          zone_id: string | null
+        }
+        Insert: {
+          bin_type?: string | null
+          capacity_units?: number | null
+          code: string
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          occupied_units?: number
+          updated_at?: string
+          warehouse_id: string
+          zone_id?: string | null
+        }
+        Update: {
+          bin_type?: string | null
+          capacity_units?: number | null
+          code?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          occupied_units?: number
+          updated_at?: string
+          warehouse_id?: string
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warehouse_bins_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warehouse_bins_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warehouse_bins_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      warehouse_zones: {
+        Row: {
+          code: string
+          company_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string | null
+          updated_at: string
+          warehouse_id: string
+          zone_type: string | null
+        }
+        Insert: {
+          code: string
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          updated_at?: string
+          warehouse_id: string
+          zone_type?: string | null
+        }
+        Update: {
+          code?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          updated_at?: string
+          warehouse_id?: string
+          zone_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warehouse_zones_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warehouse_zones_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      warehouses: {
+        Row: {
+          address_line1: string | null
+          capacity_m3: number | null
+          city: string | null
+          company_id: string
+          contact_name: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string
+          hub_type: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
           location: string | null
+          longitude: number | null
           name: string
+          operating_hours: Json | null
           updated_at: string
         }
         Insert: {
           address_line1?: string | null
+          capacity_m3?: number | null
           city?: string | null
           company_id: string
+          contact_name?: string | null
+          contact_phone?: string | null
           country?: string | null
           created_at?: string
+          hub_type?: string | null
           id?: string
           is_active?: boolean
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           name: string
+          operating_hours?: Json | null
           updated_at?: string
         }
         Update: {
           address_line1?: string | null
+          capacity_m3?: number | null
           city?: string | null
           company_id?: string
+          contact_name?: string | null
+          contact_phone?: string | null
           country?: string | null
           created_at?: string
+          hub_type?: string | null
           id?: string
           is_active?: boolean
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           name?: string
+          operating_hours?: Json | null
           updated_at?: string
         }
         Relationships: [
