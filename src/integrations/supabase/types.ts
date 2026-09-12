@@ -433,6 +433,108 @@ export type Database = {
           },
         ]
       }
+      carrier_sync_log: {
+        Row: {
+          carrier_id: string | null
+          company_id: string
+          created_at: string
+          http_status: number | null
+          id: string
+          message: string | null
+          shipment_id: string | null
+          success: boolean
+        }
+        Insert: {
+          carrier_id?: string | null
+          company_id: string
+          created_at?: string
+          http_status?: number | null
+          id?: string
+          message?: string | null
+          shipment_id?: string | null
+          success?: boolean
+        }
+        Update: {
+          carrier_id?: string | null
+          company_id?: string
+          created_at?: string
+          http_status?: number | null
+          id?: string
+          message?: string | null
+          shipment_id?: string | null
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carrier_sync_log_carrier_id_fkey"
+            columns: ["carrier_id"]
+            isOneToOne: false
+            referencedRelation: "carriers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carrier_sync_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carrier_sync_log_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carriers: {
+        Row: {
+          account_number: string | null
+          code: string
+          company_id: string
+          created_at: string
+          credential_secret_name: string | null
+          display_name: string
+          id: string
+          is_enabled: boolean
+          tracking_url_template: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_number?: string | null
+          code: string
+          company_id: string
+          created_at?: string
+          credential_secret_name?: string | null
+          display_name: string
+          id?: string
+          is_enabled?: boolean
+          tracking_url_template?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string | null
+          code?: string
+          company_id?: string
+          created_at?: string
+          credential_secret_name?: string | null
+          display_name?: string
+          id?: string
+          is_enabled?: boolean
+          tracking_url_template?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carriers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -1596,6 +1698,44 @@ export type Database = {
           },
         ]
       }
+      freight_zones: {
+        Row: {
+          cities: string[]
+          company_id: string
+          country: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          cities?: string[]
+          company_id: string
+          country?: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          cities?: string[]
+          company_id?: string
+          country?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freight_zones_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       goods_receipt_lines: {
         Row: {
           created_at: string
@@ -1770,30 +1910,46 @@ export type Database = {
       }
       inventory: {
         Row: {
+          bin_id: string | null
+          company_id: string | null
           id: string
           item_id: string
           location_id: string
           quantity: number
           reserved_quantity: number
           updated_at: string
+          warehouse_id: string | null
         }
         Insert: {
+          bin_id?: string | null
+          company_id?: string | null
           id?: string
           item_id: string
           location_id: string
           quantity?: number
           reserved_quantity?: number
           updated_at?: string
+          warehouse_id?: string | null
         }
         Update: {
+          bin_id?: string | null
+          company_id?: string | null
           id?: string
           item_id?: string
           location_id?: string
           quantity?: number
           reserved_quantity?: number
           updated_at?: string
+          warehouse_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "inventory_bin_id_fkey"
+            columns: ["bin_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse_bins"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "inventory_item_id_fkey"
             columns: ["item_id"]
@@ -1806,6 +1962,13 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
             referencedColumns: ["id"]
           },
         ]
@@ -2863,6 +3026,145 @@ export type Database = {
           },
         ]
       }
+      rate_cards: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          effective_from: string
+          effective_to: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          volumetric_divisor: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          volumetric_divisor?: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          volumetric_divisor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_cards_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_rules: {
+        Row: {
+          base_price: number
+          company_id: string
+          created_at: string
+          destination_zone_id: string | null
+          fuel_surcharge_pct: number
+          id: string
+          max_distance_km: number | null
+          max_weight_kg: number | null
+          min_charge: number
+          min_distance_km: number
+          min_weight_kg: number
+          origin_zone_id: string | null
+          price_per_kg: number
+          price_per_km: number
+          rate_card_id: string
+          service_level: string
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          company_id: string
+          created_at?: string
+          destination_zone_id?: string | null
+          fuel_surcharge_pct?: number
+          id?: string
+          max_distance_km?: number | null
+          max_weight_kg?: number | null
+          min_charge?: number
+          min_distance_km?: number
+          min_weight_kg?: number
+          origin_zone_id?: string | null
+          price_per_kg?: number
+          price_per_km?: number
+          rate_card_id: string
+          service_level?: string
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          company_id?: string
+          created_at?: string
+          destination_zone_id?: string | null
+          fuel_surcharge_pct?: number
+          id?: string
+          max_distance_km?: number | null
+          max_weight_kg?: number | null
+          min_charge?: number
+          min_distance_km?: number
+          min_weight_kg?: number
+          origin_zone_id?: string | null
+          price_per_kg?: number
+          price_per_km?: number
+          rate_card_id?: string
+          service_level?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_rules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rate_rules_destination_zone_id_fkey"
+            columns: ["destination_zone_id"]
+            isOneToOne: false
+            referencedRelation: "freight_zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rate_rules_origin_zone_id_fkey"
+            columns: ["origin_zone_id"]
+            isOneToOne: false
+            referencedRelation: "freight_zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rate_rules_rate_card_id_fkey"
+            columns: ["rate_card_id"]
+            isOneToOne: false
+            referencedRelation: "rate_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       requisition_lines: {
         Row: {
           created_at: string
@@ -3019,6 +3321,159 @@ export type Database = {
             columns: ["vendor_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      route_stops: {
+        Row: {
+          actual_arrival: string | null
+          company_id: string
+          created_at: string
+          distance_from_prev_km: number | null
+          id: string
+          label: string | null
+          latitude: number | null
+          longitude: number | null
+          planned_arrival: string | null
+          route_id: string
+          sequence: number
+          shipment_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_arrival?: string | null
+          company_id: string
+          created_at?: string
+          distance_from_prev_km?: number | null
+          id?: string
+          label?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          planned_arrival?: string | null
+          route_id: string
+          sequence?: number
+          shipment_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_arrival?: string | null
+          company_id?: string
+          created_at?: string
+          distance_from_prev_km?: number | null
+          id?: string
+          label?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          planned_arrival?: string | null
+          route_id?: string
+          sequence?: number
+          shipment_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_stops_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_stops_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "route_stops_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routes: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          driver_id: string | null
+          id: string
+          name: string
+          notes: string | null
+          route_date: string
+          start_warehouse_id: string | null
+          status: string
+          total_distance_km: number | null
+          total_duration_min: number | null
+          updated_at: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          driver_id?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          route_date?: string
+          start_warehouse_id?: string | null
+          status?: string
+          total_distance_km?: number | null
+          total_duration_min?: number | null
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          driver_id?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          route_date?: string
+          start_warehouse_id?: string | null
+          status?: string
+          total_distance_km?: number | null
+          total_duration_min?: number | null
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routes_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routes_start_warehouse_id_fkey"
+            columns: ["start_warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routes_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "fleet_vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -3665,6 +4120,10 @@ export type Database = {
       shipments_v2: {
         Row: {
           actual_delivery: string | null
+          carrier_id: string | null
+          carrier_last_status: string | null
+          carrier_last_synced_at: string | null
+          carrier_tracking_number: string | null
           client_id: string | null
           company_id: string
           created_at: string
@@ -3674,6 +4133,7 @@ export type Database = {
           destination: string
           destination_lat: number | null
           destination_lng: number | null
+          distance_km: number | null
           driver_id: string | null
           eta: string | null
           expected_delivery: string | null
@@ -3683,14 +4143,23 @@ export type Database = {
           origin: string
           origin_lat: number | null
           origin_lng: number | null
+          quoted_cost: number | null
+          quoted_currency: string | null
+          service_level: string | null
           status: Database["public"]["Enums"]["shipment_status_v2"]
           tracking_number: string | null
           updated_at: string
           vehicle_id: string | null
+          volume_m3: number | null
           warehouse_id: string | null
+          weight_kg: number | null
         }
         Insert: {
           actual_delivery?: string | null
+          carrier_id?: string | null
+          carrier_last_status?: string | null
+          carrier_last_synced_at?: string | null
+          carrier_tracking_number?: string | null
           client_id?: string | null
           company_id: string
           created_at?: string
@@ -3700,6 +4169,7 @@ export type Database = {
           destination: string
           destination_lat?: number | null
           destination_lng?: number | null
+          distance_km?: number | null
           driver_id?: string | null
           eta?: string | null
           expected_delivery?: string | null
@@ -3709,14 +4179,23 @@ export type Database = {
           origin: string
           origin_lat?: number | null
           origin_lng?: number | null
+          quoted_cost?: number | null
+          quoted_currency?: string | null
+          service_level?: string | null
           status?: Database["public"]["Enums"]["shipment_status_v2"]
           tracking_number?: string | null
           updated_at?: string
           vehicle_id?: string | null
+          volume_m3?: number | null
           warehouse_id?: string | null
+          weight_kg?: number | null
         }
         Update: {
           actual_delivery?: string | null
+          carrier_id?: string | null
+          carrier_last_status?: string | null
+          carrier_last_synced_at?: string | null
+          carrier_tracking_number?: string | null
           client_id?: string | null
           company_id?: string
           created_at?: string
@@ -3726,6 +4205,7 @@ export type Database = {
           destination?: string
           destination_lat?: number | null
           destination_lng?: number | null
+          distance_km?: number | null
           driver_id?: string | null
           eta?: string | null
           expected_delivery?: string | null
@@ -3735,13 +4215,25 @@ export type Database = {
           origin?: string
           origin_lat?: number | null
           origin_lng?: number | null
+          quoted_cost?: number | null
+          quoted_currency?: string | null
+          service_level?: string | null
           status?: Database["public"]["Enums"]["shipment_status_v2"]
           tracking_number?: string | null
           updated_at?: string
           vehicle_id?: string | null
+          volume_m3?: number | null
           warehouse_id?: string | null
+          weight_kg?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "shipments_v2_carrier_id_fkey"
+            columns: ["carrier_id"]
+            isOneToOne: false
+            referencedRelation: "carriers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "shipments_v2_client_id_fkey"
             columns: ["client_id"]
@@ -3772,6 +4264,152 @@ export type Database = {
           },
           {
             foreignKeyName: "shipments_v2_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_alert_rules: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          item_id: string | null
+          min_quantity: number
+          reorder_quantity: number | null
+          updated_at: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          item_id?: string | null
+          min_quantity?: number
+          reorder_quantity?: number | null
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          item_id?: string | null
+          min_quantity?: number
+          reorder_quantity?: number | null
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_alert_rules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_alert_rules_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_alert_rules_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_movements: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          from_bin_id: string | null
+          id: string
+          item_id: string | null
+          notes: string | null
+          quantity: number
+          reason: string
+          shipment_id: string | null
+          to_bin_id: string | null
+          warehouse_id: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          from_bin_id?: string | null
+          id?: string
+          item_id?: string | null
+          notes?: string | null
+          quantity: number
+          reason?: string
+          shipment_id?: string | null
+          to_bin_id?: string | null
+          warehouse_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          from_bin_id?: string | null
+          id?: string
+          item_id?: string | null
+          notes?: string | null
+          quantity?: number
+          reason?: string
+          shipment_id?: string | null
+          to_bin_id?: string | null
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_from_bin_id_fkey"
+            columns: ["from_bin_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse_bins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_to_bin_id_fkey"
+            columns: ["to_bin_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse_bins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_warehouse_id_fkey"
             columns: ["warehouse_id"]
             isOneToOne: false
             referencedRelation: "warehouses"
@@ -3828,6 +4466,54 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracking_tokens: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          revoked: boolean
+          shipment_id: string
+          token: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          revoked?: boolean
+          shipment_id: string
+          token: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          revoked?: boolean
+          shipment_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_tokens_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracking_tokens_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments_v2"
             referencedColumns: ["id"]
           },
         ]
