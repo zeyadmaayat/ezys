@@ -3,7 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import {
   Building2, Users, Warehouse, Package, FileText, Shield,
-  ScrollText, BarChart3, ChevronLeft, ChevronRight, Settings, Sparkles, Code2,
+  ScrollText, BarChart3, ChevronLeft, ChevronRight, Settings, Sparkles, Code2, Truck, Radio, Calculator,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -43,6 +43,9 @@ const navGroups: NavGroup[] = [
     titleAr: 'العمليات',
     items: [
       { icon: Package, labelEn: 'Shipments', labelAr: 'الشحنات', path: '/saas/shipments' },
+      { icon: Radio, labelEn: 'Tracking', labelAr: 'متابعة الشحنات', path: '/saas/tracking' },
+      { icon: Truck, labelEn: 'Fleet', labelAr: 'الأسطول', path: '/saas/fleet' },
+      { icon: Calculator, labelEn: 'Freight Calculator', labelAr: 'حاسبة الشحن', path: '/saas/freight' },
       { icon: FileText, labelEn: 'Invoices', labelAr: 'الفواتير', path: '/saas/invoices' },
     ],
   },

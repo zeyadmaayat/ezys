@@ -5,3 +5,5 @@ verify_jwt = false
 
 [functions.notify-new-signup]
 verify_jwt = true
+[functions.public-tracking]
+verify_jwt = false
