@@ -40,6 +40,10 @@ const FieldPermissions = lazy(() => import("./pages/saas/FieldPermissions"));
 const AuditLog = lazy(() => import("./pages/saas/AuditLog"));
 const ComplianceCenter = lazy(() => import("./pages/saas/ComplianceCenter"));
 const DevelopersPage = lazy(() => import("./pages/saas/Developers"));
+const FleetPage = lazy(() => import("./pages/saas/Fleet"));
+const TrackingPage = lazy(() => import("./pages/saas/Tracking"));
+const FreightCalculatorPage = lazy(() => import("./pages/saas/FreightCalculator"));
+const TrackShipment = lazy(() => import("./pages/TrackShipment"));
 
 // Finance
 const ExpensesPage = lazy(() => import("./pages/finance/Expenses"));
@@ -106,6 +110,10 @@ const App = () => (
                 <Route path="/saas/clients" element={<ProtectedRoute><SaaSClients /></ProtectedRoute>} />
                 <Route path="/saas/warehouses" element={<ProtectedRoute><SaaSWarehouses /></ProtectedRoute>} />
                 <Route path="/saas/invoices" element={<ProtectedRoute><SaaSInvoices /></ProtectedRoute>} />
+                <Route path="/saas/fleet" element={<ProtectedRoute><FleetPage /></ProtectedRoute>} />
+                <Route path="/saas/tracking" element={<ProtectedRoute><TrackingPage /></ProtectedRoute>} />
+                <Route path="/saas/freight" element={<ProtectedRoute><FreightCalculatorPage /></ProtectedRoute>} />
+                <Route path="/track/:token" element={<TrackShipment />} />
                 <Route path="/finance/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
                 <Route path="/finance/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
                 <Route path="/finance/three-way-match" element={<ProtectedRoute><ThreeWayMatchPage /></ProtectedRoute>} />
