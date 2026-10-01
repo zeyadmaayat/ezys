@@ -92,12 +92,15 @@ serve(async (req) => {
             .ilike("name", clientName)
             .maybeSingle();
           if (!c) {
+            // Expected business outcome, not a server failure: return 200 with ok:false
+            // so the client shows the reason without it being treated as a crash.
             return json({
+              ok: false,
               error: "missing_prerequisite",
               message: `Client "${clientName}" was not found. Add the client first.`,
               message_ar: `العميل "${clientName}" غير موجود. أضف العميل أولاً.`,
               route: "/saas/clients",
-            }, 409);
+            });
           }
           clientId = c.id as string;
         }
