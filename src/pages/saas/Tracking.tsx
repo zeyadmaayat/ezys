@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SaasLayout } from '@/components/saas/SaasLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useShipmentsV2 } from '@/hooks/useShipmentsV2';
@@ -12,10 +12,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Radio, Link2, Copy, Plus } from 'lucide-react';
+import { MapPin, Radio, Link2, Copy, Plus, Navigation, CheckCircle2, Circle } from 'lucide-react';
 import { toast } from 'sonner';
 
 type Ev = { id: string; event_type: string; status: string | null; description: string | null; location_text: string | null; is_public: boolean; created_at: string };
+type Stop = { id: string; route_id: string; sequence: number; label: string | null; status: string; actual_arrival: string | null };
 type Pos = { id: string; latitude: number; longitude: number; speed_kmh: number | null; recorded_at: string; source: string };
 
 export default function TrackingPage() {
@@ -28,17 +29,24 @@ export default function TrackingPage() {
   const [events, setEvents] = useState<Ev[]>([]);
   const [positions, setPositions] = useState<Pos[]>([]);
   const [link, setLink] = useState('');
+  const [stops, setStops] = useState<Stop[]>([]);
+  const [stopLabel, setStopLabel] = useState('');
+  const [sharing, setSharing] = useState(false);
+  const watchRef = useRef<number | null>(null);
+  const lastSent = useRef(0);
   const [ev, setEv] = useState({ description: '', location_text: '', lat: '', lng: '', is_public: true });
 
   const shipment = shipments.find((s) => s.id === sel);
 
   const load = useCallback(async () => {
     if (!sel) return;
-    const [e, p, t] = await Promise.all([
+    const [e, p, t, st] = await Promise.all([
       supabase.from('shipment_events').select('*').eq('shipment_id', sel).order('created_at', { ascending: false }),
       supabase.from('shipment_positions').select('*').eq('shipment_id', sel).order('recorded_at', { ascending: false }).limit(20),
       supabase.from('tracking_tokens').select('token').eq('shipment_id', sel).eq('revoked', false).order('created_at', { ascending: false }).limit(1),
+      supabase.from('route_stops').select('id, route_id, sequence, label, status, actual_arrival').eq('shipment_id', sel).order('sequence'),
     ]);
+    setStops((st.data || []) as Stop[]);
     setEvents((e.data || []) as Ev[]);
     setPositions((p.data || []) as Pos[]);
     setLink(t.data?.[0] ? `${window.location.origin}/track/${t.data[0].token}` : '');
@@ -50,6 +58,7 @@ export default function TrackingPage() {
     const ch = supabase.channel(`track-${sel}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'shipment_events', filter: `shipment_id=eq.${sel}` }, load)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'shipment_positions', filter: `shipment_id=eq.${sel}` }, load)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'route_stops', filter: `shipment_id=eq.${sel}` }, load)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [sel, load]);
@@ -66,6 +75,46 @@ export default function TrackingPage() {
       await supabase.from('shipment_positions').insert({ company_id: company.id, shipment_id: sel, latitude: lat, longitude: lng, source: 'manual' });
     }
     setEv({ description: '', location_text: '', lat: '', lng: '', is_public: true });
+    load();
+  };
+
+  const stopSharing = useCallback(() => {
+    if (watchRef.current !== null) navigator.geolocation.clearWatch(watchRef.current);
+    watchRef.current = null; setSharing(false);
+  }, []);
+  useEffect(() => stopSharing, [sel, stopSharing]);
+
+  const startSharing = () => {
+    if (!company || !sel) return;
+    if (!navigator.geolocation) return toast.error(ar ? 'الجهاز لا يدعم تحديد الموقع' : 'Location not supported on this device');
+    watchRef.current = navigator.geolocation.watchPosition(async (pos) => {
+      if (Date.now() - lastSent.current < 30000) return;
+      lastSent.current = Date.now();
+      await supabase.from('shipment_positions').insert({ company_id: company.id, shipment_id: sel, latitude: pos.coords.latitude, longitude: pos.coords.longitude,
+        speed_kmh: pos.coords.speed != null ? pos.coords.speed * 3.6 : null, source: 'device' });
+    }, () => { toast.error(ar ? 'لم يتم السماح بالوصول للموقع' : 'Location permission denied'); stopSharing(); }, { enableHighAccuracy: true });
+    lastSent.current = 0; setSharing(true);
+  };
+
+  const addStop = async () => {
+    if (!company || !shipment || !stopLabel.trim()) return toast.error(ar ? 'اكتب اسم التوقف' : 'Enter a stop name');
+    let routeId = stops[0]?.route_id;
+    if (!routeId) {
+      const { data, error } = await supabase.from('routes').insert({ company_id: company.id, name: shipment.tracking_number, created_by: user?.id }).select('id').single();
+      if (error) return toast.error(error.message);
+      routeId = data.id;
+    }
+    const { error } = await supabase.from('route_stops').insert({ company_id: company.id, route_id: routeId, shipment_id: sel, label: stopLabel.trim(),
+      sequence: (stops[stops.length - 1]?.sequence ?? 0) + 1, status: 'pending' });
+    if (error) return toast.error(error.message);
+    setStopLabel(''); load();
+  };
+
+  const markArrived = async (s: Stop) => {
+    const { error } = await supabase.from('route_stops').update({ status: 'arrived', actual_arrival: new Date().toISOString() }).eq('id', s.id);
+    if (error) return toast.error(error.message);
+    if (company) await supabase.from('shipment_events').insert({ company_id: company.id, shipment_id: sel, event_type: 'stop_arrived', status: shipment?.status ?? null,
+      description: (ar ? 'وصل إلى: ' : 'Arrived at: ') + (s.label ?? ''), location_text: s.label, is_public: true, created_by: user?.id });
     load();
   };
 
@@ -101,6 +150,18 @@ export default function TrackingPage() {
               <Card><CardHeader><CardTitle className="text-base flex items-center gap-2"><MapPin className="w-4 h-4" />{ar ? 'آخر موقع' : 'Last position'}</CardTitle></CardHeader>
                 <CardContent className="text-sm">{last ? <><div>{last.latitude.toFixed(5)}, {last.longitude.toFixed(5)}</div><div className="text-xs text-muted-foreground">{new Date(last.recorded_at).toLocaleString()}</div>
                   <a className="text-primary text-xs underline" target="_blank" rel="noreferrer" href={`https://www.openstreetmap.org/?mlat=${last.latitude}&mlon=${last.longitude}#map=14/${last.latitude}/${last.longitude}`}>{ar ? 'فتح على الخريطة' : 'Open on map'}</a></> : <span className="text-muted-foreground">{ar ? 'لا يوجد موقع' : 'No position yet'}</span>}</CardContent></Card>
+              <Card><CardHeader><CardTitle className="text-base flex items-center gap-2"><Navigation className="w-4 h-4" />{ar ? 'مشاركة الموقع تلقائياً' : 'Auto location sharing'}</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm"><p className="text-muted-foreground text-xs">{ar ? 'افتح هذه الصفحة على جوال السائق، وسيُرسل موقعه كل 30 ثانية.' : "Open this page on the driver's phone; it sends the location every 30 seconds."}</p>
+                  {sharing ? <Button variant="destructive" className="w-full" onClick={stopSharing}>{ar ? 'إيقاف المشاركة' : 'Stop sharing'}</Button>
+                    : <Button className="w-full" onClick={startSharing}>{ar ? 'بدء المشاركة' : 'Start sharing'}</Button>}</CardContent></Card>
+              <Card><CardHeader><CardTitle className="text-base">{ar ? 'مسار التوقفات' : 'Route stops'}</CardTitle></CardHeader>
+                <CardContent className="space-y-2">
+                  {stops.map((s) => <div key={s.id} className="flex items-center gap-2 text-sm">
+                    {s.status === 'arrived' ? <CheckCircle2 className="w-4 h-4 text-primary" /> : <Circle className="w-4 h-4 text-muted-foreground" />}
+                    <span className="flex-1">{s.sequence}. {s.label}</span>
+                    {s.status !== 'arrived' && <Button size="sm" variant="outline" onClick={() => markArrived(s)}>{ar ? 'وصل' : 'Arrived'}</Button>}</div>)}
+                  <div className="flex gap-2"><Input placeholder={ar ? 'اسم التوقف' : 'Stop name'} value={stopLabel} onChange={(e) => setStopLabel(e.target.value)} /><Button onClick={addStop}><Plus className="w-4 h-4" /></Button></div>
+                </CardContent></Card>
               <Card><CardHeader><CardTitle className="text-base">{ar ? 'إضافة تحديث' : 'Add update'}</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
                   <Input placeholder={ar ? 'الوصف *' : 'Description *'} value={ev.description} onChange={(e) => setEv({ ...ev, description: e.target.value })} />
