@@ -2331,6 +2331,7 @@ export type Database = {
       invoices_v2: {
         Row: {
           amount: number
+          arrival_date: string | null
           client_id: string | null
           company_id: string
           created_at: string
@@ -2350,6 +2351,7 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          arrival_date?: string | null
           client_id?: string | null
           company_id: string
           created_at?: string
@@ -2369,6 +2371,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          arrival_date?: string | null
           client_id?: string | null
           company_id?: string
           created_at?: string
@@ -4143,6 +4146,7 @@ export type Database = {
           origin: string
           origin_lat: number | null
           origin_lng: number | null
+          payment_status: string
           quoted_cost: number | null
           quoted_currency: string | null
           service_level: string | null
@@ -4179,6 +4183,7 @@ export type Database = {
           origin: string
           origin_lat?: number | null
           origin_lng?: number | null
+          payment_status?: string
           quoted_cost?: number | null
           quoted_currency?: string | null
           service_level?: string | null
@@ -4215,6 +4220,7 @@ export type Database = {
           origin?: string
           origin_lat?: number | null
           origin_lng?: number | null
+          payment_status?: string
           quoted_cost?: number | null
           quoted_currency?: string | null
           service_level?: string | null

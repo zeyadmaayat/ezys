@@ -71,6 +71,7 @@ export interface ShipmentV2 {
   expected_delivery: string | null;
   actual_delivery: string | null;
   tracking_number: string | null;
+  payment_status?: 'Unbilled' | 'Invoiced' | 'Paid' | 'Overdue' | string;
   notes: string | null;
   created_by: string | null;
   created_at: string;
@@ -90,6 +91,7 @@ export interface InvoiceV2 {
   status: InvoiceStatusV2;
   issued_at: string | null;
   due_date: string | null;
+  arrival_date?: string | null;
   paid_at: string | null;
   notes: string | null;
   created_by: string | null;
