@@ -26,7 +26,13 @@ Deno.serve(async (req) => {
     const { data: events } = await db.from("shipment_events")
       .select("description, status, location_text, created_at")
       .eq("shipment_id", t.shipment_id).eq("is_public", true).order("created_at", { ascending: false }).limit(50);
-    return json({ shipment: s, events: events ?? [] });
+    const { data: stops } = await db.from("route_stops")
+      .select("sequence, label, status, planned_arrival, actual_arrival")
+      .eq("shipment_id", t.shipment_id).order("sequence", { ascending: true }).limit(50);
+    const { data: pos } = await db.from("shipment_positions")
+      .select("latitude, longitude, recorded_at")
+      .eq("shipment_id", t.shipment_id).order("recorded_at", { ascending: false }).limit(1);
+    return json({ shipment: s, events: events ?? [], stops: stops ?? [], position: pos?.[0] ?? null });
   } catch (e) {
     console.error(e);
     return json({ error: "server_error" }, 500);
