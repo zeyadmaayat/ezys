@@ -335,6 +335,7 @@ export default function InvoicesPage() {
                         <TableHead>{isRTL ? 'المسار' : 'Route'}</TableHead>
                         <TableHead className="text-end">{isRTL ? 'المبلغ' : 'Amount'}</TableHead>
                         <TableHead>{isRTL ? 'الحالة' : 'Status'}</TableHead>
+                        <TableHead>{isRTL ? 'تاريخ الوصول' : 'Arrival Date'}</TableHead>
                         <TableHead>{isRTL ? 'تاريخ الاستحقاق' : 'Due Date'}</TableHead>
                         <TableHead className="text-end">{isRTL ? 'إجراءات' : 'Actions'}</TableHead>
                       </TableRow>
@@ -358,6 +359,9 @@ export default function InvoicesPage() {
                             </TableCell>
                             <TableCell>
                               <Badge className={cfg.color}>{invoice.status}</Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {(invoice.arrival_date || invoice.shipment?.actual_delivery) ? format(new Date((invoice.arrival_date || invoice.shipment?.actual_delivery) as string), 'MMM d, yyyy') : '—'}
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {invoice.due_date ? format(new Date(invoice.due_date), 'MMM d, yyyy') : '—'}

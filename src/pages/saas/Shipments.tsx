@@ -237,9 +237,16 @@ export default function ShipmentsPage() {
                       </TableCell>
                       <TableCell>{shipment.client?.name || '—'}</TableCell>
                       <TableCell>
-                        <Badge className={statusColors[shipment.status]}>
-                          {SHIPMENT_STATUS_LABELS[shipment.status]}
-                        </Badge>
+                        <div className="flex flex-col gap-1 items-start">
+                          <Badge className={statusColors[shipment.status]}>
+                            {SHIPMENT_STATUS_LABELS[shipment.status]}
+                          </Badge>
+                          {shipment.payment_status && shipment.payment_status !== 'Unbilled' && (
+                            <Badge variant={shipment.payment_status === 'Paid' ? 'default' : 'outline'}>
+                              {shipment.payment_status === 'Paid' ? 'مدفوعة' : shipment.payment_status === 'Overdue' ? 'متأخرة الدفع' : 'مفوترة'}
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {shipment.expected_delivery 
